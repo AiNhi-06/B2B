@@ -511,3 +511,12 @@ body {
   .card-fruit-meta { min-width: 0; }
   .card-bottom-info { gap: 12px; flex-wrap: wrap; }
 }
+
+.product-photo-upload { margin-bottom: 24px; padding: 16px; background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 8px; }
+.product-photo-upload > label { display: block; font-weight: 700; color: #0f172a; }
+.product-photo-upload p { margin: 6px 0 12px; font-size: .875rem; color: #475569; }
+.product-photo-upload input { width: 100%; min-height: 44px; }
+.product-photo-upload input::file-selector-button { min-height: 44px; margin-right: 12px; border: 1px solid #94a3b8; border-radius: 6px; padding: 8px 12px; background: white; color: #0f172a; cursor: pointer; }
+.product-photo-preview { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.product-photo-preview img { max-width: 100%; object-fit: contain; border-radius: 8px; background: white; }
+.product-photo-upload .product-photo-error { color: #b91c1c; }

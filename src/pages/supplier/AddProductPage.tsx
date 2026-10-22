@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getDemoSession, createProduct, getSuppliers } from '../../services/demoService';
 import type { Supplier } from '../../types';
 import { ErrorMessage } from '../../components/shared/Feedback';
+import { prepareProductPhoto } from '../../components/shared/prepareProductPhoto';
 
 export function AddProductPage() {
   const navigate = useNavigate();
@@ -14,6 +15,25 @@ export function AddProductPage() {
   const [basePricePerKg, setBasePricePerKg] = useState<number>(20000);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [readingImage, setReadingImage] = useState(false);
+  const [photoInputKey, setPhotoInputKey] = useState(0);
+
+  const handlePhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setReadingImage(true);
+    setImageError(null);
+    try {
+      setImageUrl(await prepareProductPhoto(file));
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Không thể đọc ảnh. Vui lòng chọn lại.');
+    } finally {
+      setReadingImage(false);
+      setPhotoInputKey((key) => key + 1);
+    }
+  };
 
   useEffect(() => {
     Promise.all([getDemoSession(), getSuppliers()]).then(([sess, supList]) => {
@@ -26,6 +46,7 @@ export function AddProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (readingImage || submitting) return;
     if (!name.trim()) {
       setError('Vui lòng nhập tên loại trái cây.');
       return;
@@ -48,6 +69,7 @@ export function AddProductPage() {
         variety: variety.trim() || undefined,
         availableKg: Math.floor(availableKg),
         basePricePerKg: Math.floor(basePricePerKg),
+        imageUrl,
       });
       navigate('/supplier');
     } catch (err: unknown) {
@@ -80,6 +102,24 @@ export function AddProductPage() {
         {error && <ErrorMessage message={error} />}
 
         <form onSubmit={handleSubmit}>
+          <div className="product-photo-upload">
+            <label htmlFor="product-photo">Ảnh sản phẩm (không bắt buộc)</label>
+            <p id="product-photo-help">Chọn ảnh JPG, PNG hoặc WebP, tối đa 8 MB. Ảnh chỉ được lưu trong trình duyệt cho bản demo.</p>
+            <input key={photoInputKey} id="product-photo" type="file" accept="image/jpeg,image/png,image/webp"
+              aria-describedby="product-photo-help product-photo-status" aria-invalid={!!imageError}
+              onChange={handlePhoto} disabled={readingImage || submitting} />
+            <div id="product-photo-status" aria-live="polite">
+              {readingImage && <p>Đang xử lý ảnh…</p>}
+              {imageError && <p className="product-photo-error" role="alert">{imageError}</p>}
+            </div>
+            {imageUrl && (
+              <div className="product-photo-preview">
+                <img src={imageUrl} alt="Ảnh sản phẩm đã chọn" width={240} height={160} />
+                <button type="button" className="btn-secondary" disabled={readingImage || submitting}
+                  onClick={() => { setImageUrl(undefined); setImageError(null); setPhotoInputKey((key) => key + 1); }}>Xóa ảnh</button>
+              </div>
+            )}
+          </div>
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', color: '#0f172a', marginBottom: 6 }}>
               Tên loại trái cây <span style={{ color: '#ef4444' }}>*</span>
@@ -156,7 +196,7 @@ export function AddProductPage() {
             >
               Hủy
             </button>
-            <button type="submit" className="btn-primary" disabled={submitting}>
+            <button type="submit" className="btn-primary" disabled={submitting || readingImage}>
               {submitting ? 'Đang lưu...' : 'Đăng Bán Ngay'}
             </button>
           </div>
