@@ -12,19 +12,19 @@ export function SupplierDashboard() {
           end
           className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
         >
-          📦 Lô hàng của tôi
+          Nguồn cung trái cây
         </NavLink>
         <NavLink
           to="/supplier/new"
           className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
         >
-          ➕ Đăng bán trái cây
+          Đăng bán lô mới
         </NavLink>
         <NavLink
           to="/supplier/demand"
           className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
         >
-          📋 Nhu cầu tổng (Gom đơn)
+          Nhu cầu giao kho Hub
         </NavLink>
       </div>
 

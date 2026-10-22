@@ -4,139 +4,101 @@ import { useNavigate } from 'react-router-dom';
 interface PhaseStep {
   time: string;
   title: string;
-  role: string;
   targetRoute: string;
-  desc: string;
+  role: string;
 }
 
 const PHASES: PhaseStep[] = [
   {
     time: '12:00–15:00',
-    title: 'Nhà vườn đăng bán',
-    role: 'Nhà vườn',
+    title: 'Nhà vườn cập nhật nguồn cung',
     targetRoute: '/supplier',
-    desc: 'Cập nhật tồn kho & định giá sỉ gốc bảo mật.',
+    role: 'Nhà vườn',
   },
   {
     time: '16:00–22:00',
-    title: 'Khách B2B đặt đơn',
-    role: 'Khách B2B',
+    title: 'Quán chốt đơn & xem giá sỉ',
     targetRoute: '/customer',
-    desc: 'Xem giá công khai (đã cộng markup), ước tính cước & checkout.',
+    role: 'Khách B2B',
   },
   {
     time: 'Sau 22:00',
-    title: 'Gom đơn tự động',
-    role: 'Admin Hub',
+    title: 'Tổng hợp nhu cầu toàn hệ thống',
     targetRoute: '/admin/aggregate',
-    desc: 'Gom toàn bộ nhu cầu của các quán, báo tổng kg cho nhà vườn.',
+    role: 'Kho Hub',
   },
   {
     time: '03:00–04:00',
-    title: 'Giao hàng về Hub',
-    role: 'Nhà vườn',
+    title: 'Xuất hàng từ vườn về Hub',
     targetRoute: '/supplier/demand',
-    desc: 'Nhà vườn xác nhận số kg, biển số xe & giờ dự kiến tới kho Hub.',
+    role: 'Nhà vườn',
   },
   {
     time: 'Từ 04:00',
-    title: 'Tem QR & Gom tuyến',
-    role: 'Admin Hub',
+    title: 'Dán nhãn sọt & phân tuyến giao',
     targetRoute: '/admin/shipments',
-    desc: 'In tem dán sọt, gom cụm chuyến Multi-stop & điều phối.',
+    role: 'Kho Hub',
   },
   {
     time: 'Sáng sớm',
-    title: 'Giao hàng & Theo dõi',
-    role: 'Khách B2B',
+    title: 'Giao hàng đa điểm & theo dõi',
     targetRoute: '/customer/orders',
-    desc: 'Khách theo dõi tài xế và nhận hàng đúng chất lượng.',
+    role: 'Khách B2B',
   },
 ];
 
 export function PhaseAdvancer() {
   const navigate = useNavigate();
-  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelectPhase = (index: number, route: string) => {
-    setCurrentPhaseIndex(index);
+  const current = PHASES[currentIdx];
+
+  const handleSelect = (idx: number, route: string) => {
+    setCurrentIdx(idx);
     navigate(route);
+    setIsOpen(false);
   };
-
-  const handleNextPhase = () => {
-    const nextIdx = (currentPhaseIndex + 1) % PHASES.length;
-    setCurrentPhaseIndex(nextIdx);
-    navigate(PHASES[nextIdx].targetRoute);
-  };
-
-  const currentPhase = PHASES[currentPhaseIndex];
 
   return (
-    <aside className="phase-advancer-dock" aria-label="Widget điều khiển khung giờ demo">
-      <div className="phase-advancer-header">
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>⏱️ Kịch bản Demo</span>
-          <span className="demo-chip">{currentPhase.time}</span>
-        </span>
-        <div style={{ display: 'flex', gap: 4 }}>
-          <button
-            type="button"
-            className="btn-secondary"
-            style={{ padding: '2px 8px', fontSize: '0.75rem' }}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? 'Mở rộng bảng giai đoạn' : 'Thu gọn'}
-          >
-            {isCollapsed ? '🔼 Mở' : '🔽 Thu gọn'}
-          </button>
-        </div>
-      </div>
+    <div className="demo-control-widget">
+      {isOpen && (
+        <div className="demo-control-panel">
+          <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0f172a', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>KỊCH BẢN THEO MỐC GIỜ</span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Bấm để chuyển</span>
+          </div>
 
-      {!isCollapsed ? (
-        <>
-          <div className="phase-chips">
-            {PHASES.map((p, idx) => {
-              const isCurrent = idx === currentPhaseIndex;
-              return (
-                <button
-                  type="button"
-                  key={p.time}
-                  className={`phase-chip ${isCurrent ? 'current' : ''}`}
-                  onClick={() => handleSelectPhase(idx, p.targetRoute)}
-                >
-                  <div>
-                    <strong>{p.time}:</strong> {p.title}
-                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{p.desc}</div>
-                  </div>
-                  <span className="badge" style={{ fontSize: '0.65rem' }}>{p.role}</span>
-                </button>
-              );
-            })}
+          <div>
+            {PHASES.map((p, idx) => (
+              <button
+                type="button"
+                key={p.time}
+                className={`demo-step-btn ${idx === currentIdx ? 'active' : ''}`}
+                onClick={() => handleSelect(idx, p.targetRoute)}
+              >
+                <div>
+                  <strong style={{ display: 'block', fontSize: '0.72rem' }}>{p.time}</strong>
+                  <span>{p.title}</span>
+                </div>
+                <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{p.role}</span>
+              </button>
+            ))}
           </div>
-          <div style={{ marginTop: 10, display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              type="button"
-              className="btn-primary"
-              style={{ padding: '4px 12px', fontSize: '0.8rem' }}
-              onClick={handleNextPhase}
-            >
-              Chuyển mốc tiếp theo ⏭️
-            </button>
-          </div>
-        </>
-      ) : (
-        <div style={{ fontSize: '0.75rem', color: '#475569', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>{currentPhase.title} ({currentPhase.role})</span>
-          <button
-            type="button"
-            className="btn-primary"
-            style={{ padding: '2px 8px', fontSize: '0.7rem' }}
-            onClick={handleNextPhase}
-          >
-            Tiếp ⏭️
-          </button>
         </div>
       )}
-    </aside>
+
+      <button
+        type="button"
+        className="demo-control-trigger"
+        onClick={() => setIsOpen(!isOpen)}
+        title="Bấm để chọn khung giờ demo"
+      >
+        <span>⏱️ {current.time}</span>
+        <span style={{ opacity: 0.7 }}>•</span>
+        <span>{current.role}</span>
+        <span>{isOpen ? '✕' : '▲'}</span>
+      </button>
+    </div>
   );
 }

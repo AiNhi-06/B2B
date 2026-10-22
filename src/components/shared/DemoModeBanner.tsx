@@ -6,35 +6,34 @@ export function DemoModeBanner() {
   const [resetting, setResetting] = useState(false);
 
   const handleReset = async () => {
-    if (!window.confirm('Khôi phục dữ liệu demo về trạng thái hạt giống (Seed) ban đầu?')) {
+    if (!window.confirm('Đặt lại toàn bộ dữ liệu mẫu ban đầu?')) {
       return;
     }
     setResetting(true);
     try {
       await resetDemoData();
     } catch (err) {
-      console.error('Lỗi reset demo data:', err);
+      console.error('Lỗi reset dữ liệu mẫu:', err);
     } finally {
       setResetting(false);
     }
   };
 
   return (
-    <div className="demo-banner">
+    <div className="demo-banner-slim">
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span className="demo-badge-pill">Prototype</span>
-        <span>
-          <strong>Chế độ DEMO:</strong> Toàn bộ dữ liệu trái cây, đơn hàng, GPS và tài xế là giả lập phục vụ thuyết trình cuộc thi.
-        </span>
+        <span className="tag">Bản Demo</span>
+        <span>Hệ thống phân phối nông sản B2B — Dữ liệu giả lập phục vụ thuyết trình</span>
       </div>
       <div>
         <button
-          className="btn-reset-demo"
+          type="button"
+          className="btn-reset-slim"
           onClick={handleReset}
           disabled={resetting}
-          title="Xóa phiên làm việc hiện tại và khôi phục dữ liệu mẫu ban đầu"
+          title="Khôi phục lại danh sách mặt hàng và đơn mẫu ban đầu"
         >
-          {resetting ? 'Đang khôi phục...' : '🔄 Khôi phục Seed'}
+          {resetting ? 'Đang đặt lại...' : 'Đặt lại dữ liệu mẫu'}
         </button>
       </div>
     </div>
