@@ -13,7 +13,7 @@ export function RoleSelector() {
   const navigate = useNavigate();
   const location = useLocation();
   const [session, setSession] = useState<DemoSession>({
-    role: 'CUSTOMER',
+    role: 'SUPPLIER',
     activeSupplierId: 'supplier-1',
     activeCustomerId: 'customer-1',
   });
@@ -86,7 +86,6 @@ export function RoleSelector() {
     }
   };
 
-  // Sync role pill with URL if navigated directly
   const currentPath = location.pathname;
   const activeRole: Role = currentPath.startsWith('/supplier')
     ? 'SUPPLIER'
@@ -95,41 +94,41 @@ export function RoleSelector() {
     : 'CUSTOMER';
 
   return (
-    <div className="role-switcher-container">
-      <div className="role-pills">
+    <div className="role-nav-group">
+      <div className="role-switcher-pills">
         <button
           type="button"
-          className={`role-pill ${activeRole === 'SUPPLIER' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'SUPPLIER' ? 'active' : ''}`}
           onClick={() => handleRoleChange('SUPPLIER')}
         >
-          🌿 Nhà vườn
+          Nhà Vườn
         </button>
         <button
           type="button"
-          className={`role-pill ${activeRole === 'CUSTOMER' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'CUSTOMER' ? 'active' : ''}`}
           onClick={() => handleRoleChange('CUSTOMER')}
         >
-          ☕ Khách B2B
+          Quán Cà Phê / F&B
         </button>
         <button
           type="button"
-          className={`role-pill ${activeRole === 'ADMIN' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'ADMIN' ? 'active' : ''}`}
           onClick={() => handleRoleChange('ADMIN')}
         >
-          ⚙️ Admin Hub
+          Kho Hub & Điều Phối
         </button>
       </div>
 
       {activeRole === 'SUPPLIER' && suppliers.length > 0 && (
         <select
-          className="account-select"
+          className="account-dropdown"
           value={session.activeSupplierId || 'supplier-1'}
           onChange={handleSupplierChange}
-          aria-label="Chọn tài khoản nhà vườn demo"
+          aria-label="Chọn nhà vườn"
         >
           {suppliers.map((s) => (
             <option key={s.id} value={s.id}>
-              Vườn: {s.name} ({s.phone})
+              {s.name}
             </option>
           ))}
         </select>
@@ -137,14 +136,14 @@ export function RoleSelector() {
 
       {activeRole === 'CUSTOMER' && customers.length > 0 && (
         <select
-          className="account-select"
+          className="account-dropdown"
           value={session.activeCustomerId || 'customer-1'}
           onChange={handleCustomerChange}
-          aria-label="Chọn tài khoản quán B2B demo"
+          aria-label="Chọn khách hàng F&B"
         >
           {customers.map((c) => (
             <option key={c.id} value={c.id}>
-              Quán: {c.businessName} ({c.phone})
+              {c.businessName}
             </option>
           ))}
         </select>
