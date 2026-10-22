@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CustomerProduct } from '../../types';
 import { getCustomerCatalog, subscribeDemoData } from '../../services/demoService';
-import { FruitImage } from '../../components/shared/FruitImage';
+import { FruitPhoto } from '../../components/shared/FruitPhoto';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
 
@@ -126,8 +126,8 @@ export function CatalogPage() {
 
             return (
               <div key={p.id} className="fruit-listing-card" style={{ opacity: isOutOfStock ? 0.6 : 1 }}>
+                <FruitPhoto id={p.id} name={p.name} imageUrl={p.imageUrl} />
                 <div className="card-fruit-header">
-                  <FruitImage id={p.id} name={p.name} size={64} />
                   <div className="card-fruit-meta">
                     <h3 className="fruit-title">{p.name}</h3>
                     <div className="fruit-variety">

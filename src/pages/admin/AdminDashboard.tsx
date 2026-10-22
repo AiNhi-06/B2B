@@ -4,10 +4,11 @@ import { AdminOrdersPage } from './AdminOrdersPage';
 import { AggregatePage } from './AggregatePage';
 import { LabelsPage } from './LabelsPage';
 import { ShipmentsPage } from './ShipmentsPage';
+import { HubProductPhotos } from '../../components/shared/HubProductPhotos';
 
 export function AdminDashboard() {
   return (
-    <div>
+    <HubProductPhotos><div>
       <div className="sub-nav-tabs">
         <NavLink
           to="/admin"
@@ -50,6 +51,6 @@ export function AdminDashboard() {
         <Route path="/shipments" element={<ShipmentsPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
-    </div>
+    </div></HubProductPhotos>
   );
 }

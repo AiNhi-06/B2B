@@ -568,3 +568,8 @@ body {
 .product-photo-preview { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
 .product-photo-preview img { max-width: 100%; object-fit: contain; border-radius: 8px; background: white; }
 .product-photo-upload .product-photo-error { color: #b91c1c; }
+
+.hub-product-line { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.hub-product-thumbnail { display: block; width: 48px; flex: 0 0 48px; }
+.hub-product-thumbnail .supplier-photo-frame { height: 48px; border-radius: 6px; }
+.hub-product-thumbnail svg { width: 40px; height: 40px; }

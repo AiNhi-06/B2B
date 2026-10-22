@@ -9,6 +9,7 @@ import {
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
+import { HubProductThumbnail } from '../../components/shared/HubProductPhotos';
 
 export function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -109,8 +110,9 @@ export function AdminOrdersPage() {
                       </td>
                       <td>
                         {order.items.map((i) => (
-                          <div key={i.productId} style={{ fontSize: '0.85rem' }}>
-                            {i.productName} × <strong>{i.quantityKg}kg</strong>
+                          <div key={i.productId} className="hub-product-line" style={{ fontSize: '0.85rem' }}>
+                            <HubProductThumbnail id={i.productId} name={i.productName} />
+                            <span>{i.productName} × <strong>{i.quantityKg}kg</strong></span>
                           </div>
                         ))}
                       </td>
