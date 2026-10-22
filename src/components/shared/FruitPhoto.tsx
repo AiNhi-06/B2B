@@ -19,7 +19,7 @@ export function FruitPhoto({ id, name, imageUrl }: { id: string; name: string; i
     <figure className="supplier-fruit-photo">
       <div className="supplier-photo-frame">
         {showPhoto ? (
-          <img src={source} alt={`Ảnh minh họa ${name}`} width={480} height={280}
+          <img src={source} alt={imageUrl ? `Ảnh lô hàng ${name}` : `Ảnh minh họa ${name}`} width={480} height={280}
             loading="lazy" decoding="async" referrerPolicy="no-referrer"
             onError={() => setFailedSource(source)} />
         ) : (
@@ -28,12 +28,6 @@ export function FruitPhoto({ id, name, imageUrl }: { id: string; name: string; i
           </div>
         )}
       </div>
-      <figcaption>
-        {!showPhoto ? 'Ảnh dự phòng' : imageUrl ? 'Ảnh lô hàng' : (
-          <>Ảnh minh họa · <a href={`https://commons.wikimedia.org/wiki/File:${filename}`}
-            target="_blank" rel="noreferrer">{photo?.author} / Wikimedia</a> · CC0</>
-        )}
-      </figcaption>
     </figure>
   );
 }
