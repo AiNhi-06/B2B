@@ -8,7 +8,7 @@ import {
   getSuppliers,
   subscribeDemoData,
 } from '../../services/demoService';
-import { FruitImage } from '../../components/shared/FruitImage';
+import { FruitPhoto } from '../../components/shared/FruitPhoto';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
 
@@ -69,13 +69,13 @@ export function ListingsPage() {
   return (
     <div>
       {/* 1. Header Section with Crisp Typography */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
+      <div className="supplier-listing-heading">
         <div>
           <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Khu vực vườn trồng • {supplierName}
+            Khu vực cung ứng • {supplierName}
           </span>
           <h1 style={{ margin: '4px 0 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            Nguồn Cung Trái Cây
+            Hàng đang bán
           </h1>
         </div>
 
@@ -128,12 +128,12 @@ export function ListingsPage() {
 
             return (
               <div key={item.id} className="fruit-listing-card">
+                <FruitPhoto id={item.id} name={item.name} imageUrl={item.imageUrl} />
                 <div className="card-fruit-header">
-                  <FruitImage id={item.id} name={item.name} size={64} />
                   <div className="card-fruit-meta">
                     <h3 className="fruit-title">{item.name}</h3>
                     <div className="fruit-variety">
-                      {item.variety ? `Giống: ${item.variety}` : 'Chuẩn sọt xuất khẩu'}
+                      {item.variety ? `Giống: ${item.variety}` : 'Chưa có thông tin giống'}
                     </div>
                   </div>
                   <span className={`badge ${item.active ? 'badge-delivered' : 'badge-placed'}`}>
@@ -151,7 +151,7 @@ export function ListingsPage() {
                   </div>
 
                   <div className="metric-item">
-                    <span className="metric-item-label">Giá bán cho hệ thống</span>
+                    <span className="metric-item-label">Giá gốc cung cấp</span>
                     <span className="metric-item-number green">
                       {item.basePricePerKg.toLocaleString('vi-VN')} đ/kg
                     </span>
