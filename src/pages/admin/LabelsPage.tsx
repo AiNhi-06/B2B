@@ -3,6 +3,7 @@ import type { Order } from '../../types';
 import { getAllOrders, subscribeDemoData } from '../../services/demoService';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
+import { HubProductThumbnail } from '../../components/shared/HubProductPhotos';
 
 export function LabelsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -116,7 +117,7 @@ export function LabelsPage() {
                   <div style={{ fontWeight: 700, marginBottom: 4 }}>CHI TIẾT TRÁI CÂY TRONG SỌT:</div>
                   {order.items.map((i) => (
                     <div key={i.productId} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>• {i.productName}</span>
+                      <div className="hub-product-line"><HubProductThumbnail id={i.productId} name={i.productName} />{i.productName}</div>
                       <strong>{i.quantityKg} kg</strong>
                     </div>
                   ))}

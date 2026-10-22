@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { PricingRule } from '../../types';
 import { getPricingRule, updatePricingRule, subscribeDemoData } from '../../services/demoService';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
+import { HubProductGallery } from '../../components/shared/HubProductPhotos';
 
 export function PricingPage() {
   const [rule, setRule] = useState<PricingRule>({ mode: 'PERCENT', value: 30 });
@@ -63,7 +64,7 @@ export function PricingPage() {
       : sampleBasePrice + rule.value;
 
   return (
-    <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: 20 }}>
         <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem' }}>⚙️ Cấu Hình Biên Lợi Nhuận (Markup Rule)</h2>
         <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -154,6 +155,7 @@ export function PricingPage() {
           </form>
         </div>
       )}
+      <HubProductGallery />
     </div>
   );
 }

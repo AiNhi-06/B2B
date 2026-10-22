@@ -7,6 +7,7 @@ import {
 } from '../../services/demoService';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
+import { HubProductThumbnail } from '../../components/shared/HubProductPhotos';
 
 export function AggregatePage() {
   const [demand, setDemand] = useState<DemandLine[]>([]);
@@ -126,7 +127,7 @@ export function AggregatePage() {
               <tbody>
                 {demand.map((line) => (
                   <tr key={line.productId}>
-                    <td><strong>{line.productName}</strong></td>
+                    <td><div className="hub-product-line"><HubProductThumbnail id={line.productId} name={line.productName} /><strong>{line.productName}</strong></div></td>
                     <td>
                       <span className="badge badge-placed">{line.supplierId}</span>
                     </td>
