@@ -13,7 +13,7 @@
 
 - [06-farmgo-approved-scope.md](06-farmgo-approved-scope.md) — hướng và thứ tự triển khai đã được người dùng duyệt ngày 23/10/2026.
 - [07-data-api-contract-v3-draft.md](07-data-api-contract-v3-draft.md) — đề xuất kỹ thuật cho đợt 2, chưa thay thế contract v2.
-- Contract chạy hiện tại vẫn là `03-data-api-contract.md`. Không đổi chữ ký hoặc quy tắc giá dựa riêng vào bản nháp.
+- Contract v3 đã được duyệt triển khai ngày 23/10/2026 tại `03-data-api-contract.md`; mục 8 chốt tên types/API và migration. Bản v2 được lưu tại `03-data-api-contract-v2-archive.md`. File 07 giữ lịch sử đề xuất, không phải contract chạy.
 
 ## Tính chính xác của đặc tả
 - **[SOURCE]**: trực tiếp từ `trái cây.md` do nhóm cung cấp.
