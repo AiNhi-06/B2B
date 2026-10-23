@@ -36,6 +36,10 @@ if (process.argv.includes('--migration')) {
   assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 1);
   failWrites = false;
   assert.equal((await api.getCustomerCatalog())[0].publicPricePerKg, 20000);
+  assert.equal((await api.getSupplierListings('supplier-1')).find(p => p.id === 'user-old').commodityId, undefined);
+  assert.equal((await api.getCustomerCatalog()).some(p => p.id === 'user-old'), false);
+  await api.updateProduct({supplierId:'supplier-1',productId:'user-old',changes:{commodityId:'avocado-034'}});
+  assert.equal((await api.getCustomerCatalog()).some(p => p.id === 'user-old'), true);
   assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 3);
   assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, 810000);
 } else if (process.argv.includes('--reload')) {
@@ -209,17 +213,22 @@ if (!process.argv.includes('--reload') && !process.argv.includes('--migration'))
     const { upgradeStoredState } = await import('../store/demoStore.ts');
     const { createSeed } = await import('../mocks/seed.ts');
     const seed = createSeed();
-    const legacy = {...seed, version: 1, pricing: {mode: 'PERCENT', value: 30}, products: seed.products.slice(0,3).map(({publicPricePerKg, commodityId, uses, ...p}) => ({...p, basePricePerKg: publicPricePerKg}))};
+    const legacy = {...seed, version: 1, pricing: {mode: 'PERCENT', value: 30}, products: seed.products.slice(0,3).map(({publicPricePerKg, commodityId: _commodityId, uses: _uses, ...p}) => ({...p, basePricePerKg: publicPricePerKg}))};
     delete legacy.commodities;
     legacy.products[0].availableKg = 470;
     legacy.products.push({...legacy.products[0], id: 'user-old', imageUrl: 'data:image/png;base64,aGVsbG8='});
     legacy.orders = [{id: 'order-old', customerId: 'customer-1', deliveryAddressId: 'address-1', items: [{productId:'avocado-034',productName:'Bơ 034',quantityKg:30,unitPriceVnd:26000,lineTotalVnd:780000}], subtotalVnd:780000,shippingFeeVnd:30000,totalVnd:810000,status:'PLACED',paymentStatus:'UNPAID',placedAt:'2026-10-22T01:00:00Z'}];
+    legacy.confirmations = [{supplierId:'supplier-1',orderIds:['order-old'],confirmedAt:'2026-10-22T02:00:00Z'}];
+    legacy.shipments = [{id:'shipment-old',orderIds:['order-old'],routeLabel:'Tuyến cũ',status:'ASSIGNED'}];
     const before = structuredClone(legacy);
     const migrated = upgradeStoredState(legacy);
     assert.deepEqual(legacy, before);
     assert.equal(migrated.version, 3);
     assert.equal(migrated.products[0].publicPricePerKg, 20000);
     assert.equal(migrated.products[0].availableKg, 470);
+    assert.deepEqual(migrated.confirmations, before.confirmations);
+    assert.deepEqual(migrated.shipments, before.shipments);
+    assert.deepEqual(migrated.session, before.session);
     assert.equal(migrated.orders[0].totalVnd, 810000);
     assert.equal(migrated.orders[0].items[0].unitPriceVnd, 26000);
     assert.equal(migrated.products.at(-1).commodityId, undefined);
