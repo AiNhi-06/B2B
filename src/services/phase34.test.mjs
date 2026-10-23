@@ -30,7 +30,7 @@ test('phase 3: approval gates, QC revisions, snapshots, claims and storage atomi
   assert.equal(api.calculateTrueCost(32000,10,(await api.getQualityReviews())[0]),null);
   await admin(); await api.reviewProductQC({productId:listing.id,approved:true,note:'QC demo đạt'});
   await customer(p.id); input.items=[{productId:listing.id,quantityKg:10}];
-  const order=await api.placeOrder(input); assert.equal(order.items[0].qcSnapshot.yieldPercent,80);
+  input.deliveryDate=api.nextDeliveryDate(await api.getDemoClock()); input.deliverySlot='MORNING'; input.requestKey='phase3-order'; const order=await api.placeOrder(input); assert.equal(order.items[0].qcSnapshot.yieldPercent,80);
   await supplier('supplier-1'); await api.updateProduct({supplierId:'supplier-1',productId:listing.id,changes:{publicPricePerKg:35000}});
   assert.equal((await api.getQualityReviews())[0].status,'APPROVED');
   await api.submitProductQC({productId:listing.id,grade:'A',yieldPercent:90});
@@ -45,4 +45,58 @@ test('phase 3: approval gates, QC revisions, snapshots, claims and storage atomi
   assert.equal((await api.decideClaim(decision)).refundVnd,64000); await api.decideClaim(decision);
   await api.advanceDemoClock(121); await customer(p.id); await assert.rejects(()=>api.submitClaim({orderId:order.id,supplierId:'supplier-1',lines:[{productId:listing.id,quantityKg:1}],reason:'Muộn',images:[]}));
   const before=store.readState(); broken=true; await assert.rejects(()=>api.saveBusinessProfile({id:p.id,changes:{businessName:'Không lưu'}})); broken=false; assert.deepEqual(store.readState(),before);
+});
+const checkout = async (items, key, slot='MORNING') => ({customerId:'customer-1',deliveryAddressId:'address-1',items,deliveryDate:api.nextDeliveryDate(await api.getDemoClock()),deliverySlot:slot,requestKey:key});
+async function deliver(order) {
+  await admin(); await api.aggregateDemand();
+  for(const id of new Set(order.items.map(i=>i.supplierId))) await api.confirmSupplierDemand({supplierId:id,orderIds:[order.id]});
+  await api.advanceOrderStatus(order.id,'AT_HUB'); const trip=await api.assignDemoShipment({orderIds:[order.id],routeLabel:'Tuyến test demo'});
+  await api.advanceShipmentStatus(trip.id,'IN_TRANSIT'); await api.advanceShipmentStatus(trip.id,'DELIVERED');
+}
+test('phase 4: exact 350000 hold, 64000 refund, 7680 fee, 248320 available and idempotency',async()=>{
+  await api.resetDemoData(); await customer('customer-1');
+  const input=await checkout([{productId:'mango-mekong',quantityKg:10}],'money-standard');
+  const o=await api.placeOrder(input); assert.equal(o.totalVnd,350000); assert.equal(o.paymentStatus,'PAID');
+  assert.equal((await api.placeOrder(input)).id,o.id); await assert.rejects(()=>api.placeOrder({...input,items:[{productId:'mango-mekong',quantityKg:11}]}));
+  assert.equal((await api.getAllOrders()).length,1); assert.equal((await api.getCustomerCatalog()).find(p=>p.id==='mango-mekong').availableKg,230);
+  await deliver(o); await assert.rejects(()=>api.settleEscrow({orderId:o.id,supplierId:'supplier-2'}));
+  await customer('customer-1'); const c=await api.submitClaim({orderId:o.id,supplierId:'supplier-2',lines:[{productId:'mango-mekong',quantityKg:2}],reason:'Dập demo',images:[]});
+  await admin(); const decision={claimId:c.id,approved:true,lines:c.lines,note:'Hoàn 2kg demo'};
+  const before=store.readState(); broken=true; await assert.rejects(()=>api.decideClaim(decision)); broken=false; assert.deepEqual(store.readState(),before);
+  await api.decideClaim(decision); await api.decideClaim(decision);
+  let f=await api.getFinance(); assert.equal(f.ledger.filter(e=>e.kind==='HOLD').length,1); assert.equal(f.ledger.filter(e=>e.kind==='REFUND').length,1); assert.equal(f.allocations[0].refundedVnd,64000);
+  await api.advanceDemoClock(120); const a=await api.settleEscrow({orderId:o.id,supplierId:'supplier-2'}); await api.settleEscrow({orderId:o.id,supplierId:'supplier-2'});
+  assert.equal(a.feeVnd,7680); assert.equal(a.supplierNetVnd,248320);
+  f=await api.getFinance(); assert.equal(f.balances.find(b=>b.supplierId==='supplier-2').availableVnd,248320);
+  assert.equal(f.ledger.filter(e=>e.kind==='SETTLEMENT').length,1);
+  assert.equal(f.ledger.find(e=>e.kind==='HOLD').amountVnd-f.ledger.filter(e=>['REFUND','SETTLEMENT'].includes(e.kind)).reduce((n,e)=>n+e.amountVnd,0),30000);
+  await supplier('supplier-2'); const request={supplierId:'supplier-2',amountVnd:248320,requestKey:'withdraw-standard'};
+  const w=await api.requestWithdrawal(request); assert.equal((await api.requestWithdrawal(request)).id,w.id);
+  await assert.rejects(()=>api.requestWithdrawal({...request,requestKey:'overdraw',amountVnd:1}));
+  await admin(); await api.reviewWithdrawal({withdrawalId:w.id,approved:false,note:'Demo từ chối'});
+  await supplier('supplier-2'); assert.equal((await api.getFinance()).balances[0].availableVnd,248320);
+  const w2=await api.requestWithdrawal({...request,requestKey:'withdraw-again'}); await admin(); const review={withdrawalId:w2.id,approved:true,note:'Demo đã duyệt'}; await api.reviewWithdrawal(review); await api.reviewWithdrawal(review);
+  assert.equal((await api.getFinance()).ledger.filter(e=>e.kind==='WITHDRAWAL').length,1);
+  await assert.rejects(()=>api.reviewWithdrawal({...review,approved:false}));
+});
+test('multi supplier claims block only one allocation; shipments cannot mix dates or slots',async()=>{
+  await api.resetDemoData(); const o=await api.placeOrder(await checkout([{productId:'avocado-034',quantityKg:10},{productId:'mango-mekong',quantityKg:10}],'multi'));
+  await deliver(o); await customer('customer-1'); const c=await api.submitClaim({orderId:o.id,supplierId:'supplier-1',lines:[{productId:'avocado-034',quantityKg:1}],reason:'Lỗi demo',images:[]});
+  await admin(); await api.advanceDemoClock(120); await assert.rejects(()=>api.settleEscrow({orderId:o.id,supplierId:'supplier-1'}));
+  await api.settleEscrow({orderId:o.id,supplierId:'supplier-2'}); await api.decideClaim({claimId:c.id,approved:false,note:'Không lỗi demo'}); await api.settleEscrow({orderId:o.id,supplierId:'supplier-1'});
+  const o1=await api.placeOrder(await checkout([{productId:'avocado-034',quantityKg:1}],'morning'));
+  const o2=await api.placeOrder(await checkout([{productId:'avocado-034',quantityKg:1}],'afternoon','AFTERNOON'));
+  await api.aggregateDemand(); await api.confirmSupplierDemand({supplierId:'supplier-1',orderIds:[o1.id,o2.id]}); await api.advanceOrderStatus(o1.id,'AT_HUB'); await api.advanceOrderStatus(o2.id,'AT_HUB');
+  const before=store.readState(); await assert.rejects(()=>api.assignDemoShipment({orderIds:[o1.id,o2.id],routeLabel:'Không trộn ca'})); assert.deepEqual(store.readState(),before);
+  const trip=await api.assignDemoShipment({orderIds:[o2.id],routeLabel:'Chiều demo'}); assert.equal(trip.deliverySlot,'AFTERNOON');
+});
+test('migration 3→4→5 retains assets and history; never invents QC, deliveredAt or money',async()=>{
+  const {upgradeStoredState}=await import('../store/demoStore.ts'); const {createSeed}=await import('../mocks/seed.ts');
+  const v3=createSeed(); v3.version=3; v3.products[0].imageUrl=image; v3.products[0].availableKg=71;
+  v3.orders=[{id:'legacy-order',customerId:'customer-1',items:[],status:'DELIVERED',paymentStatus:'UNPAID',totalVnd:99000}];
+  for(const k of ['profiles','qualityReviews','claims','demoNow','allocations','ledger','withdrawals','operations']) delete v3[k];
+  const before=structuredClone(v3); const v5=upgradeStoredState(v3); assert.deepEqual(v3,before); assert.equal(v5.version,5); assert.equal(v5.products[0].imageUrl,image); assert.equal(v5.products[0].availableKg,71);
+  assert.equal(v5.orders[0].deliveredAt,undefined); assert.equal(v5.ledger.length,0); assert.equal(v5.allocations.length,0); assert.equal(v5.qualityReviews.length,0); assert.equal(v5.profiles[0].legacy,true);
+  const v4={...v5,version:4,claims:[{id:'old-claim',status:'APPROVED',refundVnd:12000}],demoNow:'2026-10-23T00:00:00.000Z'};
+  const migrated=upgradeStoredState(v4); assert.equal(migrated.claims[0].refundVnd,12000); assert.equal(migrated.ledger.length,0); assert.equal(migrated.demoNow,v4.demoNow);
 });

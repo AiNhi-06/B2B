@@ -107,6 +107,9 @@ export interface OrderItem {
 }
 
 export interface Order {
+  deliveryDate?: string;
+  deliverySlot?: DeliverySlot;
+  paymentRequestKey?: string;
   deliveredAt?: string;
   id: string;
   customerId: string;
@@ -144,6 +147,8 @@ export interface SupplierConfirmation {
 }
 
 export interface Shipment {
+  deliveryDate?: string;
+  deliverySlot?: DeliverySlot;
   id: string;
   orderIds: string[];
   routeLabel: string;
@@ -155,6 +160,9 @@ export interface Shipment {
 }
 
 export interface NewOrderInput {
+  deliveryDate?: string;
+  deliverySlot?: DeliverySlot;
+  requestKey?: string;
   customerId: string;
   deliveryAddressId: string;
   items: {
@@ -184,3 +192,5 @@ export interface UpdateProductInput {
 
 export type { BusinessRole, BusinessProfile, QualityReview, ClaimLine, Claim } from './governance';
 import type { QualityReview } from './governance';
+export type { DeliverySlot, EscrowAllocation, LedgerEntry, Withdrawal, FinanceSnapshot } from './finance';
+import type { DeliverySlot } from './finance';

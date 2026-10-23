@@ -12,19 +12,23 @@ type LegacyState = Omit<DemoState, 'version' | 'products' | 'commodities'> & {
   products: (Omit<ProductListing, 'publicPricePerKg' | 'uses'> & { basePricePerKg: number })[];
 };
 export function upgradeStoredState(value: unknown): DemoState {
-  const parsed = structuredClone(value) as DemoState | LegacyState | (Omit<DemoState, 'version'> & { version: 3 });
-  if (!parsed || ![1, 3, 4].includes(parsed.version) || !parsed.session ||
+  const parsed = structuredClone(value) as DemoState | LegacyState | (Omit<DemoState, 'version'> & { version: 3 | 4 });
+  if (!parsed || ![1, 3, 4, 5].includes(parsed.version) || !parsed.session ||
     !['products', 'orders', 'confirmations', 'shipments', 'suppliers', 'customers', 'addresses'].every(key => Array.isArray((parsed as unknown as Record<string, unknown>)[key])) ||
     !Number.isSafeInteger(parsed.nextId)) throw new Error('Dữ liệu demo không hợp lệ. Bản lưu được giữ nguyên; chưa chuyển đổi.');
-  if (parsed.version === 4) {
+  if (parsed.version === 5) {
     if (!Array.isArray(parsed.commodities)) throw new Error('Thiếu danh mục FARMGO trong dữ liệu đã lưu.');
     return structuredClone(parsed);
   }
-  if (parsed.version === 3) return addGovernance(parsed as unknown as DemoState);
+  if (parsed.version === 3 || parsed.version === 4) {
+    const result = parsed as unknown as DemoState;
+    if (parsed.version === 3) addGovernance(result);
+    result.version = 5; result.allocations = []; result.ledger = []; result.withdrawals = []; result.operations = {}; return result;
+  }
   const legacy = parsed as LegacyState;
   const { pricing: _pricing, ...rest } = legacy;
   const upgraded: DemoState = {
-    ...rest, version: 4, profiles: [], qualityReviews: [], claims: [], demoNow: new Date().toISOString(), commodities: structuredClone(commodities),
+    ...rest, version: 5, allocations: [], ledger: [], withdrawals: [], operations: {}, profiles: [], qualityReviews: [], claims: [], demoNow: new Date().toISOString(), commodities: structuredClone(commodities),
     products: legacy.products.map(item => {
       const { basePricePerKg, ...product } = item;
       if (!Number.isSafeInteger(basePricePerKg) || basePricePerKg < 0) throw new Error('Giá NCC cũ không hợp lệ. Dữ liệu được giữ nguyên.');
@@ -46,7 +50,7 @@ function current(): DemoState {
       let parsed: unknown;
       try { parsed = JSON.parse(saved); } catch { throw new Error('Không đọc được dữ liệu demo đã lưu. Dữ liệu chưa bị ghi đè.'); }
       const upgraded = upgradeStoredState(parsed);
-      if ((parsed as { version: number }).version !== 4) storage()?.setItem(KEY, JSON.stringify(upgraded));
+      if ((parsed as { version: number }).version !== 5) storage()?.setItem(KEY, JSON.stringify(upgraded));
       state = upgraded;
     } else state = createSeed();
   }

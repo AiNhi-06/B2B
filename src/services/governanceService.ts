@@ -1,3 +1,4 @@
+import { refundClaim } from './financeService';
 import type * as T from '../types/index';
 import type { DemoState } from '../mocks/seed';
 import { mutate, readState } from '../store/demoStore';
@@ -142,5 +143,5 @@ export function resolveClaim(s: DemoState, input: { claimId: string; approved: b
   }
   c.status = input.approved ? 'APPROVED' : 'REJECTED'; c.refundVnd = refund; c.decisionNote = input.note; c.decidedAt = s.demoNow; return c;
 }
-export async function decideClaim(input: { claimId: string; approved: boolean; lines?: T.ClaimLine[]; note: string }) { return mutate('DATA_CHANGED', s => resolveClaim(s, input)); }
+export async function decideClaim(input: { claimId: string; approved: boolean; lines?: T.ClaimLine[]; note: string }) { return mutate('DATA_CHANGED', s => { const c = resolveClaim(s, input); refundClaim(s, c); return c; }); }
 

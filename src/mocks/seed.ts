@@ -1,8 +1,13 @@
 import type { Commodity, Customer, DeliveryAddress, DemoSession, Order, ProductListing, Shipment, Supplier, SupplierConfirmation } from '../types/index';
 
 import type { BusinessProfile, QualityReview, Claim } from '../types/index';
+import type { EscrowAllocation, LedgerEntry, Withdrawal } from '../types/index';
 export interface DemoState {
-  version: 4;
+  version: 5;
+  allocations: EscrowAllocation[];
+  ledger: LedgerEntry[];
+  withdrawals: Withdrawal[];
+  operations: Record<string, { fingerprint: string; entityId: string }>;
   profiles: BusinessProfile[];
   qualityReviews: QualityReview[];
   claims: Claim[];
@@ -31,7 +36,7 @@ export const commodities: Commodity[] = [
 // Fixed demo fixtures only; certificates, QC and financial claims are not inferred.
 export function createSeed(): DemoState {
   const seed: DemoState = {
-    version: 4, profiles: [], qualityReviews: [], claims: [], demoNow: new Date().toISOString(),
+    version: 5, allocations: [], ledger: [], withdrawals: [], operations: {}, profiles: [], qualityReviews: [], claims: [], demoNow: new Date().toISOString(),
     session: { role: 'SUPPLIER', activeSupplierId: 'supplier-1', activeCustomerId: 'customer-1' },
     suppliers: [
       { id: 'supplier-1', name: 'Nhà vườn Chú Sáu', phone: '0900000001', gardenAddress: 'Vườn demo, Lâm Đồng', taxCode: 'DEMO-MST-NCC-01', regionLabel: 'Lâm Đồng' },
@@ -63,6 +68,6 @@ export function createSeed(): DemoState {
 export function addGovernance(state: DemoState): DemoState {
   state.profiles = [...state.suppliers.map(s => ({ id: s.id, role: 'SUPPLIER' as const, businessName: s.name, phone: s.phone, taxCode: s.taxCode ?? '', contactName: '', address: s.gardenAddress, status: 'DRAFT' as const, legacy: true })), ...state.customers.map(c => ({ id: c.id, role: 'CUSTOMER' as const, businessName: c.businessName, phone: c.phone, taxCode: c.taxCode ?? '', contactName: '', address: state.addresses.find(a => a.customerId === c.id)?.address ?? '', status: 'DRAFT' as const, legacy: true }))];
   state.products.forEach(p => { p.legacy = true; });
-  state.qualityReviews = []; state.claims = []; state.demoNow = new Date().toISOString(); state.version = 4;
+  state.qualityReviews = []; state.claims = []; state.demoNow = new Date().toISOString(); state.version = 5;
   return state;
 }

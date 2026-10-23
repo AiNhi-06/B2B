@@ -1,3 +1,5 @@
+import { schedule, requestKey, requestFingerprint, holdOrder } from './financeService';
+export * from './financeService';
 import { eligible, visible } from './governanceService';
 export * from './governanceService';
 import type * as T from '../types/index';
@@ -48,6 +50,7 @@ function validateListing(product: T.ProductListing) {
   requireValue(typeof product.active === 'boolean', 'Trạng thái không hợp lệ.', 'active');
 }
 function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
+  schedule(state, input);
   find(state.customers, input.customerId);
   requireValue(eligible(state, input.customerId), 'Hồ sơ bên mua chưa được duyệt.');
   const address = find(state.addresses, input.deliveryAddressId);
@@ -151,10 +154,15 @@ export async function getDeliveryAddresses(customerId: string): Promise<T.Delive
 export async function quoteCheckout(input: T.NewOrderInput): Promise<T.CheckoutQuote> { return quote(readState(), input); }
 export async function placeOrder(input: T.NewOrderInput): Promise<T.Order> {
   return mutate('DATA_CHANGED', state => {
+    const key = `order:${requestKey(input.requestKey)}`;
+    const fingerprint = requestFingerprint(input);
+    const old = state.operations[key];
+    if (old) { requireValue(old.fingerprint === fingerprint, 'Mã thanh toán đã dùng cho đơn khác.'); return find(state.orders, old.entityId); }
+    const delivery = schedule(state, input, true);
     const result = quote(state, input);
     for (const item of result.items) find(state.products, item.productId).availableKg -= item.quantityKg;
-    const order: T.Order = { id: `order-${state.nextId++}`, customerId: input.customerId, deliveryAddressId: input.deliveryAddressId, ...result, status: 'PLACED', paymentStatus: 'UNPAID', placedAt: state.demoNow };
-    state.orders.push(order); return order;
+    const order: T.Order = { id: `order-${state.nextId++}`, customerId: input.customerId, deliveryAddressId: input.deliveryAddressId, ...result, ...delivery, paymentRequestKey: input.requestKey, status: 'PLACED', paymentStatus: 'PAID', placedAt: state.demoNow };
+    state.orders.push(order); holdOrder(state, order); state.operations[key] = { fingerprint, entityId: order.id }; return order;
   });
 }
 export async function getCustomerOrders(customerId: string): Promise<T.Order[]> {
@@ -210,11 +218,13 @@ export async function assignDemoShipment(input: { orderIds: string[]; routeLabel
   return mutate('DATA_CHANGED', state => {
     requireValue(Array.isArray(input.orderIds) && input.orderIds.length > 0 && new Set(input.orderIds).size === input.orderIds.length, 'Danh sách đơn phải có dữ liệu và không trùng.');
     const routeLabel = text(input.routeLabel, 'Tên tuyến');
+    const first = find(state.orders, input.orderIds[0]);
+    requireValue(input.orderIds.every(id => { const o = find(state.orders, id); return o.deliveryDate === first.deliveryDate && o.deliverySlot === first.deliverySlot; }), 'Chỉ gom đơn cùng ngày và ca giao.');
     for (const id of input.orderIds) {
       const order = find(state.orders, id);
       if (order.status !== 'AT_HUB' || state.shipments.some(shipment => shipment.orderIds.includes(id))) invalidTransition(id, order.status, 'ASSIGNED');
     }
-    const shipment: T.Shipment = { id: `shipment-${state.nextId++}`, orderIds: [...input.orderIds], routeLabel, status: 'ASSIGNED', driverName: 'Tài xế demo', driverPhone: '0900000099', vehiclePlate: 'DEMO-001', trackingLabel: 'Chuyến giao mô phỏng — chưa xuất phát' };
+    const shipment: T.Shipment = { id: `shipment-${state.nextId++}`, deliveryDate: first.deliveryDate, deliverySlot: first.deliverySlot, orderIds: [...input.orderIds], routeLabel, status: 'ASSIGNED', driverName: 'Tài xế demo', driverPhone: '0900000099', vehiclePlate: 'DEMO-001', trackingLabel: 'Chuyến giao mô phỏng — chưa xuất phát' };
     state.shipments.push(shipment); return shipment;
   });
 }
