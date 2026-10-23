@@ -40,7 +40,7 @@ if (process.argv.includes('--migration')) {
   assert.equal((await api.getCustomerCatalog()).some(p => p.id === 'user-old'), false);
   await api.updateProduct({supplierId:'supplier-1',productId:'user-old',changes:{commodityId:'avocado-034'}});
   assert.equal((await api.getCustomerCatalog()).some(p => p.id === 'user-old'), true);
-  assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 3);
+  assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 4);
   assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, 810000);
 } else if (process.argv.includes('--reload')) {
   assert.equal((await api.getCustomerOrders('customer-1')).length, 1);
@@ -223,7 +223,7 @@ if (!process.argv.includes('--reload') && !process.argv.includes('--migration'))
     const before = structuredClone(legacy);
     const migrated = upgradeStoredState(legacy);
     assert.deepEqual(legacy, before);
-    assert.equal(migrated.version, 3);
+    assert.equal(migrated.version, 4);
     assert.equal(migrated.products[0].publicPricePerKg, 20000);
     assert.equal(migrated.products[0].availableKg, 470);
     assert.deepEqual(migrated.confirmations, before.confirmations);

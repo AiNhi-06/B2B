@@ -33,7 +33,7 @@ export async function registerDemoBusiness(input: { role: T.BusinessRole; phone:
     s.profiles.push(p);
     if (p.role === 'SUPPLIER') { s.suppliers.push({ id, name: p.businessName, phone: p.phone, gardenAddress: '' }); s.session.activeSupplierId = id; }
     else {
-      const addressId = `address-${s.nextId++}`;
+      const addressId = `address-${s.nextId++}-registered`;
       s.customers.push({ id, businessName: p.businessName, phone: p.phone, deliveryAddressIds: [addressId] });
       s.addresses.push({ id: addressId, customerId: id, label: 'Địa chỉ doanh nghiệp demo', address: '', deliveryZone: 'DEMO_30000' }); s.session.activeCustomerId = id;
     }
@@ -143,3 +143,4 @@ export function resolveClaim(s: DemoState, input: { claimId: string; approved: b
   c.status = input.approved ? 'APPROVED' : 'REJECTED'; c.refundVnd = refund; c.decisionNote = input.note; c.decidedAt = s.demoNow; return c;
 }
 export async function decideClaim(input: { claimId: string; approved: boolean; lines?: T.ClaimLine[]; note: string }) { return mutate('DATA_CHANGED', s => resolveClaim(s, input)); }
+
