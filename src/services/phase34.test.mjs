@@ -2,11 +2,22 @@ import { registerHooks, stripTypeScriptTypes } from 'node:module';
 import { readFileSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 registerHooks({ resolve(s,c,next) { if(s.startsWith('.') && c.parentURL) { const u=new URL(`${s}.ts`,c.parentURL); if(existsSync(u)) return {url:u.href,shortCircuit:true}; } return next(s,c); }, load(u,c,next) { if(u.endsWith('.ts')) return {format:'module',source:stripTypeScriptTypes(readFileSync(new URL(u),'utf8')),shortCircuit:true}; return next(u,c); } });
-const storage = new Map(); let broken = false;
+const storage = new Map(process.env.PHASE_STATE ? [['b2b-demo-v1',process.env.PHASE_STATE]] : []); let broken = false;
 globalThis.localStorage = {getItem:k=>storage.get(k)??null,setItem:(k,v)=>{if(broken)throw Error('quota'); storage.set(k,v);}};
 const api = await import('./demoService.ts');
 const store = await import('../store/demoStore.ts');
+if(process.argv.includes('--verify-migration-write')) {
+  const saved=storage.get('b2b-demo-v1'); broken=true; await assert.rejects(()=>api.getCustomerCatalog()); assert.equal(storage.get('b2b-demo-v1'),saved);
+  broken=false; await api.getCustomerCatalog(); assert.equal(JSON.parse(storage.get('b2b-demo-v1')).version,5); process.exit(0);
+}
+if(process.argv.includes('--verify-refresh')) {
+  const before=store.readState(); const input=JSON.parse(process.env.PHASE_INPUT); const order=await api.placeOrder(input);
+  assert.equal(order.id,process.env.PHASE_ORDER); assert.deepEqual(store.readState(),before); assert.equal(await api.getDemoClock(),before.demoNow);
+  process.exit(0);
+}
 const admin = () => api.setDemoSession({role:'ADMIN'});
 const supplier = id => api.setDemoSession({role:'SUPPLIER',activeSupplierId:id});
 const customer = id => api.setDemoSession({role:'CUSTOMER',activeCustomerId:id});
@@ -78,6 +89,35 @@ test('phase 4: exact 350000 hold, 64000 refund, 7680 fee, 248320 available and i
   const w2=await api.requestWithdrawal({...request,requestKey:'withdraw-again'}); await admin(); const review={withdrawalId:w2.id,approved:true,note:'Demo đã duyệt'}; await api.reviewWithdrawal(review); await api.reviewWithdrawal(review);
   assert.equal((await api.getFinance()).ledger.filter(e=>e.kind==='WITHDRAWAL').length,1);
   await assert.rejects(()=>api.reviewWithdrawal({...review,approved:false}));
+  const reload=spawnSync(process.execPath,[fileURLToPath(import.meta.url),'--verify-refresh'],{encoding:'utf8',env:{...process.env,PHASE_STATE:storage.get('b2b-demo-v1'),PHASE_INPUT:JSON.stringify(input),PHASE_ORDER:o.id}});
+  assert.equal(reload.status,0,reload.stderr+reload.stdout);
+});
+test('validation enforces account ownership, evidence, kg, deadlines, pending supplier and atomic paid checkout',async()=>{
+  await api.resetDemoData(); const input=await checkout([{productId:'mango-mekong',quantityKg:10}],'validation-order');
+  let before=store.readState(); broken=true; await assert.rejects(()=>api.placeOrder(input)); broken=false; assert.deepEqual(store.readState(),before);
+  await assert.rejects(async()=>api.placeOrder({...input,deliveryDate:api.demoDate(await api.getDemoClock())}));
+  await assert.rejects(()=>api.placeOrder({...input,deliverySlot:'NIGHT'}));
+  const o=await api.placeOrder(input); await deliver(o);
+  await customer('customer-2'); const claim={orderId:o.id,supplierId:'supplier-2',lines:[{productId:'mango-mekong',quantityKg:2}],reason:'Lỗi demo',images:[]};
+  await assert.rejects(()=>api.submitClaim(claim)); await customer('customer-1');
+  await assert.rejects(()=>api.submitClaim({...claim,images:[image,image,image,image]}));
+  await assert.rejects(()=>api.submitClaim({...claim,images:['data:video/mp4;base64,AAAA']}));
+  await assert.rejects(()=>api.submitClaim({...claim,lines:[{productId:'avocado-034',quantityKg:2}]}));
+  await assert.rejects(()=>api.submitClaim({...claim,lines:[{productId:'mango-mekong',quantityKg:11}]}));
+  const c=await api.submitClaim(claim); await supplier('supplier-1'); await assert.rejects(()=>api.respondToClaim({claimId:c.id,response:'Sai NCC'}));
+  await admin(); await assert.rejects(()=>api.decideClaim({claimId:c.id,approved:true,lines:[{productId:'mango-mekong',quantityKg:3}],note:'Vượt yêu cầu'}));
+  await api.decideClaim({claimId:c.id,approved:true,lines:c.lines,note:'Hoàn demo'}); await customer('customer-1');
+  await assert.rejects(()=>api.submitClaim({...claim,lines:[{productId:'mango-mekong',quantityKg:9}]}));
+  const p=await api.registerDemoBusiness({role:'SUPPLIER',phone:'0988888888',otp:'000000'});
+  const listing=await api.createProduct({supplierId:p.id,commodityId:'orange',name:'Cam nháp',availableKg:20,publicPricePerKg:12345,uses:[]}); assert.equal(listing.active,false);
+  await assert.rejects(()=>api.updateProduct({supplierId:p.id,productId:listing.id,changes:{active:true}}));
+  await api.saveBusinessProfile({id:p.id,changes:{businessName:'NCC demo',taxCode:'DEMO001',contactName:'Demo',address:'Demo',capacityKg:100,certificateImage:image}}); await api.submitBusinessProfile(p.id);
+  await api.submitProductQC({productId:listing.id,grade:'A',yieldPercent:80}); await admin(); await api.reviewProductQC({productId:listing.id,approved:true,note:'QC demo'});
+  assert.equal((await api.getCustomerCatalog()).some(i=>i.id===listing.id),false);
+  await api.reviewBusinessProfile({id:p.id,approved:true,note:''}); await supplier(p.id); await api.updateProduct({supplierId:p.id,productId:listing.id,changes:{active:true}});
+  assert.equal((await api.getCustomerCatalog()).some(i=>i.id===listing.id),true);
+  const changes={availableKg:19}; await api.updateProduct({supplierId:p.id,productId:listing.id,changes}); changes.availableKg=0;
+  assert.equal((await api.getSupplierListings(p.id))[0].availableKg,19);
 });
 test('multi supplier claims block only one allocation; shipments cannot mix dates or slots',async()=>{
   await api.resetDemoData(); const o=await api.placeOrder(await checkout([{productId:'avocado-034',quantityKg:10},{productId:'mango-mekong',quantityKg:10}],'multi'));
@@ -99,4 +139,7 @@ test('migration 3→4→5 retains assets and history; never invents QC, delivere
   assert.equal(v5.orders[0].deliveredAt,undefined); assert.equal(v5.ledger.length,0); assert.equal(v5.allocations.length,0); assert.equal(v5.qualityReviews.length,0); assert.equal(v5.profiles[0].legacy,true);
   const v4={...v5,version:4,claims:[{id:'old-claim',status:'APPROVED',refundVnd:12000}],demoNow:'2026-10-23T00:00:00.000Z'};
   const migrated=upgradeStoredState(v4); assert.equal(migrated.claims[0].refundVnd,12000); assert.equal(migrated.ledger.length,0); assert.equal(migrated.demoNow,v4.demoNow);
+  for(const state of [v3,v4]) { const child=spawnSync(process.execPath,[fileURLToPath(import.meta.url),'--verify-migration-write'],{encoding:'utf8',env:{...process.env,PHASE_STATE:JSON.stringify(state)}}); assert.equal(child.status,0,child.stderr+child.stdout); }
+  assert.throws(()=>upgradeStoredState({...v5,ledger:undefined}));
 });
+
