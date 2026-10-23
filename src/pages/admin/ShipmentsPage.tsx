@@ -21,6 +21,7 @@ export function ShipmentsPage() {
   // Form: Create multi-stop shipment
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [routeLabel, setRouteLabel] = useState('Tuyến 1 - Trung tâm Quận 1');
+  const [scheduleGroup, setScheduleGroup] = useState('');
   const [creating, setCreating] = useState(false);
 
   const loadData = async () => {
@@ -52,6 +53,10 @@ export function ShipmentsPage() {
   const assignedOrderIds = new Set(shipments.flatMap((s) => s.orderIds));
   const eligibleOrders = orders.filter((o) => o.status === 'AT_HUB' && !assignedOrderIds.has(o.id));
 
+  const groupKey = (o: Order) => `${o.deliveryDate ?? 'LEGACY'}|${o.deliverySlot ?? 'LEGACY'}`;
+  const groups = [...new Set(eligibleOrders.map(groupKey))];
+  const selectedGroup = groups.includes(scheduleGroup) ? scheduleGroup : groups[0] ?? '';
+  const scheduleLabel = (date?: string, slot?: string) => date ? `${date} · ${slot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Demo cũ — chưa có lịch giao';
   const toggleSelectOrder = (orderId: string) => {
     setSelectedOrderIds((prev) =>
       prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
@@ -66,7 +71,7 @@ export function ShipmentsPage() {
       setCreating(true);
       setError(null);
       await assignDemoShipment({
-        orderIds: selectedOrderIds,
+        orderIds: selectedOrderIds.filter(id => eligibleOrders.some(o => o.id === id && groupKey(o) === selectedGroup)),
         routeLabel: routeLabel.trim(),
       });
       setActionMsg(`Đã tạo chuyến Multi-stop [${routeLabel}] thành công!`);
@@ -119,13 +124,13 @@ export function ShipmentsPage() {
             Hiện chưa có đơn nào ở trạng thái <code>AT_HUB</code> sẵn sàng gom tuyến. (Đơn cần được Nhà vườn xác nhận và Admin duyệt nhập Hub trước).
           </p>
         ) : (
-          <form onSubmit={handleCreateShipment}>
+          <form onSubmit={handleCreateShipment}><label>Ngày và ca giao<select value={selectedGroup} onChange={e => {setScheduleGroup(e.target.value);setSelectedOrderIds([]);}}>{groups.map(group => { const o=eligibleOrders.find(o=>groupKey(o)===group)!; return <option key={group} value={group}>{scheduleLabel(o.deliveryDate,o.deliverySlot)}</option>; })}</select></label>
             <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: 12 }}>
-              Chọn các đơn hàng cần gom chung vào một chuyến xe giao sáng sớm:
+              Chọn các đơn cùng ngày và ca để gom một chuyến qua Hub:
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-              {eligibleOrders.map((ord) => {
+              {eligibleOrders.filter(o => groupKey(o) === selectedGroup).map((ord) => {
                 const isSelected = selectedOrderIds.includes(ord.id);
                 const totalKg = ord.items.reduce((s, i) => s + i.quantityKg, 0);
 
@@ -150,7 +155,7 @@ export function ShipmentsPage() {
                     />
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <strong>Đơn #{ord.id}</strong> — Khách: {ord.customerId} ({totalKg} kg)
+                        <strong>Đơn #{ord.id}</strong> · {scheduleLabel(ord.deliveryDate,ord.deliverySlot)} — Khách: {ord.customerId} ({totalKg} kg)
                         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đ/c: {ord.deliveryAddressId}</div>
                       </div>
                       <StatusBadge status={ord.status} />
@@ -207,7 +212,7 @@ export function ShipmentsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div>
                     <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>
-                      {ship.routeLabel} (#{ship.id})
+                      {ship.routeLabel} (#{ship.id}) · {scheduleLabel(ship.deliveryDate,ship.deliverySlot)}
                     </strong>
                     <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                       Tài xế: {ship.driverName || 'Nguyễn Văn Tài'} ({ship.driverPhone || '0903.123.456'}) | Xe: {ship.vehiclePlate || '59B1-999.88'}

@@ -43,7 +43,7 @@ export function AddProductPage() {
       const values={...form,name:form.name.trim()};
       if(id){const {commodityId,...changes}=values;await updateProduct({supplierId:supplier.id,productId:id,changes:{...changes,...(!lockedCommodity?{commodityId}:{})}});}
       else {const {active:_active,...input}=values;await createProduct({...input,supplierId:supplier.id});}
-      navigate('/supplier/products');
+      navigate(id ? '/supplier/products' : '/supplier/quality');
     }catch(err){setError(err instanceof Error?err.message:'Không lưu được lô hàng.');}finally{setSaving(false);}
   };
   const photo=async(event:React.ChangeEvent<HTMLInputElement>)=>{

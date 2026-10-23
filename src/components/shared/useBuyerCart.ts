@@ -5,8 +5,8 @@ export interface CartLine { productId: string; quantityKg: number; }
 const CHANGED = 'farmgo-cart-changed';
 const cartKey = (id: string) => `farmgo-cart-${id}`;
 export async function resetCartStorage() {
-  const customers = await getCustomers();
-  customers.forEach(customer => localStorage.removeItem(cartKey(customer.id)));
+  const ownedKeys = Array.from({length: localStorage.length}, (_, index) => localStorage.key(index)).filter((key): key is string => !!key && ['farmgo-cart-', 'farmgo-checkout-attempt-', 'farmgo-withdraw-attempt-'].some(prefix => key.startsWith(prefix)));
+  ownedKeys.forEach(key => localStorage.removeItem(key));
   localStorage.removeItem('demo-cart-items');
 }
 export function useBuyerCart() {
