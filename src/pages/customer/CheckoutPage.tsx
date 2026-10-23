@@ -47,7 +47,9 @@ export function CheckoutPage() {
       const attempt = previous?.fingerprint === fingerprint ? previous : {fingerprint,requestKey:crypto.randomUUID()};
       localStorage.setItem(storageKey,JSON.stringify(attempt));
       const order = await placeOrder({ requestKey: attempt.requestKey, customerId: cart.customerId, deliveryAddressId: addressId, items: cart.items, deliveryDate, deliverySlot });
-      cart.clear(); localStorage.removeItem(storageKey); navigate(`/customer/orders/${order.id}`, {state: {placedTotal: order.totalVnd}});
+      const cleared = cart.clear();
+      if (cleared) { try { localStorage.removeItem(storageKey); } catch { /* Keep the key so retry remains idempotent. */ } }
+      navigate(`/customer/orders/${order.id}`, {state: {placedTotal: order.totalVnd}});
     } catch (err) { setError(err instanceof Error ? err.message : 'Không tạo được đơn.'); }
     finally { setSubmitting(false); }
   };

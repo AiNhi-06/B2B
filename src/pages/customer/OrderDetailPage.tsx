@@ -87,7 +87,7 @@ export function OrderDetailPage() {
       {/* Simulated GPS & Driver Tracking */}
       <div className="card" style={{ borderColor: shipment ? '#38bdf8' : '#e2e8f0', background: shipment ? '#f0f9ff' : '#ffffff' }}>
         <h3 className="card-title" style={{ color: '#0369a1' }}>
-          <span>🚚 Giám Sát Hành Trình Giao Hàng (Sáng Sớm)</span>
+          <span>🚚 Giám Sát Hành Trình Giao Hàng</span>
           <span className="demo-chip">Hành trình & Tài xế mô phỏng (Demo)</span>
         </h3>
 
@@ -124,7 +124,7 @@ export function OrderDetailPage() {
           </div>
         ) : (
           <div style={{ color: '#64748b', fontSize: '0.9rem', padding: '10px 0' }}>
-            ⏳ Đơn hàng của bạn đang được tổng hợp tại kho Hub. Admin sẽ dán tem QR và gom tuyến xe lúc 04:00 sáng.
+            ⏳ Đơn hàng của bạn đang được tổng hợp tại kho Hub. Admin sẽ dán tem QR và gom tuyến theo ngày, ca giao đã chọn.
           </div>
         )}
       </div>

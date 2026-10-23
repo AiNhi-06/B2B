@@ -34,3 +34,7 @@
 4. Người tích hợp merge tuần tự các branch vào `main`, xử lý conflict và chạy toàn bộ happy-path.
 
 Nguồn nghiệp vụ: file `trái cây.md` được cung cấp trong cuộc trò chuyện. Bản sao đưa kèm tại `docs/source-trai-cay.md` để hai agent đọc offline.
+
+## Đợt 3 và đợt 4 đã triển khai trên nhánh làm việc
+
+Contract hiện hành: v5 tại `03-data-api-contract.md`; lưu lịch sử v3/v4 trong các file archive. Phạm vi 06 và tiêu chí 05/nguồn cũ chỉ áp dụng khi không mâu thuẫn contract mới. Quyết định được người dùng chốt: phí sàn 3%, hai cửa sổ 2 giờ riêng, Escrow giả lập, hai ca qua Hub; vẫn loại trừ VAT/hóa đơn/công nợ/khóa giá/tự giao/đổi hàng/video/OCR. Xem `09-farmgo-phase34-handoff.md` để kiểm thử và trình diễn. Chưa merge code đợt 3/4 vào main.

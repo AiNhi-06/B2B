@@ -19,6 +19,11 @@ export function RoleSelector() {
   });
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    const role: Role = location.pathname.startsWith('/supplier') ? 'SUPPLIER' : location.pathname.startsWith('/admin') ? 'ADMIN' : 'CUSTOMER';
+    void setDemoSession({role}).catch(err => setError(err instanceof Error ? err.message : 'Không chuyển được vai trò demo.'));
+  }, [location.pathname]);
 
   useEffect(() => {
     let isMounted = true;
@@ -43,7 +48,7 @@ export function RoleSelector() {
     loadData();
 
     const unsubscribe = subscribeDemoData((event) => {
-      if (event.type === 'SESSION_CHANGED' || event.type === 'RESET') {
+      if (event.type === 'SESSION_CHANGED' || event.type === 'RESET' || event.type === 'DATA_CHANGED') {
         loadData();
       }
     });
@@ -95,6 +100,7 @@ export function RoleSelector() {
 
   return (
     <div className="role-nav-group">
+      {error && <span role="alert">{error}</span>}
       <div className="role-switcher-pills">
         <button
           type="button"

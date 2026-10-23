@@ -745,6 +745,9 @@ button { cursor: pointer; }
 .governance-badge{display:inline-block;border-radius:8px;padding:6px 10px;background:#edf7ef;color:#174b35;font-size:.85rem;font-weight:600;overflow-wrap:anywhere}
 .quality-title{display:flex;gap:16px;align-items:center;margin-bottom:16px}
 .evidence-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.finance-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}
+.finance-stats .card{margin-bottom:0}
+.finance-stats{margin-bottom:20px}
 .evidence-photo{width:160px;height:120px;object-fit:contain;border:1px solid #d4e7d9;border-radius:10px;background:#f5f8f5;display:block;max-width:100%}
 .sla-warning{background:#fff2d5;color:#774900;padding:12px;border-radius:8px}
 .card textarea{width:100%;min-height:90px;resize:vertical;border:1px solid #c4d6ca;border-radius:8px;padding:10px;font:inherit}
