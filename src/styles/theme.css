@@ -738,3 +738,16 @@ button { cursor: pointer; }
 .home-market-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
 @media(max-width:1100px) { .home-market-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) { .home-market-grid { grid-template-columns: minmax(0,1fr); } }
+/* Governance and demo finance follow FARMGO's existing portal language. */
+.demo-clock{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 24px;background:#edf7ef;color:#174b35;font-size:.85rem;border-bottom:1px solid #d4e7d9}
+.demo-clock button{background:white;border:1px solid #a9cbb5;border-radius:8px;min-height:44px;padding:6px 12px;color:#174b35;cursor:pointer}
+.action-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.governance-badge{display:inline-block;border-radius:8px;padding:6px 10px;background:#edf7ef;color:#174b35;font-size:.85rem;font-weight:600;overflow-wrap:anywhere}
+.quality-title{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.evidence-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.evidence-photo{width:160px;height:120px;object-fit:contain;border:1px solid #d4e7d9;border-radius:10px;background:#f5f8f5;display:block;max-width:100%}
+.sla-warning{background:#fff2d5;color:#774900;padding:12px;border-radius:8px}
+.card textarea{width:100%;min-height:90px;resize:vertical;border:1px solid #c4d6ca;border-radius:8px;padding:10px;font:inherit}
+.card label{display:block;margin-bottom:12px}
+.card input,.card select{max-width:100%}
+@media(max-width:600px){.demo-clock{padding:10px 16px}.quality-title{align-items:flex-start}.action-row>button{min-height:44px}.evidence-photo{width:120px;height:100px}}
