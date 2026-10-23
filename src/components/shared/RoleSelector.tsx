@@ -98,24 +98,24 @@ export function RoleSelector() {
       <div className="role-switcher-pills">
         <button
           type="button"
-          className={`role-tab-btn ${activeRole === 'SUPPLIER' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'SUPPLIER' ? 'active' : ''}`} aria-pressed={activeRole === 'SUPPLIER'}
           onClick={() => handleRoleChange('SUPPLIER')}
         >
-          Nhà Vườn
+          Nhà cung cấp
         </button>
         <button
           type="button"
-          className={`role-tab-btn ${activeRole === 'CUSTOMER' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'CUSTOMER' ? 'active' : ''}`} aria-pressed={activeRole === 'CUSTOMER'}
           onClick={() => handleRoleChange('CUSTOMER')}
         >
-          Quán Cà Phê / F&B
+          Bên mua F&B
         </button>
         <button
           type="button"
-          className={`role-tab-btn ${activeRole === 'ADMIN' ? 'active' : ''}`}
+          className={`role-tab-btn ${activeRole === 'ADMIN' ? 'active' : ''}`} aria-pressed={activeRole === 'ADMIN'}
           onClick={() => handleRoleChange('ADMIN')}
         >
-          Kho Hub & Điều Phối
+          Quản trị & Hub
         </button>
       </div>
 
@@ -124,7 +124,7 @@ export function RoleSelector() {
           className="account-dropdown"
           value={session.activeSupplierId || 'supplier-1'}
           onChange={handleSupplierChange}
-          aria-label="Chọn nhà vườn"
+          aria-label="Chọn nhà cung cấp"
         >
           {suppliers.map((s) => (
             <option key={s.id} value={s.id}>

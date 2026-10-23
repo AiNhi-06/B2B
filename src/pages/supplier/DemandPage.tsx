@@ -20,8 +20,8 @@ export function DemandPage() {
   const [activeSupplierId, setActiveSupplierId] = useState<string>('supplier-1');
 
   // Form confirmation state
-  const [vehiclePlate, setVehiclePlate] = useState('49A-888.99');
-  const [estimatedArrivalAt, setEstimatedArrivalAt] = useState('03:30 (Sáng sớm)');
+  const [vehiclePlate, setVehiclePlate] = useState('');
+  const [estimatedArrivalAt, setEstimatedArrivalAt] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -64,22 +64,22 @@ export function DemandPage() {
   }, []);
 
   const allOrderIds = Array.from(new Set(demand.flatMap((d) => d.orderIds)));
-  const isAlreadyConfirmed = confirmations.some((c) =>
-    allOrderIds.length > 0 && allOrderIds.every((id) => c.orderIds.includes(id))
-  );
+  const confirmedIds = new Set(confirmations.flatMap(confirmation => confirmation.orderIds));
+  const pendingOrderIds = allOrderIds.filter(id => !confirmedIds.has(id));
+  const isAlreadyConfirmed = allOrderIds.length > 0 && pendingOrderIds.length === 0;
 
   const totalDemandKg = demand.reduce((sum, d) => sum + d.quantityKg, 0);
 
   const handleConfirmSupply = async () => {
-    if (allOrderIds.length === 0) return;
+    if (pendingOrderIds.length === 0) return;
     try {
       setConfirming(true);
       setError(null);
       await confirmSupplierDemand({
         supplierId: activeSupplierId,
-        orderIds: allOrderIds,
+        orderIds: pendingOrderIds,
         vehiclePlate: vehiclePlate.trim() || undefined,
-        estimatedArrivalAt: estimatedArrivalAt.trim() || undefined,
+        estimatedArrivalAt: estimatedArrivalAt ? new Date(estimatedArrivalAt).toISOString() : undefined,
       });
       setSuccessMsg('Đã xác nhận vận chuyển lô hàng thành công! Kho Hub sẽ đón nhận xe lúc 03:00 - 04:00 sáng.');
       await loadData();
@@ -210,10 +210,10 @@ export function DemandPage() {
                       Giờ dự kiến giao tới Hub:
                     </label>
                     <input
-                      type="text"
+                      type="datetime-local"
                       className="account-dropdown"
                       style={{ width: '100%', padding: '9px 12px' }}
-                      placeholder="VD: 03:30 Sáng"
+                      aria-label="Ngày giờ dự kiến tới Hub"
                       value={estimatedArrivalAt}
                       onChange={(e) => setEstimatedArrivalAt(e.target.value)}
                     />

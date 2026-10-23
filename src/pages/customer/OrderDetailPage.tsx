@@ -138,14 +138,14 @@ export function OrderDetailPage() {
               <tr>
                 <th>Mặt hàng</th>
                 <th>Số lượng</th>
-                <th>Đơn giá snapshot</th>
+                <th>Giá lúc đặt hàng</th>
                 <th>Thành tiền</th>
               </tr>
             </thead>
             <tbody>
               {order.items.map((i) => (
                 <tr key={i.productId}>
-                  <td><strong>{i.productName}</strong></td>
+                  <td><strong>{i.productName}</strong><div>{i.supplierName || 'Thông tin NCC chưa có'}</div></td>
                   <td>{i.quantityKg} kg</td>
                   <td>{i.unitPriceVnd.toLocaleString('vi-VN')} đ/kg</td>
                   <td><strong>{i.lineTotalVnd.toLocaleString('vi-VN')} đ</strong></td>

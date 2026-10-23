@@ -1,323 +1,58 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import type { DeliveryAddress, CheckoutQuote } from '../../types';
-import {
-  getDemoSession,
-  getDeliveryAddresses,
-  quoteCheckout,
-  placeOrder,
-  subscribeDemoData,
-} from '../../services/demoService';
-import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
-import { EmptyState } from '../../components/shared/EmptyState';
-
-interface CartItem {
-  productId: string;
-  productName: string;
-  quantityKg: number;
-  unitPriceVnd: number;
-}
-
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import type { CheckoutQuote, DeliveryAddress } from '../../types';
+import { getDeliveryAddresses, quoteCheckout, placeOrder, subscribeDemoData } from '../../services/demoService';
+import { useBuyerCart } from '../../components/shared/useBuyerCart';
+import { useCatalog, money } from '../../components/shared/useCatalog';
+import { FruitPhoto } from '../../components/shared/FruitPhoto';
+import { ErrorMessage, LoadingSpinner } from '../../components/shared/Feedback';
 export function CheckoutPage() {
+  const cart = useBuyerCart();
+  const { products } = useCatalog();
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [customerId, setCustomerId] = useState<string>('customer-1');
   const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
-  const [quote, setQuote] = useState<CheckoutQuote | null>(null);
-  const [loadingQuote, setLoadingQuote] = useState(false);
+  const [addressId, setAddressId] = useState('');
+  const [quoteState, setQuoteState] = useState<{key: string; value?: CheckoutQuote; error?: string}>({key: ''});
+  const [error, setError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // 1. Load cart items
-  const loadCart = () => {
-    try {
-      const raw = localStorage.getItem('demo-cart-items') || '[]';
-      const parsed = JSON.parse(raw);
-      setCartItems(parsed);
-    } catch {
-      setCartItems([]);
-    }
-  };
-
-  // 2. Load customer session and addresses
-  const loadSessionAndAddresses = async () => {
-    try {
-      const session = await getDemoSession();
-      const cId = session.activeCustomerId || 'customer-1';
-      setCustomerId(cId);
-      const addrList = await getDeliveryAddresses(cId);
-      setAddresses(addrList);
-      if (addrList.length > 0) {
-        setSelectedAddressId((prev) => prev || addrList[0].id);
-      }
-    } catch (err: unknown) {
-      console.error('Lỗi tải địa chỉ nhận hàng:', err);
-    }
-  };
-
+  const [revision, setRevision] = useState(0);
+  useEffect(() => subscribeDemoData(() => setRevision(value => value + 1)), []);
   useEffect(() => {
-    loadCart();
-    loadSessionAndAddresses();
-
-    const unsub = subscribeDemoData((event) => {
-      if (event.type === 'RESET') {
-        localStorage.removeItem('demo-cart-items');
-        setCartItems([]);
-      } else if (event.type === 'SESSION_CHANGED') {
-        loadSessionAndAddresses();
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  // 3. Trigger live quote when items or address changes
+    let disposed = false;
+    setAddresses([]); setAddressId('');
+    if (cart.customerId) getDeliveryAddresses(cart.customerId).then(data => { if (!disposed) { setAddresses(data); setAddressId(data[0]?.id || ''); setError(undefined); } }).catch(err => { if (!disposed) setError(err instanceof Error ? err.message : 'Không tải được địa chỉ.'); });
+    return () => { disposed = true; };
+  }, [cart.customerId]);
+  const key = JSON.stringify([cart.customerId, cart.items, addressId, revision, cart.ready]);
   useEffect(() => {
-    if (cartItems.length === 0 || !selectedAddressId) {
-      setQuote(null);
-      return;
+    let disposed = false;
+    if (cart.ready && cart.items.length && addressId) {
+      quoteCheckout({ customerId: cart.customerId, deliveryAddressId: addressId, items: cart.items }).then(value => { if (!disposed) setQuoteState({key, value}); }).catch(err => { if (!disposed) setQuoteState({key, error: err instanceof Error ? err.message : 'Không tính được giá.'}); });
     }
-
-    let isMounted = true;
-    async function calculateQuote() {
-      try {
-        setLoadingQuote(true);
-        setError(null);
-        const q = await quoteCheckout({
-          customerId,
-          deliveryAddressId: selectedAddressId,
-          items: cartItems.map((i) => ({ productId: i.productId, quantityKg: i.quantityKg })),
-        });
-        if (isMounted) setQuote(q);
-      } catch (err: unknown) {
-        if (isMounted) {
-          const msg = err instanceof Error ? err.message : 'Lỗi tính báo giá.';
-          setError(msg);
-        }
-      } finally {
-        if (isMounted) setLoadingQuote(false);
-      }
-    }
-
-    calculateQuote();
-    return () => {
-      isMounted = false;
-    };
-  }, [cartItems, customerId, selectedAddressId]);
-
-  const handleUpdateQty = (productId: string, delta: number) => {
-    const updated = cartItems
-      .map((item) => {
-        if (item.productId === productId) {
-          const newQty = item.quantityKg + delta;
-          return newQty > 0 ? { ...item, quantityKg: newQty } : null;
-        }
-        return item;
-      })
-      .filter((i): i is CartItem => i !== null);
-
-    setCartItems(updated);
-    localStorage.setItem('demo-cart-items', JSON.stringify(updated));
-  };
-
-  const handleRemoveItem = (productId: string) => {
-    const updated = cartItems.filter((i) => i.productId !== productId);
-    setCartItems(updated);
-    localStorage.setItem('demo-cart-items', JSON.stringify(updated));
-  };
-
-  const handlePlaceOrder = async () => {
-    if (cartItems.length === 0 || !selectedAddressId) return;
-
+    return () => { disposed = true; };
+  }, [key, cart.ready, cart.items, cart.customerId, addressId]);
+  const quote = quoteState.key === key ? quoteState.value : undefined;
+  const requestError = quoteState.key === key ? quoteState.error : undefined;
+  const place = async () => {
+    if (!quote || submitting || !cart.ready) return;
+    setSubmitting(true); setError(undefined);
     try {
-      setSubmitting(true);
-      setError(null);
-      await placeOrder({
-        customerId,
-        deliveryAddressId: selectedAddressId,
-        items: cartItems.map((i) => ({ productId: i.productId, quantityKg: i.quantityKg })),
-      });
-      // Clear cart
-      localStorage.removeItem('demo-cart-items');
-      setCartItems([]);
-      navigate('/customer/orders');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Đặt đơn hàng thất bại.';
-      setError(msg);
-    } finally {
-      setSubmitting(false);
-    }
+      const order = await placeOrder({ customerId: cart.customerId, deliveryAddressId: addressId, items: cart.items });
+      cart.clear(); navigate(`/customer/orders/${order.id}`, {state: {placedTotal: order.totalVnd}});
+    } catch (err) { setError(err instanceof Error ? err.message : 'Không tạo được đơn.'); }
+    finally { setSubmitting(false); }
   };
-
-  if (cartItems.length === 0) {
-    return (
-      <EmptyState
-        icon="🛒"
-        title="Giỏ hàng của bạn đang trống"
-        description="Hãy chọn các loại trái cây tươi ngon từ danh mục mở bán hôm nay."
-        action={{
-          label: 'Xem danh mục trái cây',
-          onClick: () => navigate('/customer'),
-        }}
-      />
-    );
-  }
-
-  return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: 16 }}>
-        <Link to="/customer" style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem' }}>
-          ← Tiếp tục chọn thêm trái cây
-        </Link>
-      </div>
-
-      <h2 style={{ margin: '0 0 16px 0', fontSize: '1.25rem' }}>🛒 Xác Nhận Đơn Hàng & Thanh Toán</h2>
-
-      {error && <ErrorMessage message={error} />}
-
-      <div className="card">
-        <h3 className="card-title">1. Danh sách sản phẩm đặt sỉ</h3>
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {cartItems.map((item) => {
-                const lineTotal = item.quantityKg * item.unitPriceVnd;
-                return (
-                  <tr key={item.productId}>
-                    <td><strong>{item.productName}</strong></td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <button
-                          type="button"
-                          className="btn-secondary"
-                          style={{ padding: '2px 8px', fontSize: '0.8rem' }}
-                          onClick={() => handleUpdateQty(item.productId, -5)}
-                        >
-                          -5
-                        </button>
-                        <strong style={{ minWidth: '40px', textAlign: 'center' }}>
-                          {item.quantityKg} kg
-                        </strong>
-                        <button
-                          type="button"
-                          className="btn-secondary"
-                          style={{ padding: '2px 8px', fontSize: '0.8rem' }}
-                          onClick={() => handleUpdateQty(item.productId, 5)}
-                        >
-                          +5
-                        </button>
-                      </div>
-                    </td>
-                    <td>{item.unitPriceVnd.toLocaleString('vi-VN')} đ</td>
-                    <td><strong>{lineTotal.toLocaleString('vi-VN')} đ</strong></td>
-                    <td>
-                      <button
-                        type="button"
-                        style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.85rem' }}
-                        onClick={() => handleRemoveItem(item.productId)}
-                        title="Xóa khỏi giỏ"
-                      >
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="card">
-        <h3 className="card-title">2. Địa chỉ giao hàng (Chi nhánh quán)</h3>
-        {addresses.length === 0 ? (
-          <p style={{ color: '#64748b', fontSize: '0.85rem' }}>Đang nạp địa chỉ...</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {addresses.map((addr) => (
-              <label
-                key={addr.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '10px 14px',
-                  borderRadius: '6px',
-                  border: `1px solid ${selectedAddressId === addr.id ? '#15803d' : '#e2e8f0'}`,
-                  background: selectedAddressId === addr.id ? '#f0fdf4' : '#ffffff',
-                  cursor: 'pointer',
-                }}
-              >
-                <input
-                  type="radio"
-                  name="deliveryAddress"
-                  value={addr.id}
-                  checked={selectedAddressId === addr.id}
-                  onChange={(e) => setSelectedAddressId(e.target.value)}
-                />
-                <div>
-                  <strong>{addr.label}:</strong> {addr.address}
-                  <span className="demo-chip" style={{ marginLeft: 8 }}>Khu vực: {addr.deliveryZone}</span>
-                </div>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="card">
-        <h3 className="card-title">3. Tổng tiền thanh toán dự tính</h3>
-        {loadingQuote ? (
-          <LoadingSpinner text="Đang tính cước vận chuyển..." />
-        ) : quote ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.95rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#64748b' }}>Tiền hàng ({quote.items.reduce((sum, i) => sum + i.quantityKg, 0)} kg):</span>
-              <strong>{quote.subtotalVnd.toLocaleString('vi-VN')} đ</strong>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>Cước vận chuyển:</span>
-                <span className="demo-chip">Dữ liệu demo ước tính</span>
-              </span>
-              <strong>{quote.shippingFeeVnd.toLocaleString('vi-VN')} đ</strong>
-            </div>
-
-            <div style={{ height: '1px', background: '#e2e8f0', margin: '8px 0' }}></div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>Tổng cộng:</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#15803d' }}>
-                {quote.totalVnd.toLocaleString('vi-VN')} đ
-              </span>
-            </div>
-          </div>
-        ) : null}
-
-        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e', padding: '10px 14px', borderRadius: '6px', marginTop: 16, fontSize: '0.85rem' }}>
-          ⚠️ <strong>Giá và phí được tính lại khi xác nhận đặt hàng.</strong>
-        </div>
-
-        <button
-          type="button"
-          className="btn-primary"
-          style={{ width: '100%', marginTop: 16, padding: '12px', fontSize: '1rem' }}
-          onClick={handlePlaceOrder}
-          disabled={submitting || loadingQuote || !quote}
-        >
-          {submitting ? 'Đang tạo đơn...' : 'Xác Nhận Đặt Hàng Ngay'}
-        </button>
-      </div>
-    </div>
-  );
+  if (!cart.ready) return cart.error ? <ErrorMessage message={cart.error} /> : <LoadingSpinner />;
+  if (!cart.items.length) return <div className="empty-panel"><h1>Giỏ hàng đang trống</h1><p>Chọn nguyên liệu từ danh mục để tạo đơn cho quán.</p><Link className="btn-primary" to="/customer/catalog">Chọn nguyên liệu</Link></div>;
+  return <><div className="page-heading"><div><h1>Giỏ hàng & đặt hàng</h1><p>Kiểm tra nguồn cung, số lượng và địa chỉ nhận hàng.</p></div><Link to="/customer/catalog">Chọn thêm nguyên liệu</Link></div>
+    {(error || cart.error || requestError) && <ErrorMessage message={error || cart.error || requestError!} />}
+    <div className="checkout-layout"><div><section className="card"><h2>Nguyên liệu đã chọn</h2>{cart.items.map(item => {
+      const product = products.find(value => value.id === item.productId);
+      const price = quote?.items.find(value => value.productId === item.productId);
+      return <div className="cart-line" key={item.productId}><div className="cart-photo"><FruitPhoto id={product?.commodityId || item.productId} name={product?.name || price?.productName || 'Sản phẩm'} imageUrl={product?.imageUrl} /></div>
+        <div className="cart-line-info"><strong>{product?.name || price?.productName || 'Sản phẩm chưa mở bán'}</strong><span>{product?.supplier.name || price?.supplierName || 'Thông tin NCC chưa có'}</span><span>{price ? `${money(price.unitPriceVnd)} /kg` : product ? `${money(product.publicPricePerKg)} /kg` : 'Không có báo giá hiện tại'}</span></div>
+        <label className="cart-quantity">kg<input type="number" min={1} step={1} value={item.quantityKg} disabled={submitting} aria-label={`Số kg ${product?.name || item.productId}`} onChange={event => cart.quantity(item.productId, Number(event.target.value))} /></label><strong>{price ? money(price.lineTotalVnd) : '—'}</strong><button className="btn-secondary" disabled={submitting} aria-label={`Xóa ${product?.name || item.productId}`} onClick={() => cart.remove(item.productId)}>Xóa</button></div>;
+    })}</section><section className="card"><h2>Địa chỉ nhận hàng</h2>{addresses.map(address => <label className="address-choice" key={address.id}><input type="radio" name="address" checked={addressId === address.id} onChange={() => setAddressId(address.id)} disabled={submitting} /><span><strong>{address.label}</strong><br />{address.address}</span></label>)}</section></div>
+      <section className="card checkout-summary"><h2>Tóm tắt đơn hàng</h2>{quote ? <><div><span>Tiền hàng</span><strong>{money(quote.subtotalVnd)}</strong></div><div><span>Phí vận chuyển ước tính<br /><small>(dữ liệu demo)</small></span><strong>{money(quote.shippingFeeVnd)}</strong></div><div className="checkout-total"><span>Tổng cộng</span><strong>{money(quote.totalVnd)}</strong></div></> : !requestError && <LoadingSpinner text="Đang cập nhật báo giá…" />}<p>Giá và phí được tính lại khi xác nhận đặt hàng.</p><button className="btn-primary" disabled={submitting || !quote} onClick={place}>{submitting ? 'Đang tạo đơn…' : 'Xác nhận đặt hàng'}</button><small>Đặt hàng giả lập. Chưa thực hiện thanh toán.</small></section>
+    </div></>;
 }

@@ -2,11 +2,11 @@
 
 **Trạng thái: được người dùng duyệt triển khai ngày 23/10/2026. Thay thế quy tắc sản phẩm/giá v2 trước khi sửa code.**
 
-Phạm vi bản nháp là đợt 2 của [kế hoạch đã thống nhất](06-farmgo-approved-scope.md). Tên type/API dưới đây là đề xuất thay đổi được công bố rõ, không phải export đã tồn tại.
+Phạm vi là đợt 2 của [kế hoạch đã thống nhất](06-farmgo-approved-scope.md). Tài liệu này là nguồn hợp đồng chung cho code v3; các mục 1–5 mô tả quy tắc, mục 8 chốt chi tiết tích hợp.
 
 ## 1. Thay đổi so với v2
 
-| V2 | Đề xuất v3 |
+| V2 | V3 |
 |---|---|
 | Giá gốc bảo mật + `PricingRule` | Một `publicPricePerKg` do NCC khai báo, công khai cho cả ba vai trò |
 | `CustomerProduct` không có NCC | Trả thông tin NCC công khai, không kèm dữ liệu hồ sơ nội bộ |
@@ -17,7 +17,7 @@ Phạm vi bản nháp là đợt 2 của [kế hoạch đã thống nhất](06-f
 
 Không thêm thuế, Escrow, ví, khiếu nại, SQS, QC approval hoặc luồng giao thẳng trong bản này.
 
-## 2. Mô hình dữ liệu đề xuất
+## 2. Mô hình dữ liệu
 
 Giữ các quy ước VND nguyên, kg nguyên, ISO 8601 và ID ổn định của v2. Giữ `Role`, `DemoSession`, `ServiceError`, event, status order/shipment hiện tại.
 
@@ -40,7 +40,7 @@ export interface SupplierPublicProfile {
 export interface ProductListing {
   id: string; // listing ID riêng cho từng NCC; được dùng trong order.items.productId
   supplierId: string;
-  commodityId: string;
+  commodityId?: string; // Chỉ có thể thiếu trên lô cũ chưa phân nhóm
   name: string;
   variety?: string;
   unit: 'kg';
@@ -54,6 +54,7 @@ export interface ProductListing {
 }
 
 export interface CustomerProduct extends ProductListing {
+  commodityId: string;
   category: ProductCategory; // Lấy từ Commodity, không lưu giá trị mâu thuẫn
   supplier: SupplierPublicProfile;
 }
@@ -75,16 +76,16 @@ export interface UpdateProductInput {
   supplierId: string;
   productId: string;
   changes: Partial<Pick<ProductListing,
-    'name' | 'variety' | 'availableKg' | 'publicPricePerKg' |
+    'commodityId' | 'name' | 'variety' | 'availableKg' | 'publicPricePerKg' |
     'imageUrl' | 'uses' | 'originLabel' | 'packagingLabel' | 'active'>>;
 }
 ```
 
-Các tên `Farmgo*` trong nháp giúp phân biệt với types đang chạy. Khi review cần quyết định thay thế type cũ hay giữ adapter; không triển khai đồng thời hai store/business model.
+Dùng các tên type hiện có như trên và chỉ một store/business model, không tạo types `Farmgo*` song song.
 
 Không dùng thông tin chứng nhận, địa chỉ cá nhân, điện thoại hay MST từ `Supplier` để tự tạo dấu “đã xác minh”. Hồ sơ doanh nghiệp và dữ liệu công khai cần được định nghĩa ở đợt 3.
 
-## 3. API đề xuất
+## 3. API sản phẩm
 
 Các chữ ký sau bổ sung/thay thế API sản phẩm; các API order, session và shipment giữ nguyên tên v2 trừ dữ liệu snapshot bổ sung.
 
@@ -122,7 +123,7 @@ export async function updateProduct(input: UpdateProductInput): Promise<ProductL
 
 - `getPricingRule` / `updatePricingRule` không còn vai trò trong v3; chỉ gỡ sau khi các màn hình không còn import chúng. Không âm thầm thay nghĩa API thành phí sàn.
 - Màn hình cấu hình markup được thay bằng danh mục công khai của Hub; không để nút lưu không còn tác dụng.
-- Cần schema version trong persistence. Chưa đổi key hoặc xóa `b2b-demo-v1` trong bản nháp này.
+- Giữ key `b2b-demo-v1`, tăng schema version từ 1 lên 3. Không xóa dữ liệu cũ khi nâng cấp.
 - [APPROVED — người dùng xác nhận 23/10/2026] Migration một lần từ v2: `publicPricePerKg = basePricePerKg` của từng listing. Bỏ phần markup cũ; không lấy giá catalog v2 làm giá NCC mới. Ví dụ bơ: giá NCC 20.000đ/kg, catalog v2 26.000đ/kg thì giá công khai v3 là 20.000đ/kg. Đơn cũ ở 26.000đ/kg giữ nguyên snapshot; phí giao tiếp tục tính riêng theo fixture. Không áp dụng phép chuyển đổi này cho đơn đã đặt.
 - Không đổi ID, tồn, orders, confirmations, shipments hoặc session. Giữ nguyên snapshot giá đơn cũ.
 - Snapshot NCC của đơn cũ có thể bổ sung từ listing còn lưu; nếu không xác định được, hiển thị “Thông tin NCC chưa có”, không bịa tên.
@@ -130,11 +131,11 @@ export async function updateProduct(input: UpdateProductInput): Promise<ProductL
 - Lưu version mới chỉ sau khi migration và ghi storage thành công; lỗi không ghi đè bản cũ. Không chạy migration lặp lại ở mỗi refresh.
 - Reset khôi phục seed v3 trên schema đã thống nhất và phát `RESET`; không gọi `localStorage.clear()`.
 
-## 6. Yêu cầu để chuyển nháp thành contract chạy
+## 6. Điều kiện tích hợp
 
-1. Review tên types/exports và cách thay thế v2.
+1. Tên types/exports được chốt ở mục 8; không thay nghĩa API cũ một cách âm thầm.
 2. Áp dụng quyết định giá chuyển đổi đã duyệt: dùng giá NCC gốc, bỏ markup; không thay đổi snapshot đơn cũ.
-3. Duyệt schema persistence và mapping dữ liệu cũ.
+3. Áp dụng schema persistence và mapping dữ liệu cũ ở mục 8.
 4. Integrator cập nhật contract dùng chung và tích hợp theo quy trình trước khi FE/mock logic đổi chữ ký.
 5. Chốt API/model riêng cho hồ sơ, QC và khiếu nại trước đợt 3; không gắn model chưa có vào UI như dữ liệu thật.
 

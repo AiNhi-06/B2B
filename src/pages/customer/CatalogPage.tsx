@@ -1,188 +1,46 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { CustomerProduct } from '../../types';
-import { getCustomerCatalog, subscribeDemoData } from '../../services/demoService';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { FruitPhoto } from '../../components/shared/FruitPhoto';
+import { useCatalog, money, categoryLabels } from '../../components/shared/useCatalog';
+import { useBuyerCart } from '../../components/shared/useBuyerCart';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
-import { EmptyState } from '../../components/shared/EmptyState';
 
 export function CatalogPage() {
-  const navigate = useNavigate();
-  const [products, setProducts] = useState<CustomerProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Cart quantities map: productId -> kg
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [cartSuccess, setCartSuccess] = useState<string | null>(null);
-
-  const loadCatalog = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getCustomerCatalog();
-      setProducts(data);
-      const initialQtys: Record<string, number> = {};
-      data.forEach((p) => {
-        initialQtys[p.id] = initialQtys[p.id] || 10;
-      });
-      setQuantities(initialQtys);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Lỗi khi tải danh mục sản phẩm.';
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadCatalog();
-    const unsub = subscribeDemoData((event) => {
-      if (event.type === 'DATA_CHANGED' || event.type === 'SESSION_CHANGED' || event.type === 'RESET') {
-        loadCatalog();
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  const handleQtyChange = (productId: string, val: number, max: number) => {
-    const qty = Math.max(1, Math.min(val, max));
-    setQuantities((prev) => ({ ...prev, [productId]: qty }));
-  };
-
-  const handleAddToCart = (product: CustomerProduct) => {
-    const qty = quantities[product.id] || 10;
-    const existingRaw = localStorage.getItem('demo-cart-items') || '[]';
-    let currentCart: { productId: string; productName: string; quantityKg: number; unitPriceVnd: number }[] = [];
-    try {
-      currentCart = JSON.parse(existingRaw);
-    } catch {
-      currentCart = [];
-    }
-
-    const foundIdx = currentCart.findIndex((i) => i.productId === product.id);
-    if (foundIdx >= 0) {
-      currentCart[foundIdx].quantityKg = qty;
-    } else {
-      currentCart.push({
-        productId: product.id,
-        productName: product.name,
-        quantityKg: qty,
-        unitPriceVnd: product.sellingPricePerKg,
-      });
-    }
-
-    localStorage.setItem('demo-cart-items', JSON.stringify(currentCart));
-    setCartSuccess(`Đã thêm ${qty} kg ${product.name} vào đơn đặt hàng.`);
-    setTimeout(() => setCartSuccess(null), 3000);
-  };
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
-        <div>
-          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Phân phối sỉ nông sản B2B
-          </span>
-          <h1 style={{ margin: '4px 0 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            Danh Mục Trái Cây Mở Bán
-          </h1>
-          <span style={{ fontSize: '0.85rem', color: '#475569' }}>
-            Giá bán buôn minh bạch theo sọt, giao tận nơi từ kho Hub lúc 04:00 sáng.
-          </span>
-        </div>
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={() => navigate('/customer/checkout')}
-          style={{ padding: '8px 16px' }}
-        >
-          Xem giỏ hàng & Đặt đơn →
-        </button>
-      </div>
-
-      {cartSuccess && (
-        <div style={{ background: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '10px 16px', borderRadius: '8px', marginBottom: 16, fontWeight: 600 }}>
-          {cartSuccess}
-        </div>
-      )}
-
-      {loading && <LoadingSpinner />}
-      {error && <ErrorMessage message={error} onRetry={loadCatalog} />}
-
-      {!loading && !error && products.length === 0 && (
-        <EmptyState
-          icon="🍉"
-          title="Chưa có sản phẩm mở bán"
-          description="Hiện tại nhà vườn chưa đăng lô hàng hoặc chưa tới khung giờ mở bán hôm nay."
-        />
-      )}
-
-      {!loading && !error && products.length > 0 && (
-        <div className="grid-cards">
-          {products.map((p) => {
-            const isOutOfStock = p.availableKg <= 0;
-            const currentQty = quantities[p.id] || 1;
-
-            return (
-              <div key={p.id} className="fruit-listing-card" style={{ opacity: isOutOfStock ? 0.6 : 1 }}>
-                <FruitPhoto id={p.id} name={p.name} imageUrl={p.imageUrl} />
-                <div className="card-fruit-header">
-                  <div className="card-fruit-meta">
-                    <h3 className="fruit-title">{p.name}</h3>
-                    <div className="fruit-variety">
-                      {p.variety ? `Giống: ${p.variety}` : 'Chuẩn sọt sỉ'}
-                    </div>
-                  </div>
-                  <span className={`badge ${isOutOfStock ? 'badge-placed' : 'badge-delivered'}`}>
-                    {isOutOfStock ? 'Hết hàng' : `Còn ${p.availableKg.toLocaleString('vi-VN')} kg`}
-                  </span>
-                </div>
-
-                <div style={{ padding: '16px', background: '#fafafa' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', display: 'block', textTransform: 'uppercase' }}>
-                    Giá sỉ công khai
-                  </span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '2px 0 12px 0' }}>
-                    {p.sellingPricePerKg.toLocaleString('vi-VN')} đ <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>/ kg</span>
-                  </div>
-
-                  {!isOutOfStock ? (
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>Số lượng:</span>
-                        <input
-                          type="number"
-                          min="1"
-                          max={p.availableKg}
-                          className="account-dropdown"
-                          style={{ width: '80px', textAlign: 'center', padding: '6px' }}
-                          value={currentQty}
-                          onChange={(e) => handleQtyChange(p.id, Number(e.target.value), p.availableKg)}
-                        />
-                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>kg</span>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        style={{ width: '100%', padding: '9px' }}
-                        onClick={() => handleAddToCart(p)}
-                      >
-                        Thêm {currentQty} kg vào giỏ
-                      </button>
-                    </div>
-                  ) : (
-                    <button type="button" className="btn-secondary" style={{ width: '100%' }} disabled>
-                      Tạm hết hàng
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+  const { products, loading, error, retry } = useCatalog();
+  const cart = useBuyerCart();
+  const [params, setParams] = useSearchParams();
+  const [sort, setSort] = useState('name');
+  const [supplier, setSupplier] = useState('');
+  const [amounts, setAmounts] = useState<Record<string, number>>({});
+  const [message, setMessage] = useState('');
+  const category = params.get('category') || '';
+  const query = params.get('q') || '';
+  const use = params.get('use') || '';
+  const setFilter = (key: string, value: string) => { const next = new URLSearchParams(params); if (value) next.set(key, value); else next.delete(key); setParams(next); };
+  const suppliers = [...new Map(products.map(product => [product.supplier.id, product.supplier])).values()];
+  const visible = products.filter(product => (!category || product.category === category) && (!supplier || product.supplierId === supplier) &&
+    (!use || (use === 'DRINKS' ? product.uses.some(value => ['JUICE', 'SMOOTHIE'].includes(value)) : product.uses.includes(use as 'JUICE'))) &&
+    `${product.name} ${product.supplier.name} ${product.originLabel || ''}`.toLocaleLowerCase('vi').includes(query.toLocaleLowerCase('vi')))
+    .sort((a, b) => sort === 'price-up' ? a.publicPricePerKg - b.publicPricePerKg : sort === 'price-down' ? b.publicPricePerKg - a.publicPricePerKg : a.name.localeCompare(b.name, 'vi'));
+  return <>
+    <div className="page-heading"><div><h1>Danh mục nguyên liệu</h1><p>Chọn đúng mặt hàng, đúng nhà cung cấp cho quán.</p></div><Link className="btn-primary" to="/customer/checkout">Giỏ hàng ({cart.items.length})</Link></div>
+    <div className="catalog-tabs" aria-label="Nhóm sản phẩm">{[['', 'Tất cả'], ['FRESH_FRUIT', 'Trái cây tươi'], ['VEGETABLES', 'Rau củ quả']].map(([value, label]) => <button key={value} className={category === value ? 'active' : ''} onClick={() => setFilter('category', value)}>{label}</button>)}<button className={use === 'DRINKS' ? 'active' : ''} onClick={() => setFilter('use', use === 'DRINKS' ? '' : 'DRINKS')}>Nguyên liệu pha chế</button></div>
+    <div className="catalog-toolbar"><label>Tìm sản phẩm<input type="search" placeholder="Tên hàng, vùng trồng, nhà cung cấp…" value={query} onChange={event => setFilter('q', event.target.value)} /></label>
+      <label>Nhà cung cấp<select value={supplier} onChange={event => setSupplier(event.target.value)}><option value="">Tất cả nhà cung cấp</option>{suppliers.map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>
+      <label>Sắp xếp<select value={sort} onChange={event => setSort(event.target.value)}><option value="name">Theo tên</option><option value="price-up">Giá tăng dần</option><option value="price-down">Giá giảm dần</option></select></label></div>
+    {(error || cart.error) && <ErrorMessage message={error || cart.error!} onRetry={retry} />}
+    {loading ? <LoadingSpinner /> : <><p className="result-count">{visible.length} báo giá phù hợp · Giá công khai từ nhà cung cấp</p>
+      {visible.length === 0 && <div className="empty-panel"><h2>Chưa tìm thấy mặt hàng</h2><p>Thử đổi từ khóa hoặc bộ lọc.</p><button className="btn-secondary" onClick={() => { setParams({}); setSupplier(''); }}>Xóa bộ lọc</button></div>}
+      <div className="market-grid">{visible.map(product => { const qty = amounts[product.id] ?? 10; const count = products.filter(item => item.commodityId === product.commodityId).length;
+        return <article key={product.id} className="market-card"><Link to={`/customer/products/${product.id}`} className="product-photo-link" aria-label={`Chi tiết ${product.name} từ ${product.supplier.name}`}><FruitPhoto id={product.commodityId} name={product.name} imageUrl={product.imageUrl} /></Link>
+          <div className="market-card-body"><span className="product-category">{categoryLabels[product.category]}</span><h2><Link to={`/customer/products/${product.id}`}>{product.name}</Link></h2>
+            <p className="supplier-name">{product.supplier.name}</p><p className="product-origin">{product.originLabel || product.supplier.regionLabel || 'Chưa có vùng trồng'}{product.packagingLabel ? ` · ${product.packagingLabel}` : ''}</p>
+            <div className="market-price">{money(product.publicPricePerKg)}<small>/kg</small></div><span className="stock-label">{product.availableKg > 0 ? `Còn ${product.availableKg.toLocaleString('vi-VN')} kg` : 'Tạm hết hàng'}</span>
+            <div className="product-buy"><label className="sr-only" htmlFor={`qty-${product.id}`}>Số kg {product.name} từ {product.supplier.name}</label><input id={`qty-${product.id}`} type="number" min={1} max={product.availableKg} step={1} disabled={product.availableKg === 0} value={qty} onChange={event => setAmounts(previous => ({ ...previous, [product.id]: Number(event.target.value) }))} />
+              <button className="btn-primary" disabled={!cart.ready || product.availableKg === 0 || !Number.isSafeInteger(qty) || qty < 1 || qty > product.availableKg} onClick={() => { if (cart.add(product.id, qty)) setMessage(`Đã thêm ${qty} kg ${product.name} — ${product.supplier.name}`); }}>Thêm vào giỏ</button></div>
+            {count > 1 && <Link className="compare-link" to={`/customer/products/${product.id}#suppliers`}>So sánh {count} nhà cung cấp</Link>}
+          </div></article>;
+      })}</div></>}
+    {message && <div className="cart-toast" role="status"><span>{message}</span><button aria-label="Đóng thông báo" onClick={() => setMessage('')}>×</button></div>}
+  </>;
 }

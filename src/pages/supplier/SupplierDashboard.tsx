@@ -1,39 +1,12 @@
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ListingsPage } from './ListingsPage';
 import { AddProductPage } from './AddProductPage';
 import { DemandPage } from './DemandPage';
-
+import { SupplierOverviewPage } from './SupplierOverviewPage';
+import { PortalLayout } from '../../components/shared/PortalLayout';
 export function SupplierDashboard() {
-  return (
-    <div>
-      <div className="sub-nav-tabs">
-        <NavLink
-          to="/supplier"
-          end
-          className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
-        >
-          Hàng đang bán
-        </NavLink>
-        <NavLink
-          to="/supplier/new"
-          className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
-        >
-          Đăng lô hàng
-        </NavLink>
-        <NavLink
-          to="/supplier/demand"
-          className={({ isActive }) => `sub-nav-tab ${isActive ? 'active' : ''}`}
-        >
-          Nhu cầu cần giao
-        </NavLink>
-      </div>
-
-      <Routes>
-        <Route path="/" element={<ListingsPage />} />
-        <Route path="/new" element={<AddProductPage />} />
-        <Route path="/demand" element={<DemandPage />} />
-        <Route path="*" element={<Navigate to="/supplier" replace />} />
-      </Routes>
-    </div>
-  );
+  return <PortalLayout title="Nhà cung cấp" subtitle="Quản lý nguồn hàng" links={[
+    {to:'/supplier',label:'Tổng quan',end:true}, {to:'/supplier/products',label:'Sản phẩm & báo giá'},
+    {to:'/supplier/new',label:'Đăng lô hàng'}, {to:'/supplier/demand',label:'Nhu cầu & giao Hub'},
+  ]}><Routes><Route index element={<SupplierOverviewPage />} /><Route path="products" element={<ListingsPage />} /><Route path="new" element={<AddProductPage />} /><Route path="products/:id/edit" element={<AddProductPage />} /><Route path="demand" element={<DemandPage />} /><Route path="*" element={<Navigate to="/supplier" replace />} /></Routes></PortalLayout>;
 }

@@ -12,7 +12,8 @@
 ## Đợt chỉnh sửa FARMGO tháng 10/2026
 
 - [06-farmgo-approved-scope.md](06-farmgo-approved-scope.md) — hướng và thứ tự triển khai đã được người dùng duyệt ngày 23/10/2026.
-- [07-data-api-contract-v3-draft.md](07-data-api-contract-v3-draft.md) — đề xuất kỹ thuật cho đợt 2, chưa thay thế contract v2.
+- [07-data-api-contract-v3-draft.md](07-data-api-contract-v3-draft.md) — bản đề xuất lịch sử; các quyết định cuối cùng nằm trong contract file 03.
+- [08-farmgo-phase2-handoff.md](08-farmgo-phase2-handoff.md) — phạm vi đã triển khai, kiểm thử và giới hạn đợt 2.
 - Contract v3 đã được duyệt triển khai ngày 23/10/2026 tại `03-data-api-contract.md`; mục 8 chốt tên types/API và migration. Bản v2 được lưu tại `03-data-api-contract-v2-archive.md`. File 07 giữ lịch sử đề xuất, không phải contract chạy.
 
 ## Tính chính xác của đặc tả

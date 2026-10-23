@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import type { DemandLine, Order } from '../../types';
 import {
   getAllOrders,
+  getSuppliers,
+  getSupplierDemand,
   aggregateDemand,
   subscribeDemoData,
 } from '../../services/demoService';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
-import { HubProductThumbnail } from '../../components/shared/HubProductPhotos';
+import { HubProductThumbnail, HubSupplierName } from '../../components/shared/HubProductPhotos';
 
 export function AggregatePage() {
   const [demand, setDemand] = useState<DemandLine[]>([]);
@@ -25,10 +27,9 @@ export function AggregatePage() {
       const placed = orders.filter((o) => o.status === 'PLACED').length;
       setPlacedOrdersCount(placed);
 
-      // We can inspect existing demand by calling aggregateDemand (idempotent)
-      // or we can call aggregateDemand to refresh current in-progress demand
-      const dem = await aggregateDemand();
-      setDemand(dem);
+      const suppliers = await getSuppliers();
+      const batches = await Promise.all(suppliers.map(supplier => getSupplierDemand(supplier.id)));
+      setDemand(batches.flat());
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Lỗi tải dữ liệu gom đơn.';
       setError(msg);
@@ -54,7 +55,7 @@ export function AggregatePage() {
       setSuccessMsg(null);
       const res = await aggregateDemand();
       setDemand(res);
-      setSuccessMsg('Đã hoàn tất tổng hợp nhu cầu tự động! Toàn bộ đơn PLACED đã chuyển sang AGGREGATED.');
+      setSuccessMsg('Đã gom các đơn mới thành nhu cầu cung ứng cho nhà cung cấp.');
       const orders = await getAllOrders();
       setPlacedOrdersCount(orders.filter((o: Order) => o.status === 'PLACED').length);
     } catch (err: unknown) {
@@ -81,17 +82,17 @@ export function AggregatePage() {
           onClick={handleAggregate}
           disabled={aggregating}
         >
-          {aggregating ? 'Đang tổng hợp...' : '⚡ Chạy Gom Đơn (Aggregate)'}
+          {aggregating ? 'Đang tổng hợp...' : 'Gom các đơn mới'}
         </button>
       </div>
 
       {placedOrdersCount > 0 ? (
         <div style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#b45309', padding: '10px 16px', borderRadius: '8px', marginBottom: 16, fontSize: '0.9rem' }}>
-          🔔 Có <strong>{placedOrdersCount} đơn hàng mới (PLACED)</strong> từ các quán đang chờ chốt gom đơn lúc 22:00.
+          🔔 Có <strong>{placedOrdersCount} đơn hàng mới</strong> từ các quán đang chờ chốt gom đơn lúc 22:00.
         </div>
       ) : (
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#64748b', padding: '10px 16px', borderRadius: '8px', marginBottom: 16, fontSize: '0.85rem' }}>
-          ℹ️ Toàn bộ đơn hàng hiện có đã được gom xong. Không có đơn mới cần xử lý.
+          ℹ️ Không có đơn mới chờ gom.
         </div>
       )}
 
@@ -129,7 +130,7 @@ export function AggregatePage() {
                   <tr key={line.productId}>
                     <td><div className="hub-product-line"><HubProductThumbnail id={line.productId} name={line.productName} /><strong>{line.productName}</strong></div></td>
                     <td>
-                      <span className="badge badge-placed">{line.supplierId}</span>
+                      <span className="badge badge-placed"><HubSupplierName supplierId={line.supplierId} /></span>
                     </td>
                     <td>
                       <strong style={{ fontSize: '1.15rem', color: '#15803d' }}>

@@ -52,7 +52,7 @@ export function OrdersPage() {
         <button
           type="button"
           className="btn-primary"
-          onClick={() => navigate('/customer')}
+          onClick={() => navigate('/customer/catalog')}
         >
           ➕ Đặt thêm đơn mới
         </button>
@@ -67,8 +67,8 @@ export function OrdersPage() {
           title="Bạn chưa có đơn hàng nào"
           description="Chưa có đơn hàng nào được ghi nhận cho tài khoản này."
           action={{
-            label: 'Khám phá trái cây',
-            onClick: () => navigate('/customer'),
+            label: 'Khám phá nguyên liệu',
+            onClick: () => navigate('/customer/catalog'),
           }}
         />
       )}

@@ -1,6 +1,6 @@
 # FARMGO — Đề xuất contract v3 cho luồng mua bán chính
 
-**Trạng thái: [PROPOSAL] bản nháp để review. Chưa thay thế `03-data-api-contract.md` và chưa được triển khai.**
+**Trạng thái: bản đề xuất lịch sử. Các quyết định đã chốt và contract triển khai hiện hành nằm tại [03-data-api-contract.md](03-data-api-contract.md); không dùng file này để ghi đè contract hiện hành.**
 
 Phạm vi bản nháp là đợt 2 của [kế hoạch đã thống nhất](06-farmgo-approved-scope.md). Tên type/API dưới đây là đề xuất thay đổi được công bố rõ, không phải export đã tồn tại.
 

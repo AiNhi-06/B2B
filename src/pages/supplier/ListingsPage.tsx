@@ -1,184 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { ProductListing, DemandLine, Supplier } from '../../types';
-import {
-  getDemoSession,
-  getSupplierListings,
-  getSupplierDemand,
-  getSuppliers,
-  subscribeDemoData,
-} from '../../services/demoService';
+import type { ProductListing, DemandLine } from '../../types';
+import { getDemoSession, getSupplierListings, getSupplierDemand, getSuppliers, subscribeDemoData, updateProduct } from '../../services/demoService';
 import { FruitPhoto } from '../../components/shared/FruitPhoto';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
-import { EmptyState } from '../../components/shared/EmptyState';
-
+import { money } from '../../components/shared/useCatalog';
 export function ListingsPage() {
-  const [listings, setListings] = useState<ProductListing[]>([]);
-  const [demand, setDemand] = useState<DemandLine[]>([]);
-  const [supplierName, setSupplierName] = useState<string>('Nhà vườn Chú Sáu');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const session = await getDemoSession();
-      const sId = session.activeSupplierId || 'supplier-1';
-
-      const [items, demList, supList] = await Promise.all([
-        getSupplierListings(sId),
-        getSupplierDemand(sId),
-        getSuppliers(),
-      ]);
-
-      setListings(items);
-      setDemand(demList);
-
-      const foundSupplier = supList.find((s: Supplier) => s.id === sId);
-      if (foundSupplier) {
-        setSupplierName(foundSupplier.name);
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Không thể tải danh sách sản phẩm.';
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-    const unsub = subscribeDemoData((event) => {
-      if (event.type === 'DATA_CHANGED' || event.type === 'SESSION_CHANGED' || event.type === 'RESET') {
-        loadData();
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  const totalAvailableKg = listings.reduce((sum, item) => sum + (item.active ? item.availableKg : 0), 0);
-  const totalDemandKg = demand.reduce((sum, d) => sum + d.quantityKg, 0);
-
-  // Map demand by product ID
-  const demandByProduct = new Map<string, number>();
-  demand.forEach((d) => {
-    demandByProduct.set(d.productId, d.quantityKg);
-  });
-
-  return (
-    <div>
-      {/* 1. Header Section with Crisp Typography */}
-      <div className="supplier-listing-heading">
-        <div>
-          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Khu vực cung ứng • {supplierName}
-          </span>
-          <h1 style={{ margin: '4px 0 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            Hàng đang bán
-          </h1>
-        </div>
-
-        <Link to="/supplier/new" className="btn-primary" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>+</span>
-          <span>Đăng lô trái cây mới</span>
-        </Link>
-      </div>
-
-      {/* 2. Top Summary Metrics Bar */}
-      <div className="metrics-summary-bar">
-        <div className="metric-box">
-          <span className="metric-label">Tổng tồn khả dụng</span>
-          <span className="metric-value highlight-green">{totalAvailableKg.toLocaleString('vi-VN')} kg</span>
-        </div>
-
-        <div className="metric-box">
-          <span className="metric-label">Nhu cầu các quán đã đặt</span>
-          <span className="metric-value highlight-amber">
-            {totalDemandKg > 0 ? `${totalDemandKg.toLocaleString('vi-VN')} kg` : 'Chưa có đơn'}
-          </span>
-        </div>
-
-        <div className="metric-box">
-          <span className="metric-label">Mặt hàng đang mở bán</span>
-          <span className="metric-value">{listings.filter((l) => l.active).length} loại</span>
-        </div>
-      </div>
-
-      {loading && <LoadingSpinner />}
-      {error && <ErrorMessage message={error} onRetry={loadData} />}
-
-      {!loading && !error && listings.length === 0 && (
-        <EmptyState
-          icon="🥑"
-          title="Chưa có lô trái cây nào"
-          description="Cập nhật số lượng thu hoạch và giá bán để cung cấp cho hệ thống phân phối."
-          action={{
-            label: 'Đăng lô hàng đầu tiên',
-            onClick: () => window.location.assign('/supplier/new'),
-          }}
-        />
-      )}
-
-      {/* 3. High-Contrast Fruit Cards with Visuals & Priority Metrics */}
-      {!loading && !error && listings.length > 0 && (
-        <div className="grid-cards">
-          {listings.map((item) => {
-            const neededKg = demandByProduct.get(item.id) || 0;
-
-            return (
-              <div key={item.id} className="fruit-listing-card">
-                <FruitPhoto id={item.id} name={item.name} imageUrl={item.imageUrl} />
-                <div className="card-fruit-header">
-                  <div className="card-fruit-meta">
-                    <h3 className="fruit-title">{item.name}</h3>
-                    <div className="fruit-variety">
-                      {item.variety ? `Giống: ${item.variety}` : 'Chưa có thông tin giống'}
-                    </div>
-                  </div>
-                  <span className={`badge ${item.active ? 'badge-delivered' : 'badge-placed'}`}>
-                    {item.active ? 'Đang mở bán' : 'Tạm ẩn'}
-                  </span>
-                </div>
-
-                {/* Priority Metrics: Tồn khả dụng + Giá gốc + Nhu cầu quán */}
-                <div className="card-metrics-grid">
-                  <div className="metric-item">
-                    <span className="metric-item-label">Tồn khả dụng</span>
-                    <span className="metric-item-number">
-                      {item.availableKg.toLocaleString('vi-VN')} kg
-                    </span>
-                  </div>
-
-                  <div className="metric-item">
-                    <span className="metric-item-label">Giá gốc cung cấp</span>
-                    <span className="metric-item-number green">
-                      {item.basePricePerKg.toLocaleString('vi-VN')} đ/kg
-                    </span>
-                  </div>
-                </div>
-
-                {/* Secondary Section: Demand requirement */}
-                <div style={{ padding: '10px 16px', background: neededKg > 0 ? '#fef3c7' : '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: neededKg > 0 ? '#92400e' : '#64748b' }}>
-                    Nhu cầu quán cần giao Hub:
-                  </span>
-                  <strong style={{ fontSize: '0.95rem', color: neededKg > 0 ? '#b45309' : '#0f172a' }}>
-                    {neededKg > 0 ? `${neededKg.toLocaleString('vi-VN')} kg` : '0 kg'}
-                  </strong>
-                </div>
-
-                <div className="card-bottom-info">
-                  <span>Giá nội bộ nhà vườn (không hiển thị cho quán)</span>
-                  <Link to="/supplier/demand" style={{ color: '#15803d', fontWeight: 700, textDecoration: 'none' }}>
-                    Xem gom đơn →
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+  const [listings,setListings]=useState<ProductListing[]>([]);
+  const [demand,setDemand]=useState<DemandLine[]>([]);
+  const [supplierName,setSupplierName]=useState('');
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState<string>();
+  const [busy,setBusy]=useState('');
+  const [revision,setRevision]=useState(0);
+  useEffect(()=>{
+    let disposed=false,request=0;
+    const load=async()=>{const current=++request;try{
+      const session=await getDemoSession();
+      const [products,lines,suppliers]=await Promise.all([getSupplierListings(session.activeSupplierId!),getSupplierDemand(session.activeSupplierId!),getSuppliers()]);
+      if(!disposed&&current===request){setListings(products);setDemand(lines);setSupplierName(suppliers.find(item=>item.id===session.activeSupplierId)?.name||'');setError(undefined);}
+    }catch(err){if(!disposed&&current===request)setError(err instanceof Error?err.message:'Không tải được sản phẩm.');}finally{if(!disposed&&current===request)setLoading(false);}};
+    const unsubscribe=subscribeDemoData(event=>{if(event.type==='SESSION_CHANGED'||event.type==='RESET'){setListings([]);setLoading(true);}void load();});void load();return()=>{disposed=true;unsubscribe();};
+  },[revision]);
+  const toggle=async(product:ProductListing)=>{setBusy(product.id);try{const session=await getDemoSession();await updateProduct({supplierId:session.activeSupplierId!,productId:product.id,changes:{active:!product.active}});}catch(err){setError(err instanceof Error?err.message:'Không cập nhật được sản phẩm.');}finally{setBusy('');}};
+  return <><div className="page-heading"><div><h1>Sản phẩm & báo giá</h1><p>{supplierName} · Quản lý hàng cung ứng và giá công khai.</p></div><Link to="/supplier/new" className="btn-primary">Đăng lô hàng</Link></div>
+    {error&&<ErrorMessage message={error} onRetry={()=>setRevision(value=>value+1)}/>}{loading?<LoadingSpinner/>:<><div className="overview-metrics"><div><span>Mặt hàng đã phân nhóm</span><strong>{listings.filter(item=>item.commodityId).length}</strong></div><div><span>Tồn đang mở bán</span><strong>{listings.filter(item=>item.active&&item.commodityId).reduce((sum,item)=>sum+item.availableKg,0).toLocaleString('vi-VN')} kg</strong></div><div><span>Nhu cầu đang xử lý</span><strong>{demand.reduce((sum,item)=>sum+item.quantityKg,0)} kg</strong></div></div>
+      {listings.some(item=>!item.commodityId)&&<div className="notice">Lô cũ chưa phân nhóm được giữ nguyên ảnh và tồn. Chọn “Bổ sung nhóm” để đưa lô vào danh mục bên mua.</div>}
+      {!listings.length&&<div className="empty-panel"><h2>Chưa có lô hàng</h2><Link to="/supplier/new">Đăng lô đầu tiên</Link></div>}
+      <div className="market-grid">{listings.map(item=><article className="market-card" key={item.id}><FruitPhoto id={item.commodityId||item.id} name={item.name} imageUrl={item.imageUrl}/><div className="market-card-body"><span className="stock-label">{!item.commodityId?'Cần phân nhóm':item.active?'Đang mở bán':'Tạm ẩn'}</span><h2>{item.name}</h2><p>{item.originLabel||'Chưa có vùng trồng'}{item.packagingLabel?` · ${item.packagingLabel}`:''}</p><div className="market-price">{money(item.publicPricePerKg)}<small>/kg</small></div><p>Tồn: <strong>{item.availableKg.toLocaleString('vi-VN')} kg</strong></p><p>Nhu cầu đang xử lý: <strong>{demand.find(line=>line.productId===item.id)?.quantityKg||0} kg</strong></p><div className="form-actions"><Link className="btn-primary" to={`/supplier/products/${item.id}/edit`}>{item.commodityId?'Sửa lô hàng':'Bổ sung nhóm'}</Link><button className="btn-secondary" disabled={!!busy} onClick={()=>toggle(item)}>{busy===item.id?'Đang lưu…':item.active?'Tạm ẩn':'Mở bán'}</button></div></div></article>)}</div></>}
+  </>;
 }

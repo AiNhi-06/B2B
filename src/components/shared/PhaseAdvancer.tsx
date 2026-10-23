@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { subscribeDemoData } from '../../services/demoService';
 import { useNavigate } from 'react-router-dom';
 
 interface PhaseStep {
@@ -12,12 +13,12 @@ const PHASES: PhaseStep[] = [
   {
     time: '12:00–15:00',
     title: 'Nhà vườn cập nhật nguồn cung',
-    targetRoute: '/supplier',
+    targetRoute: '/supplier/products',
     role: 'Nhà vườn',
   },
   {
     time: '16:00–22:00',
-    title: 'Quán chốt đơn & xem giá sỉ',
+    title: 'Quán chốt đơn & xem giá công khai',
     targetRoute: '/customer',
     role: 'Khách B2B',
   },
@@ -51,6 +52,14 @@ export function PhaseAdvancer() {
   const navigate = useNavigate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => subscribeDemoData(event => {
+    if (event.type === 'RESET') { setCurrentIdx(0); setIsOpen(false); }
+  }), []);
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') setIsOpen(false); };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, []);
 
   const current = PHASES[currentIdx];
 
@@ -91,6 +100,7 @@ export function PhaseAdvancer() {
       <button
         type="button"
         className="demo-control-trigger"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         title="Bấm để chọn khung giờ demo"
       >
