@@ -1,3 +1,5 @@
+import { eligible, visible } from './governanceService';
+export * from './governanceService';
 import type * as T from '../types/index';
 import { createSeed, shippingFees, type DemoState } from '../mocks/seed';
 import { mutate, readState, subscribe } from '../store/demoStore';
@@ -29,7 +31,7 @@ function publicProfile(supplier: T.Supplier): T.SupplierPublicProfile {
 }
 function publicProduct(product: T.ProductListing, state: DemoState): T.CustomerProduct {
   const commodity = find(state.commodities, product.commodityId ?? '');
-  return { ...product, commodityId: commodity.id, category: commodity.category, supplier: publicProfile(find(state.suppliers, product.supplierId)) };
+  return { ...product, qc: state.qualityReviews.find(q => q.productId === product.id), commodityId: commodity.id, category: commodity.category, supplier: publicProfile(find(state.suppliers, product.supplierId)) };
 }
 function validatePhoto(value: unknown) {
   requireValue(typeof value === 'string' && value.length <= 450000 &&
@@ -47,6 +49,7 @@ function validateListing(product: T.ProductListing) {
 }
 function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
   find(state.customers, input.customerId);
+  requireValue(eligible(state, input.customerId), 'Hồ sơ bên mua chưa được duyệt.');
   const address = find(state.addresses, input.deliveryAddressId);
   requireValue(address.customerId === input.customerId, 'Địa chỉ không thuộc khách hàng.', 'deliveryAddressId');
   requireValue(Array.isArray(input.items) && input.items.length > 0, 'Giỏ hàng đang trống.', 'items');
@@ -59,14 +62,14 @@ function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
   }
   const items = [...quantities].map(([productId, quantityKg]) => {
     const product = find(state.products, productId);
-    requireValue(product.active && !!product.commodityId, 'Sản phẩm chưa mở bán hoặc chưa phân nhóm.', 'productId');
+    requireValue(visible(state, product), 'Sản phẩm chưa đủ điều kiện hồ sơ hoặc QC để mở bán.', 'productId');
     if (quantityKg > product.availableKg) fail('INSUFFICIENT_STOCK', 'Số lượng đặt vượt tồn kho khả dụng.', { productId, requestedKg: quantityKg, availableKg: product.availableKg });
     const unitPriceVnd = publicProduct(product, state).publicPricePerKg;
     const lineTotalVnd = quantityKg * unitPriceVnd;
     integer(lineTotalVnd, 'Tiền hàng');
-    return { productId, productName: product.name, supplierId: product.supplierId, supplierName: find(state.suppliers, product.supplierId).name, quantityKg, unitPriceVnd, lineTotalVnd };
+    return { qcSnapshot: state.qualityReviews.find(q => q.productId === productId && q.status === 'APPROVED'), productId, productName: product.name, supplierId: product.supplierId, supplierName: find(state.suppliers, product.supplierId).name, quantityKg, unitPriceVnd, lineTotalVnd };
   });
-  const shippingFeeVnd = shippingFees[address.id];
+  const shippingFeeVnd = shippingFees[address.id] ?? (address.deliveryZone === 'DEMO_30000' ? 30000 : undefined);
   requireValue(shippingFeeVnd !== undefined, 'Chưa có phí vận chuyển demo cho địa chỉ này.', 'deliveryAddressId');
   const subtotalVnd = items.reduce((sum, item) => sum + item.lineTotalVnd, 0);
   const totalVnd = subtotalVnd + shippingFeeVnd;
@@ -115,7 +118,7 @@ export async function createProduct(input: T.NewProductInput): Promise<T.Product
     find(state.suppliers, input.supplierId); find(state.commodities, input.commodityId);
     const product: T.ProductListing = { id: `product-${state.nextId++}`, supplierId: input.supplierId, commodityId: input.commodityId,
       name: input.name, variety: input.variety, unit: 'kg', availableKg: input.availableKg, publicPricePerKg: input.publicPricePerKg,
-      imageUrl: input.imageUrl, uses: input.uses, originLabel: input.originLabel, packagingLabel: input.packagingLabel, active: true };
+      imageUrl: input.imageUrl, uses: input.uses, originLabel: input.originLabel, packagingLabel: input.packagingLabel, active: eligible(state, input.supplierId) };
     validateListing(product); state.products.push(product); return product;
   });
 }
@@ -129,15 +132,16 @@ export async function updateProduct(input: T.UpdateProductInput): Promise<T.Prod
       requireValue(!product.commodityId || product.commodityId === input.changes.commodityId, 'Không thể đổi nhóm mặt hàng đã xác lập.', 'commodityId');
       find(state.commodities, input.changes.commodityId!);
     }
+    if (input.changes.active === true) requireValue(eligible(state, input.supplierId), 'Hồ sơ NCC chưa được duyệt để mở bán.');
     Object.assign(product, input.changes); validateListing(product); return product;
   });
 }
 export async function getCustomerCatalog(): Promise<T.CustomerProduct[]> {
-  const state = readState(); return state.products.filter(product => product.active && product.commodityId).map(product => publicProduct(product, state));
+  const state = readState(); return state.products.filter(product => visible(state, product)).map(product => publicProduct(product, state));
 }
 export async function getCustomerProduct(productId: string): Promise<T.CustomerProduct> {
   const state = readState();
-  const product = state.products.find(item => item.id === productId && item.active && item.commodityId);
+  const product = state.products.find(item => item.id === productId && visible(state, item));
   if (!product) fail('NOT_FOUND', 'Sản phẩm không còn mở bán.');
   return publicProduct(product, state);
 }
@@ -149,7 +153,7 @@ export async function placeOrder(input: T.NewOrderInput): Promise<T.Order> {
   return mutate('DATA_CHANGED', state => {
     const result = quote(state, input);
     for (const item of result.items) find(state.products, item.productId).availableKg -= item.quantityKg;
-    const order: T.Order = { id: `order-${state.nextId++}`, customerId: input.customerId, deliveryAddressId: input.deliveryAddressId, ...result, status: 'PLACED', paymentStatus: 'UNPAID', placedAt: new Date().toISOString() };
+    const order: T.Order = { id: `order-${state.nextId++}`, customerId: input.customerId, deliveryAddressId: input.deliveryAddressId, ...result, status: 'PLACED', paymentStatus: 'UNPAID', placedAt: state.demoNow };
     state.orders.push(order); return order;
   });
 }
@@ -181,7 +185,7 @@ export async function confirmSupplierDemand(input: { supplierId: string; orderId
       if (order.status !== 'AGGREGATED') invalidTransition(order.id, order.status, 'SUPPLIER_CONFIRMED');
       requireValue(!state.confirmations.some(value => value.supplierId === input.supplierId && value.orderIds.includes(order.id)), 'Đơn đã được nhà vườn xác nhận; vui lòng chọn các đơn chưa xác nhận.');
     }
-    const confirmation = { supplierId: input.supplierId, orderIds: ids, confirmedAt: new Date().toISOString(), vehiclePlate: input.vehiclePlate, estimatedArrivalAt: input.estimatedArrivalAt };
+    const confirmation = { supplierId: input.supplierId, orderIds: ids, confirmedAt: state.demoNow, vehiclePlate: input.vehiclePlate, estimatedArrivalAt: input.estimatedArrivalAt };
     state.confirmations.push(confirmation);
     for (const order of orders) {
       const suppliers = new Set(order.items.map(item => find(state.products, item.productId).supplierId));
@@ -222,7 +226,7 @@ export async function advanceShipmentStatus(id: string, next: T.ShipmentStatus):
     const orders = shipment.orderIds.map(orderId => find(state.orders, orderId));
     const expected = next === 'IN_TRANSIT' ? 'AT_HUB' : 'DISPATCHED';
     for (const order of orders) if (order.status !== expected) invalidTransition(order.id, order.status, next);
-    for (const order of orders) order.status = next === 'IN_TRANSIT' ? 'DISPATCHED' : 'DELIVERED';
+    for (const order of orders) { order.status = next === 'IN_TRANSIT' ? 'DISPATCHED' : 'DELIVERED'; if (next === 'DELIVERED') order.deliveredAt = state.demoNow; }
     shipment.status = next;
     shipment.trackingLabel = next === 'IN_TRANSIT' ? 'Đang giao — hành trình mô phỏng, không GPS thật' : 'Đã giao — xác nhận mô phỏng';
     return shipment;

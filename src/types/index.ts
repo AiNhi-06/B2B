@@ -73,6 +73,7 @@ export type ProductUse = 'JUICE' | 'SMOOTHIE' | 'KITCHEN' | 'FRESH';
 export interface Commodity { id: string; name: string; category: ProductCategory; }
 export interface SupplierPublicProfile { id: string; name: string; regionLabel?: string; }
 export interface ProductListing {
+  legacy?: boolean;
   id: string;
   supplierId: string;
   commodityId?: string;
@@ -88,12 +89,14 @@ export interface ProductListing {
   active: boolean;
 }
 export interface CustomerProduct extends ProductListing {
+  qc?: QualityReview;
   commodityId: string;
   category: ProductCategory;
   supplier: SupplierPublicProfile;
 }
 
 export interface OrderItem {
+  qcSnapshot?: QualityReview;
   productId: string;
   productName: string;
   supplierId?: string;
@@ -104,6 +107,7 @@ export interface OrderItem {
 }
 
 export interface Order {
+  deliveredAt?: string;
   id: string;
   customerId: string;
   deliveryAddressId: string;
@@ -177,3 +181,6 @@ export interface UpdateProductInput {
   changes: Partial<Pick<ProductListing, 'commodityId' | 'name' | 'variety' | 'availableKg' |
     'publicPricePerKg' | 'imageUrl' | 'uses' | 'originLabel' | 'packagingLabel' | 'active'>>;
 }
+
+export type { BusinessRole, BusinessProfile, QualityReview, ClaimLine, Claim } from './governance';
+import type { QualityReview } from './governance';
