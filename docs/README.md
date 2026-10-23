@@ -9,6 +9,12 @@
 4. [04-agent-collaboration.md](04-agent-collaboration.md) — quyền sở hữu file, Git, tiêu chuẩn bàn giao.
 5. [05-demo-acceptance.md](05-demo-acceptance.md) — kịch bản quay và tiêu chí nghiệm thu.
 
+## Đợt chỉnh sửa FARMGO tháng 10/2026
+
+- [06-farmgo-approved-scope.md](06-farmgo-approved-scope.md) — hướng và thứ tự triển khai đã được người dùng duyệt ngày 23/10/2026.
+- [07-data-api-contract-v3-draft.md](07-data-api-contract-v3-draft.md) — đề xuất kỹ thuật cho đợt 2, chưa thay thế contract v2.
+- Contract chạy hiện tại vẫn là `03-data-api-contract.md`. Không đổi chữ ký hoặc quy tắc giá dựa riêng vào bản nháp.
+
 ## Tính chính xác của đặc tả
 - **[SOURCE]**: trực tiếp từ `trái cây.md` do nhóm cung cấp.
 - **[PROPOSAL]**: giả định/giải pháp kỹ thuật đề xuất cho prototype; chưa được nhóm duyệt.
