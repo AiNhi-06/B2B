@@ -56,7 +56,7 @@ export async function settleEscrow(input: { orderId: string; supplierId: string 
     const order = entity(s.orders, a.orderId);
     check(order.status === 'DELIVERED' && order.deliveredAt && Date.parse(s.demoNow) >= Date.parse(order.deliveredAt) + 7200000, 'Chỉ đối soát sau 2 giờ kể từ khi giao thành công.');
     check(!s.claims.some(c => c.orderId === a.orderId && c.supplierId === a.supplierId && openClaim(c)), 'Phần NCC này đang có khiếu nại mở.');
-    const net = a.goodsVnd - a.refundedVnd; const fee = Math.round(net * 3 / 100);
+    const net = a.goodsVnd - a.refundedVnd; const fee = Number((BigInt(net) * 3n + 50n) / 100n);
     a.status = 'SETTLED'; a.feeVnd = fee; a.supplierNetVnd = net - fee; a.settledAt = s.demoNow;
     post(s, { key: `settle:${a.id}`, kind: 'SETTLEMENT', orderId: a.orderId, supplierId: a.supplierId, amountVnd: net, feeVnd: fee }); balance(s, a.supplierId); return a;
   });
