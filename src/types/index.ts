@@ -48,6 +48,8 @@ export interface Supplier {
   name: string;
   phone: string;
   gardenAddress: string;
+  taxCode?: string;
+  regionLabel?: string;
 }
 
 export interface Customer {
@@ -66,31 +68,36 @@ export interface DeliveryAddress {
   deliveryZone: string;
 }
 
+export type ProductCategory = 'VEGETABLES' | 'FRESH_FRUIT';
+export type ProductUse = 'JUICE' | 'SMOOTHIE' | 'KITCHEN' | 'FRESH';
+export interface Commodity { id: string; name: string; category: ProductCategory; }
+export interface SupplierPublicProfile { id: string; name: string; regionLabel?: string; }
 export interface ProductListing {
   id: string;
   supplierId: string;
+  commodityId?: string;
   name: string;
   variety?: string;
   unit: 'kg';
   availableKg: number;
-  basePricePerKg: number;
+  publicPricePerKg: number;
   imageUrl?: string;
+  uses: ProductUse[];
+  originLabel?: string;
+  packagingLabel?: string;
   active: boolean;
 }
-
-export interface CustomerProduct {
-  id: string;
-  name: string;
-  variety?: string;
-  unit: 'kg';
-  availableKg: number;
-  sellingPricePerKg: number;
-  imageUrl?: string;
+export interface CustomerProduct extends ProductListing {
+  commodityId: string;
+  category: ProductCategory;
+  supplier: SupplierPublicProfile;
 }
 
 export interface OrderItem {
   productId: string;
   productName: string;
+  supplierId?: string;
+  supplierName?: string;
   quantityKg: number;
   unitPriceVnd: number;
   lineTotalVnd: number;
@@ -143,11 +150,6 @@ export interface Shipment {
   trackingLabel?: string;
 }
 
-export interface PricingRule {
-  mode: 'PERCENT' | 'FIXED_VND_PER_KG';
-  value: number;
-}
-
 export interface NewOrderInput {
   customerId: string;
   deliveryAddressId: string;
@@ -159,10 +161,19 @@ export interface NewOrderInput {
 
 export interface NewProductInput {
   supplierId: string;
+  commodityId: string;
   name: string;
   variety?: string;
   availableKg: number;
-  basePricePerKg: number;
+  publicPricePerKg: number;
   imageUrl?: string;
+  uses: ProductUse[];
+  originLabel?: string;
+  packagingLabel?: string;
 }
-
+export interface UpdateProductInput {
+  supplierId: string;
+  productId: string;
+  changes: Partial<Pick<ProductListing, 'commodityId' | 'name' | 'variety' | 'availableKg' |
+    'publicPricePerKg' | 'imageUrl' | 'uses' | 'originLabel' | 'packagingLabel' | 'active'>>;
+}

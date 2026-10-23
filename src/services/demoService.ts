@@ -24,10 +24,26 @@ function text(value: string, field: string): string {
   requireValue(typeof value === 'string' && value.trim().length > 0, `Vui lòng nhập ${field}.`, field);
   return value.trim();
 }
-function publicProduct(product: T.ProductListing, rule: T.PricingRule): T.CustomerProduct {
-  const price = rule.mode === 'PERCENT' ? Math.round(product.basePricePerKg * (1 + rule.value / 100)) : product.basePricePerKg + rule.value;
-  integer(price, 'Giá bán');
-  return { id: product.id, name: product.name, variety: product.variety, unit: 'kg', availableKg: product.availableKg, sellingPricePerKg: price, imageUrl: product.imageUrl };
+function publicProfile(supplier: T.Supplier): T.SupplierPublicProfile {
+  return { id: supplier.id, name: supplier.name, regionLabel: supplier.regionLabel };
+}
+function publicProduct(product: T.ProductListing, state: DemoState): T.CustomerProduct {
+  const commodity = find(state.commodities, product.commodityId ?? '');
+  return { ...product, commodityId: commodity.id, category: commodity.category, supplier: publicProfile(find(state.suppliers, product.supplierId)) };
+}
+function validatePhoto(value: unknown) {
+  requireValue(typeof value === 'string' && value.length <= 450000 &&
+    (value === '' || /^https?:\/\/[^\s]+$/i.test(value) || /^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(value)), 'Ảnh không hợp lệ.', 'imageUrl');
+}
+function validateUses(value: unknown): asserts value is T.ProductUse[] {
+  requireValue(Array.isArray(value) && new Set(value).size === value.length && value.every(use => ['JUICE', 'SMOOTHIE', 'KITCHEN', 'FRESH'].includes(use)), 'Công dụng không hợp lệ.', 'uses');
+}
+function validateListing(product: T.ProductListing) {
+  integer(product.availableKg, 'Tồn kho'); integer(product.publicPricePerKg, 'Giá công khai');
+  product.name = text(product.name, 'Tên sản phẩm'); validateUses(product.uses);
+  if (product.imageUrl !== undefined) validatePhoto(product.imageUrl);
+  for (const key of ['variety', 'originLabel', 'packagingLabel'] as const) if (product[key] !== undefined) requireValue(typeof product[key] === 'string', 'Mô tả không hợp lệ.', key);
+  requireValue(typeof product.active === 'boolean', 'Trạng thái không hợp lệ.', 'active');
 }
 function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
   find(state.customers, input.customerId);
@@ -43,12 +59,12 @@ function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
   }
   const items = [...quantities].map(([productId, quantityKg]) => {
     const product = find(state.products, productId);
-    requireValue(product.active, 'Sản phẩm đã ngừng bán.', 'productId');
+    requireValue(product.active && !!product.commodityId, 'Sản phẩm chưa mở bán hoặc chưa phân nhóm.', 'productId');
     if (quantityKg > product.availableKg) fail('INSUFFICIENT_STOCK', 'Số lượng đặt vượt tồn kho khả dụng.', { productId, requestedKg: quantityKg, availableKg: product.availableKg });
-    const unitPriceVnd = publicProduct(product, state.pricing).sellingPricePerKg;
+    const unitPriceVnd = publicProduct(product, state).publicPricePerKg;
     const lineTotalVnd = quantityKg * unitPriceVnd;
     integer(lineTotalVnd, 'Tiền hàng');
-    return { productId, productName: product.name, quantityKg, unitPriceVnd, lineTotalVnd };
+    return { productId, productName: product.name, supplierId: product.supplierId, supplierName: find(state.suppliers, product.supplierId).name, quantityKg, unitPriceVnd, lineTotalVnd };
   });
   const shippingFeeVnd = shippingFees[address.id];
   requireValue(shippingFeeVnd !== undefined, 'Chưa có phí vận chuyển demo cho địa chỉ này.', 'deliveryAddressId');
@@ -92,17 +108,38 @@ export async function resetDemoData(): Promise<void> { mutate('RESET', state => 
 export async function getSupplierListings(supplierId: string): Promise<T.ProductListing[]> {
   const state = readState(); find(state.suppliers, supplierId); return state.products.filter(product => product.supplierId === supplierId);
 }
+export async function getCommodities(): Promise<T.Commodity[]> { return readState().commodities; }
+export async function getSupplierPublicProfiles(): Promise<T.SupplierPublicProfile[]> { return readState().suppliers.map(publicProfile); }
 export async function createProduct(input: T.NewProductInput): Promise<T.ProductListing> {
   return mutate('DATA_CHANGED', state => {
-    find(state.suppliers, input.supplierId);
-    integer(input.availableKg, 'Tồn kho'); integer(input.basePricePerKg, 'Giá gốc');
-    const product: T.ProductListing = { id: `product-${state.nextId++}`, supplierId: input.supplierId, name: text(input.name, 'Tên sản phẩm'), variety: input.variety, unit: 'kg', availableKg: input.availableKg, basePricePerKg: input.basePricePerKg, imageUrl: input.imageUrl, active: true };
-    publicProduct(product, state.pricing);
-    state.products.push(product); return product;
+    find(state.suppliers, input.supplierId); find(state.commodities, input.commodityId);
+    const product: T.ProductListing = { id: `product-${state.nextId++}`, supplierId: input.supplierId, commodityId: input.commodityId,
+      name: input.name, variety: input.variety, unit: 'kg', availableKg: input.availableKg, publicPricePerKg: input.publicPricePerKg,
+      imageUrl: input.imageUrl, uses: input.uses, originLabel: input.originLabel, packagingLabel: input.packagingLabel, active: true };
+    validateListing(product); state.products.push(product); return product;
+  });
+}
+export async function updateProduct(input: T.UpdateProductInput): Promise<T.ProductListing> {
+  return mutate('DATA_CHANGED', state => {
+    const product = find(state.products, input.productId);
+    requireValue(product.supplierId === input.supplierId, 'Bạn không thể chỉnh sản phẩm của NCC khác.', 'supplierId');
+    const keys = ['commodityId', 'name', 'variety', 'availableKg', 'publicPricePerKg', 'imageUrl', 'uses', 'originLabel', 'packagingLabel', 'active'];
+    requireValue(input.changes && typeof input.changes === 'object' && Object.keys(input.changes).length > 0 && Object.entries(input.changes).every(([key, value]) => keys.includes(key) && value !== undefined), 'Trường cập nhật không hợp lệ.', 'changes');
+    if ('commodityId' in input.changes) {
+      requireValue(!product.commodityId || product.commodityId === input.changes.commodityId, 'Không thể đổi nhóm mặt hàng đã xác lập.', 'commodityId');
+      find(state.commodities, input.changes.commodityId!);
+    }
+    Object.assign(product, input.changes); validateListing(product); return product;
   });
 }
 export async function getCustomerCatalog(): Promise<T.CustomerProduct[]> {
-  const state = readState(); return state.products.filter(product => product.active).map(product => publicProduct(product, state.pricing));
+  const state = readState(); return state.products.filter(product => product.active && product.commodityId).map(product => publicProduct(product, state));
+}
+export async function getCustomerProduct(productId: string): Promise<T.CustomerProduct> {
+  const state = readState();
+  const product = state.products.find(item => item.id === productId && item.active && item.commodityId);
+  if (!product) fail('NOT_FOUND', 'Sản phẩm không còn mở bán.');
+  return publicProduct(product, state);
 }
 export async function getDeliveryAddresses(customerId: string): Promise<T.DeliveryAddress[]> {
   const state = readState(); find(state.customers, customerId); return state.addresses.filter(address => address.customerId === customerId);
@@ -120,16 +157,6 @@ export async function getCustomerOrders(customerId: string): Promise<T.Order[]> 
   const state = readState(); find(state.customers, customerId); return state.orders.filter(order => order.customerId === customerId);
 }
 export async function getAllOrders(): Promise<T.Order[]> { return readState().orders; }
-export async function getPricingRule(): Promise<T.PricingRule> { return readState().pricing; }
-export async function updatePricingRule(rule: T.PricingRule): Promise<T.PricingRule> {
-  requireValue(['PERCENT', 'FIXED_VND_PER_KG'].includes(rule.mode) && Number.isFinite(rule.value) && rule.value >= 0, 'Markup không hợp lệ.');
-  if (rule.mode === 'FIXED_VND_PER_KG') integer(rule.value, 'Markup');
-  return mutate('DATA_CHANGED', state => {
-    const pricing = { mode: rule.mode, value: rule.value };
-    for (const product of state.products) publicProduct(product, pricing);
-    state.pricing = pricing; return pricing;
-  });
-}
 export async function aggregateDemand(): Promise<T.DemandLine[]> {
   return mutate('DATA_CHANGED', state => {
     for (const order of state.orders) if (order.status === 'PLACED') order.status = 'AGGREGATED';

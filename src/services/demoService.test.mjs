@@ -30,7 +30,15 @@ const api = await import('./demoService.ts');
 const input = (kg, customer = 1, product = 'avocado-034') => ({ customerId: `customer-${customer}`, deliveryAddressId: `address-${customer}`, items: [{ productId: product, quantityKg: kg }] });
 const rejects = (action, code) => assert.rejects(action, error => api.isServiceError(error) && error.code === code);
 
-if (process.argv.includes('--reload')) {
+if (process.argv.includes('--migration')) {
+  failWrites = true;
+  await assert.rejects(() => api.getCustomerCatalog());
+  assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 1);
+  failWrites = false;
+  assert.equal((await api.getCustomerCatalog())[0].publicPricePerKg, 20000);
+  assert.equal(JSON.parse(entries.get('b2b-demo-v1')).version, 3);
+  assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, 810000);
+} else if (process.argv.includes('--reload')) {
   assert.equal((await api.getCustomerOrders('customer-1')).length, 1);
   assert.equal((await api.getCustomerCatalog())[0].availableKg, 470);
   assert.equal((await api.getDemoSession()).role, 'ADMIN');
@@ -40,19 +48,19 @@ if (process.argv.includes('--reload')) {
     const events = [];
     const unsubscribe = api.subscribeDemoData(event => events.push(event.type));
     const catalog = await api.getCustomerCatalog();
-    assert.equal(catalog[0].sellingPricePerKg, 26000);
+    assert.equal(catalog[0].publicPricePerKg, 20000);
     assert.equal('basePricePerKg' in catalog[0], false);
     catalog[0].availableKg = 1;
     assert.equal((await api.getCustomerCatalog())[0].availableKg, 500);
     const quote = await api.quoteCheckout(input(30));
-    assert.equal(quote.totalVnd, 810000);
+    assert.equal(quote.totalVnd, 630000);
     assert.equal((await api.getCustomerCatalog())[0].availableKg, 500);
     const a = await api.placeOrder(input(30));
     const b = await api.placeOrder(input(20, 2));
     assert.equal((await api.getCustomerCatalog())[0].availableKg, 450);
-    await api.updatePricingRule({ mode: 'FIXED_VND_PER_KG', value: 10000 });
-    assert.equal((await api.getCustomerCatalog())[0].sellingPricePerKg, 30000);
-    assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, 810000);
+    await api.updateProduct({ supplierId: 'supplier-1', productId: 'avocado-034', changes: { publicPricePerKg: 30000 } });
+    assert.equal((await api.getCustomerCatalog())[0].publicPricePerKg, 30000);
+    assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, 630000);
     const lines = await api.aggregateDemand();
     assert.equal(lines[0].quantityKg, 50);
     const count = events.length;
@@ -101,7 +109,7 @@ if (process.argv.includes('--reload')) {
     await rejects(() => api.placeOrder(input(501)), 'INSUFFICIENT_STOCK');
     await rejects(() => api.getShipmentByOrderId('missing'), 'NOT_FOUND');
     await rejects(() => api.setDemoSession({ activeSupplierId: undefined }), 'VALIDATION_ERROR');
-    await rejects(() => api.updatePricingRule({ mode: 'PERCENT', value: Infinity }), 'VALIDATION_ERROR');
+    await rejects(() => api.updateProduct({ supplierId: 'supplier-1', productId: 'avocado-034', changes: { publicPricePerKg: Infinity } }), 'VALIDATION_ERROR');
     assert.equal((await api.getAllOrders()).length, 0);
     const duplicate = input(300);
     duplicate.items.push({ productId: 'avocado-034', quantityKg: 300 });
@@ -146,14 +154,14 @@ if (process.argv.includes('--reload')) {
 
   test('listing creation, checkout repricing and mixed valid/invalid batch rollback', async () => {
     await api.resetDemoData();
-    const product = await api.createProduct({ supplierId: 'supplier-2', name: '  Cam demo  ', availableKg: 25, basePricePerKg: 10000 });
+    const product = await api.createProduct({ supplierId: 'supplier-2', commodityId: 'orange', uses: ['JUICE'], name: '  Cam demo  ', availableKg: 25, publicPricePerKg: 10000 });
     assert.equal(product.name, 'Cam demo');
     assert.ok((await api.getSupplierListings('supplier-2')).some(value => value.id === product.id));
-    await rejects(() => api.createProduct({ supplierId: 'supplier-1', name: ' ', availableKg: 1, basePricePerKg: 1 }), 'VALIDATION_ERROR');
+    await rejects(() => api.createProduct({ supplierId: 'supplier-1', commodityId: 'orange', uses: [], name: ' ', availableKg: 1, publicPricePerKg: 1 }), 'VALIDATION_ERROR');
     const preview = await api.quoteCheckout(input(1));
-    await api.updatePricingRule({ mode: 'PERCENT', value: 50 });
+    await api.updateProduct({ supplierId: 'supplier-1', productId: 'avocado-034', changes: { publicPricePerKg: 30000 } });
     const a = await api.placeOrder(input(1));
-    assert.equal(preview.items[0].unitPriceVnd, 26000);
+    assert.equal(preview.items[0].unitPriceVnd, 20000);
     assert.equal(a.items[0].unitPriceVnd, 30000);
     const b = await api.placeOrder(input(1, 2));
     await api.aggregateDemand();
@@ -171,5 +179,54 @@ if (process.argv.includes('--reload')) {
     assert.deepEqual(await api.getDemoSession(), before);
     assert.equal((await api.getShipments()).length, 1);
     assert.equal(shipment.status, 'ASSIGNED');
+  });
+}
+
+if (!process.argv.includes('--reload') && !process.argv.includes('--migration')) {
+  test('v3 supplier listings, public profiles and editing keep historical orders usable', async () => {
+    await api.resetDemoData();
+    const mangoes = (await api.getCustomerCatalog()).filter(p => p.commodityId === 'mango-cat-hoa-loc');
+    assert.equal(mangoes.length, 2);
+    assert.equal(new Set(mangoes.map(p => p.supplier.id)).size, 2);
+    assert.equal('phone' in mangoes[0].supplier, false);
+    const order = await api.placeOrder(input(2, 1, mangoes[0].id));
+    assert.equal(order.items[0].supplierName, mangoes[0].supplier.name);
+    await rejects(() => api.updateProduct({supplierId: 'supplier-2', productId: mangoes[0].id, changes: {active: false}}), 'VALIDATION_ERROR');
+    await rejects(() => api.updateProduct({supplierId: 'supplier-1', productId: mangoes[0].id, changes: {commodityId: 'orange'}}), 'VALIDATION_ERROR');
+    await rejects(() => api.updateProduct({supplierId: 'supplier-1', productId: mangoes[0].id, changes: {imageUrl: 'javascript:alert(1)'}}), 'VALIDATION_ERROR');
+    await rejects(() => api.updateProduct({supplierId: 'supplier-1', productId: mangoes[0].id, changes: {uses: ['JUICE', 'JUICE']}}), 'VALIDATION_ERROR');
+    const url = 'data:image/png;base64,aGVsbG8=';
+    await api.updateProduct({supplierId: 'supplier-1', productId: mangoes[0].id, changes: {active: false, imageUrl: url, availableKg: 8}});
+    assert.equal((await api.getSupplierListings('supplier-1')).find(p => p.id === mangoes[0].id).imageUrl, url);
+    await rejects(() => api.getCustomerProduct(mangoes[0].id), 'NOT_FOUND');
+    assert.equal((await api.aggregateDemand())[0].quantityKg, 2);
+    await api.confirmSupplierDemand({supplierId: 'supplier-1', orderIds: [order.id]});
+    await api.advanceOrderStatus(order.id, 'AT_HUB');
+    assert.equal((await api.getCustomerOrders('customer-1'))[0].totalVnd, order.totalVnd);
+    assert.equal((await api.getSupplierListings('supplier-1')).find(p => p.id === mangoes[0].id).availableKg, 8);
+  });
+  test('migration uses supplier base prices once, preserves history and unclassified lots', async () => {
+    const { upgradeStoredState } = await import('../store/demoStore.ts');
+    const { createSeed } = await import('../mocks/seed.ts');
+    const seed = createSeed();
+    const legacy = {...seed, version: 1, pricing: {mode: 'PERCENT', value: 30}, products: seed.products.slice(0,3).map(({publicPricePerKg, commodityId, uses, ...p}) => ({...p, basePricePerKg: publicPricePerKg}))};
+    delete legacy.commodities;
+    legacy.products[0].availableKg = 470;
+    legacy.products.push({...legacy.products[0], id: 'user-old', imageUrl: 'data:image/png;base64,aGVsbG8='});
+    legacy.orders = [{id: 'order-old', customerId: 'customer-1', deliveryAddressId: 'address-1', items: [{productId:'avocado-034',productName:'Bơ 034',quantityKg:30,unitPriceVnd:26000,lineTotalVnd:780000}], subtotalVnd:780000,shippingFeeVnd:30000,totalVnd:810000,status:'PLACED',paymentStatus:'UNPAID',placedAt:'2026-10-22T01:00:00Z'}];
+    const before = structuredClone(legacy);
+    const migrated = upgradeStoredState(legacy);
+    assert.deepEqual(legacy, before);
+    assert.equal(migrated.version, 3);
+    assert.equal(migrated.products[0].publicPricePerKg, 20000);
+    assert.equal(migrated.products[0].availableKg, 470);
+    assert.equal(migrated.orders[0].totalVnd, 810000);
+    assert.equal(migrated.orders[0].items[0].unitPriceVnd, 26000);
+    assert.equal(migrated.products.at(-1).commodityId, undefined);
+    assert.equal(migrated.products.at(-1).imageUrl, legacy.products.at(-1).imageUrl);
+    assert.deepEqual(upgradeStoredState(migrated), migrated);
+    assert.equal('pricing' in migrated, false);
+    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--migration'], {env:{...process.env,DEMO_TEST_STATE:JSON.stringify(legacy)},encoding:'utf8'});
+    assert.equal(child.status, 0, child.stderr);
   });
 }
