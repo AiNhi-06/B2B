@@ -1,22 +1,25 @@
-# FARMGO — Contract v4: hồ sơ, QC và khiếu nại
+# FARMGO — Contract v5: Escrow, đối soát và ca giao
 
-Đã được người dùng duyệt triển khai 23/10/2026. Bổ sung v3 (lưu tại 03-data-api-contract-v3-archive.md); quy tắc v3 không mâu thuẫn tiếp tục có hiệu lực. Tất cả dữ liệu và quyết định là demo.
+Được người dùng duyệt triển khai 23/10/2026. Kế thừa v4 tại 03-data-api-contract-v4-archive.md và v3; các thay đổi dưới đây ưu tiên áp dụng. Chỉ giao dịch demo, không kết nối ngân hàng.
 
-## Model và quy tắc
-- Schema 4, giữ key b2b-demo-v1. Migration 1 → 3 → 4 giữ ID, tồn, ảnh, đơn; thêm profiles, qualityReviews, claims, demoNow. Hồ sơ/lô cũ được grandfathered với nhãn “Demo cũ — chưa thẩm định”, không tạo chứng nhận hoặc Yield. Chỉ giữ quyền chuyển tiếp khi trạng thái hồ sơ còn DRAFT và chưa nộp; nộp duyệt lần đầu chấm dứt quyền này.
-- BusinessProfile: id (entity ID), role CUSTOMER/SUPPLIER, businessName, phone, taxCode, contactName, address, capacityKg?, certificateImage?, vietGapImage?, status DRAFT/PENDING/APPROVED/REJECTED, legacy, rejectionReason?, submittedAt?, reviewedAt?. Chỉnh hồ sơ đã nộp đưa về DRAFT và chặn giao dịch mới; không chặn xử lý đơn cũ.
-- QualityReview: productId, supplierId, grade A/B, yieldPercent?, brix?, status PENDING/APPROVED/REJECTED, revision, note?, submittedAt, reviewedAt?. Yield (0,100] bắt buộc khi duyệt, Brix tùy chọn [0,100]. Sửa QC luôn tạo revision chờ duyệt. Snapshot QC đã duyệt vào OrderItem.qcSnapshot. Không suy diễn QC cho lịch sử.
-- Claim: id, orderId, customerId, supplierId, lines [{productId,quantityKg}], reason, images (0–3 raster data URL đã nén, mỗi ảnh ≤450000 ký tự), status OPEN/RESPONDED/APPROVED/REJECTED, submittedAt, response?, approvedLines?, refundVnd?, decisionNote?, decidedAt?. Một hồ sơ đang mở trên mỗi order/supplier. Admin duyệt từng kg không vượt yêu cầu; cộng kg OPEN/RESPONDED/APPROVED không vượt kg mua. Không nhận video; không hoàn ship/hoàn tồn/đổi hàng.
-- Order.deliveredAt? ghi khi mô phỏng giao thành công; đơn cũ thiếu mốc này không khiếu nại hồi tố. Hạn gửi < deliveredAt + 2 giờ; SLA cảnh báo >= submittedAt + 2 giờ, không tự quyết định.
-- demoNow ISO lưu trong store, chỉ tiến bằng advanceDemoClock(minutes), không tự điều phối. True-Cost chỉ dùng QC APPROVED, giá/(Yield/100), usableKg=kg*Yield/100; so sánh cùng commodityId.
-- Đăng ký/đăng nhập chỉ SĐT 10 chữ số + OTP demo 000000. Không đăng ký Admin; role selector vẫn có để thuyết trình. Service xác thực actor bằng session đang chọn cho hồ sơ/QC/khiếu nại/duyệt; đây không phải bảo mật backend.
-- Pending có thể tạo/sửa lô nháp, không mở bán. Catalog và quote/place chặn owner chưa duyệt và QC chưa duyệt, trừ quyền legacy rõ ràng. Giá thay đổi không đổi QC hay snapshot cũ.
+## Schema và lịch sử
+Schema 4 → 5 thêm allocations, ledger, withdrawals, operations. Giữ nguyên IDs, ảnh, tồn, profiles, QC, claims và đơn. Không thêm deliveredAt, escrow, giao dịch hoặc trạng thái đã hoàn/đối soát cho lịch sử. Đơn chưa có allocation luôn hiển thị “Không có thanh toán demo”. Quyết định hoàn v4 giữ nguyên nhưng không hồi tố tiền. Ghi storage nguyên tử trước khi công bố state, lỗi giữ bản cũ.
 
-## API bổ sung (async, phát DATA_CHANGED/SESSION_CHANGED)
-- registerDemoBusiness({role,phone,otp}): BusinessProfile; loginDemo({role,phone,otp}): DemoSession.
-- getBusinessProfiles(): BusinessProfile[]; saveBusinessProfile({id,changes}): BusinessProfile; submitBusinessProfile(id): BusinessProfile; reviewBusinessProfile({id,approved,note}): BusinessProfile.
-- getQualityReviews(): QualityReview[]; submitProductQC({productId,grade,yieldPercent?,brix?}): QualityReview; reviewProductQC({productId,approved,note}): QualityReview.
-- getClaims(): Claim[] (Admin tất cả, NCC/khách chỉ của mình); submitClaim({orderId,supplierId,lines,reason,images}): Claim; respondToClaim({claimId,response}): Claim; decideClaim({claimId,approved,lines?,note}): Claim.
-- getDemoClock(): string; advanceDemoClock(minutes): string (Admin); calculateTrueCost(pricePerKg,quantityKg,qc?): {costPerUsableKg,usableKg}|null.
+## Đặt và giao
+NewOrderInput bổ sung deliveryDate (YYYY-MM-DD ngày Việt Nam từ ngày mai), deliverySlot MORNING (05–07h) / AFTERNOON (13–15h), requestKey (chuỗi ổn định cho cùng lần đặt). Quote không cần requestKey; place bắt buộc. Chỉ UI cũ chưa chọn lịch được quote giá với ngày mai/ca sáng mặc định để tương thích; UI checkout mới luôn gửi cả hai. Order thêm các trường lịch và paymentRequestKey. Shipment snapshot deliveryDate?/deliverySlot?; không gom khác lịch/ca hoặc trộn lịch sử thiếu lịch với đơn mới.
+Một mutate duy nhất kiểm tra điều kiện hồ sơ/QC/tồn, trừ tồn, tạo đơn PAID và giữ total. Lỗi không thay đổi gì. placeOrder cùng requestKey và cùng payload trả đơn cũ, khác payload báo lỗi. Snapshot QC/giá và ngày/ca bất biến. Gom 22h vẫn bằng nút, không tự chạy theo đồng hồ.
 
-Các API v3 giữ tên. Validation/storage failure không công bố draft, không ghi đè bản lưu cũ. Reset khôi phục seed cùng schema; legacy seed không có QC/chứng nhận bịa.
+## Tiền
+EscrowAllocation: id, orderId, supplierId, goodsVnd, refundedVnd, status HELD/SETTLED, feeVnd?, supplierNetVnd?, settledAt?. Shipping theo ledger HOLD riêng và Order.shippingFeeVnd, không vào số dư NCC.
+LedgerEntry: id, key duy nhất, kind HOLD/REFUND/SETTLEMENT/WITHDRAWAL, orderId?, supplierId?, claimId?, withdrawalId?, amountVnd, feeVnd?, createdAt. HOLD toàn bộ order.totalVnd một lần. REFUND chỉ tiền hàng; SETTLEMENT ghi gross net hàng và fee. held = tổng HOLD − REFUND − SETTLEMENT (ship còn giữ riêng). Không có giải ngân tự động.
+- decideClaim của v4 mở rộng: khi APPROVED và có allocation, trong cùng mutate ghi REFUND theo claimId đúng một lần; nếu đã đối soát hoặc tiền thiếu thì rollback. Lịch sử không có allocation chỉ ghi quyết định, không ghi giao dịch.
+- settleEscrow({orderId,supplierId}): Admin, giao thành công + ít nhất 2 giờ, không còn claim OPEN/RESPONDED của đúng phần NCC. Trả allocation đã settled khi gọi lại. feeVnd=round((goodsVnd−refundedVnd)*3/100) một lần, supplierNetVnd=goods−refund−fee. Shipping không tính phí.
+- Withdrawal: id,supplierId,amountVnd,status PENDING/APPROVED/REJECTED,requestKey,createdAt,note?,reviewedAt. Số dư available = tổng supplierNet settled − tổng withdrawal APPROVED − tổng PENDING. PENDING giữ chỗ; từ chối giải phóng. Không cho amount <=0 hoặc vượt available.
+- requestWithdrawal({supplierId,amountVnd,requestKey}): NCC sở hữu; idempotent theo requestKey+payload. reviewWithdrawal({withdrawalId,approved,note}): Admin, quyết định đúng một lần; gọi lại cùng payload trả kết quả cũ, khác payload báo lỗi. Từ chối bắt buộc lý do.
+- getFinance(): {allocations,ledger,withdrawals,balances:[{supplierId,availableVnd,reservedVnd,paidVnd}]}. Admin tất cả; NCC chỉ phần mình; khách chỉ order của mình, không nhận balances NCC.
+- Mọi tiền VND nguyên an toàn. operations lưu fingerprint request bền qua refresh. Các giao dịch không có bên ngoài; idempotency và storage nằm trong cùng mutate.
+
+## Đồng hồ và nghiệm thu
+getDemoClock / advanceDemoClock từ v4 dùng chung cho đặt/nhận/khiếu nại/SLA/đối soát, lưu qua refresh. Reset toàn bộ state về schema5, không xóa storage khác.
+Chuẩn 10kg×32000 + ship30000 = giữ350000; hoàn2kg64000; hàng ròng256000; phí7680; NCC248320; ship30000. Cần kiểm tra đa NCC, khóa đúng phần, không lặp tiền, không rút vượt số dư, không gom khác ca, migration và lỗi lưu.
+Không VAT/hóa đơn/công nợ/khóa giá/tự giao/đổi hàng/video/OCR hoặc dịch vụ thật.
