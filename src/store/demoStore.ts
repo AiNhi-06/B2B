@@ -17,10 +17,11 @@ export function upgradeStoredState(value: unknown): DemoState {
     !['products', 'orders', 'confirmations', 'shipments', 'suppliers', 'customers', 'addresses'].every(key => Array.isArray((parsed as unknown as Record<string, unknown>)[key])) ||
     !Number.isSafeInteger(parsed.nextId)) throw new Error('Dữ liệu demo không hợp lệ. Bản lưu được giữ nguyên; chưa chuyển đổi.');
   if (parsed.version === 5) {
-    if (!Array.isArray(parsed.commodities)) throw new Error('Thiếu danh mục FARMGO trong dữ liệu đã lưu.');
+    if (!['commodities', 'profiles', 'qualityReviews', 'claims', 'allocations', 'ledger', 'withdrawals'].every(k => Array.isArray((parsed as unknown as Record<string, unknown>)[k])) || !Number.isFinite(Date.parse(parsed.demoNow)) || !parsed.operations || typeof parsed.operations !== 'object') throw new Error('Dữ liệu FARMGO thiếu hoặc không hợp lệ. Bản lưu được giữ nguyên.');
     return structuredClone(parsed);
   }
   if (parsed.version === 3 || parsed.version === 4) {
+    if (!Array.isArray(parsed.commodities) || (parsed.version === 4 && (!Array.isArray(parsed.profiles) || !Array.isArray(parsed.qualityReviews) || !Array.isArray(parsed.claims) || !Number.isFinite(Date.parse(parsed.demoNow))))) throw new Error('Dữ liệu nâng cấp không hợp lệ; bản lưu được giữ nguyên.');
     const result = parsed as unknown as DemoState;
     if (parsed.version === 3) addGovernance(result);
     result.version = 5; result.allocations = []; result.ledger = []; result.withdrawals = []; result.operations = {}; return result;
@@ -63,7 +64,7 @@ export function mutate<T>(type: DemoDataEvent['type'], action: (draft: DemoState
   const result = action(draft);
   if (type === 'RESET' || JSON.stringify(before) !== JSON.stringify(draft)) {
     storage()?.setItem(KEY, JSON.stringify(draft));
-    state = draft;
+    state = structuredClone(draft);
     for (const listener of [...listeners]) {
       try { listener({ type }); } catch (error) { console.error('Demo listener failed', error); }
     }
