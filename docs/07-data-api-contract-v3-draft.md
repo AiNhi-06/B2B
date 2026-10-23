@@ -123,7 +123,7 @@ export async function updateProduct(input: UpdateFarmgoProductInput): Promise<Fa
 - `getPricingRule` / `updatePricingRule` không còn vai trò trong v3; chỉ gỡ sau khi các màn hình không còn import chúng. Không âm thầm thay nghĩa API thành phí sàn.
 - Màn hình cấu hình markup được thay bằng danh mục công khai của Hub; không để nút lưu không còn tác dụng.
 - Cần schema version trong persistence. Chưa đổi key hoặc xóa `b2b-demo-v1` trong bản nháp này.
-- [PROPOSAL] Migration một lần từ v2: `publicPricePerKg` khởi tạo bằng giá catalog v2 tại thời điểm nâng cấp để giữ giá người mua đang thấy. Đây là giá chuyển đổi dữ liệu, không phải tiếp tục markup sau nâng cấp. Cần review lựa chọn này vì có thể khác ý muốn giữ giá NCC gốc.
+- [APPROVED — người dùng xác nhận 23/10/2026] Migration một lần từ v2: `publicPricePerKg = basePricePerKg` của từng listing. Bỏ phần markup cũ; không lấy giá catalog v2 làm giá NCC mới. Ví dụ bơ: giá NCC 20.000đ/kg, catalog v2 26.000đ/kg thì giá công khai v3 là 20.000đ/kg. Đơn cũ ở 26.000đ/kg giữ nguyên snapshot; phí giao tiếp tục tính riêng theo fixture. Không áp dụng phép chuyển đổi này cho đơn đã đặt.
 - Không đổi ID, tồn, orders, confirmations, shipments hoặc session. Giữ nguyên snapshot giá đơn cũ.
 - Snapshot NCC của đơn cũ có thể bổ sung từ listing còn lưu; nếu không xác định được, hiển thị “Thông tin NCC chưa có”, không bịa tên.
 - Bảng mapping commodity cho seed cố định; lô do người dùng tạo chưa có nhóm được giữ trong danh sách NCC và cần bổ sung thông tin trước khi đưa vào catalog v3. Không tự phân loại bằng suy đoán tên.
@@ -133,7 +133,7 @@ export async function updateProduct(input: UpdateFarmgoProductInput): Promise<Fa
 ## 6. Yêu cầu để chuyển nháp thành contract chạy
 
 1. Review tên types/exports và cách thay thế v2.
-2. Quyết định giá chuyển đổi: giữ giá khách đang thấy hay giữ giá NCC gốc. Cả hai không thể mặc định đồng thời khi v2 có markup.
+2. Áp dụng quyết định giá chuyển đổi đã duyệt: dùng giá NCC gốc, bỏ markup; không thay đổi snapshot đơn cũ.
 3. Duyệt schema persistence và mapping dữ liệu cũ.
 4. Integrator cập nhật contract dùng chung và tích hợp theo quy trình trước khi FE/mock logic đổi chữ ký.
 5. Chốt API/model riêng cho hồ sơ, QC và khiếu nại trước đợt 3; không gắn model chưa có vào UI như dữ liệu thật.
@@ -146,4 +146,5 @@ export async function updateProduct(input: UpdateFarmgoProductInput): Promise<Fa
 - Chặn chỉnh listing của NCC khác, dữ liệu số không hợp lệ và commodity không tồn tại.
 - Ảnh hiển thị xuyên ba vai trò và sau refresh; link lỗi có fallback.
 - Migration giữ số đơn/tồn/session và snapshot; chạy lần hai không đổi giá lần nữa; lỗi ghi không mất dữ liệu cũ.
+- Fixture bơ v2 có giá NCC 20.000, markup 30%: catalog v3 phải là 20.000; đơn v2 đã đặt ở 26.000 giữ đơn giá 26.000 và các tổng tiền cũ. Phí giao không đổi do migration giá.
 - Các test session, rollback, nhiều NCC và shipment cascade v2 vẫn đạt sau khi cập nhật kỳ vọng giá.

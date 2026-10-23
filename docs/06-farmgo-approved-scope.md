@@ -17,7 +17,7 @@ Người dùng đã duyệt hướng triển khai trong cuộc trò chuyện b�
 1. Thống nhất thương hiệu FARMGO cho ba vai trò.
 2. Hai nhóm hàng chính: rau củ quả và trái cây tươi. Nguyên liệu pha chế là mục khám phá theo công dụng, không phải nhóm hàng loại trừ lẫn nhau. Phân hạng A/B là thuộc tính riêng.
 3. Mua và bán là doanh nghiệp; hồ sơ có MST. NCC có thông tin VSATTP; VietGAP là chứng nhận khuyến khích, không mặc định bắt buộc.
-4. Công khai giá cung ứng, không tự cộng markup như mô hình trước. Chi tiết mô hình giá mới cần được thể hiện trong contract thay thế.
+4. Công khai giá cung ứng, không tự cộng markup như mô hình trước. Người dùng đã xác nhận ngày 23/10/2026: dùng giá NCC đã nhập (`basePricePerKg` v2) làm giá công khai mới, không giữ phần markup cũ. Đơn đã đặt giữ snapshot giá cũ; phí giao tính riêng theo fixture hiện hành. Phí nền tảng/hoa hồng chưa chốt, để đợt tài chính.
 5. Cho phép phân biệt và so sánh cùng mặt hàng từ nhiều NCC, gồm ảnh và thông tin nguồn cung công khai.
 6. Tái sử dụng luồng mua hàng, kiểm tra tồn, snapshot đơn, gom đơn và điều phối ở những bước không thay đổi nghiệp vụ.
 7. Tất cả tài khoản, OTP, thanh toán, GPS, QC và đối soát trong prototype đều giả lập. Không có backend hay tích hợp thật.
