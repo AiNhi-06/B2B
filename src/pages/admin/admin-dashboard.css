@@ -1,0 +1,75 @@
+.freso-admin-shell {
+  --admin-navy: #14231e;
+  --admin-panel: #1c3028;
+  --admin-line: #334b3f;
+  --admin-green: #7dbd74;
+  overflow: hidden;
+  border: 1px solid #203b2d;
+  border-radius: 14px;
+  background: #f2f6f2;
+}
+.freso-admin-shell .portal-layout {
+  grid-template-columns: 230px minmax(0,1fr);
+  gap: 0;
+}
+.freso-admin-shell .portal-sidebar {
+  min-height: 640px;
+  padding: 22px 14px 16px;
+  color: #e8f1ea;
+  background: var(--admin-navy);
+}
+.freso-admin-shell .portal-identity {
+  padding: 0 7px 19px;
+  border-bottom: 1px solid var(--admin-line);
+}
+.freso-admin-shell .portal-mark {
+  color: #183126;
+  background: var(--admin-green);
+}
+.freso-admin-shell .portal-identity strong { color: #f3f8f3; font-size: 14px; }
+.freso-admin-shell .portal-identity span:last-child { color: #a1b8a7; }
+.freso-admin-shell .portal-sidebar nav { padding-top: 14px; gap: 4px; }
+.freso-admin-shell .portal-link {
+  min-height: 38px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #c3d1c7;
+  font-size: 11px;
+}
+.freso-admin-shell .portal-link:hover { color: #fff; background: var(--admin-panel); }
+.freso-admin-shell .portal-link.active {
+  border-color: #417652;
+  color: #f7fff6;
+  background: #24543a;
+  box-shadow: inset 3px 0 #a6d36e;
+}
+.freso-admin-shell .portal-footnote {
+  margin-top: 24px;
+  padding: 11px 10px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  color: #a7c0ad;
+  background: #192a22;
+  font-size: 10px;
+}
+.freso-admin-shell .portal-content {
+  min-height: 640px;
+  padding: 24px clamp(16px, 3vw, 34px);
+  background: #f3f6f3;
+}
+.freso-admin-shell .page-heading h1 { color: #172d22; letter-spacing: -.035em; }
+.freso-admin-shell .card { border-radius: 10px; box-shadow: 0 1px 2px rgba(20,45,30,.04); }
+@media (max-width: 900px) {
+  .freso-admin-shell .portal-layout { grid-template-columns: 184px minmax(0,1fr); gap: 0; }
+}
+@media (max-width: 700px) {
+  .freso-admin-shell { border-radius: 10px; }
+  .freso-admin-shell .portal-layout { grid-template-columns: minmax(0,1fr); }
+  .freso-admin-shell .portal-sidebar { min-height: auto; padding: 13px 12px 8px; }
+  .freso-admin-shell .portal-identity { padding: 0 4px 11px; }
+  .freso-admin-shell .portal-sidebar nav { padding-top: 9px; }
+  .freso-admin-shell .portal-link { flex: 0 0 auto; min-height: 34px; padding: 8px 10px; }
+  .freso-admin-shell .portal-footnote { display: none; }
+  .freso-admin-shell .portal-content { min-height: 400px; padding: 17px 12px; }
+}
