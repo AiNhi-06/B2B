@@ -37,6 +37,14 @@
 .transport-signed-in small { display: block; margin-top: 2px; color: #a9c3ad; font-size: 9px; font-weight: 400; }
 .transport-signout { min-height: 32px; padding: 0 10px; border: 1px solid #4d6b56; border-radius: 7px; color: #e7f0e7; background: transparent; font-size: 10px; cursor: pointer; }
 .transport-signout:hover { background: #244633; }
+.transport-step-nav { min-height: 62px; padding: 0 clamp(14px, 3vw, 36px); display: flex; align-items: stretch; gap: 5px; position: sticky; top: 0; z-index: 20; overflow-x: auto; border-bottom: 1px solid #dfe8dd; background: #fff; }
+.transport-step-nav button { min-width: 138px; min-height: 61px; padding: 0 10px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-bottom: 3px solid transparent; color: #7a887d; background: transparent; text-align: left; cursor: pointer; }
+.transport-step-nav button > span { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #65766a; background: #e9eee8; font-size: 10px; font-weight: 750; }
+.transport-step-nav button strong { font-size: 10px; font-weight: 650; white-space: nowrap; }
+.transport-step-nav button:hover { color: #225d3b; background: #f7faf5; }
+.transport-step-nav button.active { border-bottom-color: #25834f; color: #1d7447; background: #f6fbf4; }
+.transport-step-nav button.active > span { color: #fff; background: #27834f; }
+.transport-step-nav button:focus-visible { outline: 3px solid #a5be43; outline-offset: -3px; }
 
 .transport-hero { min-height: 225px; padding: 30px clamp(22px, 4vw, 56px); display: grid; grid-template-columns: 1.2fr .8fr; gap: 30px; align-items: center; background: #dff0df; }
 .transport-hero-copy { max-width: 520px; }
@@ -44,6 +52,12 @@
 .transport-hero h1 { margin: 0; color: #143a29; font-size: clamp(30px, 4vw, 46px); font-weight: 750; line-height: 1.02; letter-spacing: -.055em; }
 .transport-hero h1 em { color: var(--tp-leaf); font-style: normal; }
 .transport-hero-copy > p:last-child { max-width: 430px; margin: 13px 0 0; color: #4a6556; font-size: 13px; line-height: 1.55; }
+.transport-step-banner { min-height: 150px; padding: 25px clamp(22px, 4vw, 56px); display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #e4f0df; }
+.transport-step-banner h1 { margin: 4px 0 0; color: #173c2a; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.045em; }
+.transport-step-banner p { margin: 6px 0 0; color: #607765; font-size: 11px; }
+.transport-step-count { min-width: 120px; padding: 12px 15px; display: grid; justify-items: end; border-left: 1px solid #bdd4bd; }
+.transport-step-count strong { color: #216b43; font-size: 30px; line-height: 1; letter-spacing: -.06em; }
+.transport-step-count span { margin-top: 5px; color: #66816a; font-size: 9px; }
 .transport-route-art { min-height: 150px; padding: 20px 22px 14px; position: relative; overflow: hidden; border: 1px solid #c0ddc2; border-radius: 15px; background: #edf7e8; }
 .transport-route-art::before, .transport-route-art::after { content: ''; position: absolute; width: 145px; height: 145px; border: 1px solid #c9e2c7; border-radius: 50%; right: -22px; top: -80px; }
 .transport-route-art::after { width: 190px; height: 190px; right: -46px; top: -103px; }
@@ -67,6 +81,21 @@
 .transport-metrics span { color: #617468; font-size: 11px; font-weight: 650; }
 .transport-metrics strong { grid-row: span 2; align-self: center; color: #1d6847; font-size: 33px; font-weight: 700; letter-spacing: -.07em; }
 .transport-metrics small { color: #89968c; font-size: 10px; }
+.transport-quick-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-bottom: 12px; }
+.transport-quick-steps button { min-height: 86px; padding: 12px; display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; align-items: center; gap: 4px 8px; border: 1px solid #dbe5da; border-radius: 9px; color: #244634; background: #fff; text-align: left; cursor: pointer; }
+.transport-quick-steps button:hover { border-color: #91bc91; background: #fbfdf9; }
+.transport-quick-steps button > span { grid-row: span 2; color: #9aaa9c; font-size: 10px; font-weight: 750; }
+.transport-quick-steps button strong { font-size: 10px; }
+.transport-quick-steps button small { grid-column: 2; color: #7b897e; font-size: 9px; }
+.transport-quick-steps button b { grid-column: 3; grid-row: 1 / span 2; color: #428055; font-weight: 500; }
+.transport-overview-note { padding: 15px; display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; border: 1px solid #dbe5da; border-radius: 10px; background: #fff; }
+.transport-overview-stamp { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 11px; color: #2b7148; background: #e6f2e3; }
+.transport-overview-stamp svg { width: 28px; height: 28px; }
+.transport-overview-note strong { color: #294b34; font-size: 11px; }
+.transport-overview-note p { margin: 4px 0 0; color: #78867b; font-size: 10px; line-height: 1.5; }
+.transport-overview-note button { min-height: 34px; padding: 0 10px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid #d5e5d3; border-radius: 6px; color: #256840; background: #f6faf3; font-size: 9px; font-weight: 700; cursor: pointer; }
+.transport-overview-note button:hover { background: #edf6e9; }
+.transport-count-label { padding: 6px 9px; border-radius: 999px; color: #39704c; background: #e6f1e3; font-size: 10px; white-space: nowrap; }
 .transport-notice { margin-bottom: 12px; padding: 10px 13px; border: 1px solid #c4dfc6; border-radius: 8px; color: #205b3d; background: #eaf5e8; font-size: 12px; }
 .transport-empty { min-height: 220px; padding: 30px; display: grid; justify-items: center; align-content: center; border: 1px dashed #cbd9cb; border-radius: 13px; background: #fbfdf9; text-align: center; }
 .transport-empty-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; color: #1c6947; background: #e5f2df; }
@@ -116,6 +145,11 @@
   .transport-masthead { min-height: 64px; padding: 0 16px; }
   .transport-masthead-actions { gap: 8px; }
   .transport-demo-chip { padding: 7px 9px; font-size: 9px; }
+  .transport-step-nav { min-height: 55px; padding-inline: 10px; }
+  .transport-step-nav button { min-width: 125px; min-height: 54px; }
+  .transport-step-banner { min-height: 122px; padding: 20px; }
+  .transport-step-count { min-width: 85px; padding: 8px 0 8px 10px; }
+  .transport-step-count strong { font-size: 25px; }
   .transport-hero { grid-template-columns: 1fr; gap: 19px; padding: 24px 20px; }
   .transport-route-art { min-height: 130px; }
   .transport-section-heading { align-items: flex-start; flex-direction: column; }
@@ -126,6 +160,11 @@
   .transport-metrics span { font-size: 9px; }
   .transport-metrics strong { font-size: 27px; }
   .transport-metrics small { max-width: 100px; font-size: 9px; }
+  .transport-quick-steps { grid-template-columns: minmax(0,1fr); }
+  .transport-quick-steps button { min-height: 64px; }
+  .transport-overview-note { grid-template-columns: 34px minmax(0,1fr); align-items: start; padding: 12px; }
+  .transport-overview-stamp { width: 34px; height: 34px; }
+  .transport-overview-note button { grid-column: 2; justify-content: space-between; }
   .transport-trip { grid-template-columns: 27px minmax(0,1fr); gap: 3px; padding: 12px 10px 12px 5px; }
   .trip-topline { align-items: flex-start; flex-direction: column; gap: 8px; }
   .trip-vehicle { gap: 7px 13px; }

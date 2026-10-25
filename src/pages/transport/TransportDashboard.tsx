@@ -22,6 +22,23 @@ type TransportData = {
 const initialData: TransportData = { addresses: [], customers: [], orders: [], shipments: [] };
 const slotLabel = (slot?: string) => slot === 'MORNING' ? 'Ca sáng · 05–07h' : slot === 'AFTERNOON' ? 'Ca chiều · 13–15h' : 'Lịch demo cũ';
 const nextStatus: Partial<Record<ShipmentStatus, ShipmentStatus>> = { ASSIGNED: 'IN_TRANSIT', IN_TRANSIT: 'DELIVERED' };
+type TransportStep = 'overview' | 'trips' | 'routes' | 'hub' | 'delivery' | 'complete';
+const stepNavigation: { id: TransportStep; label: string }[] = [
+  { id: 'overview', label: 'Tổng quan' },
+  { id: 'trips', label: 'Chuyến được giao' },
+  { id: 'routes', label: 'Lộ trình & điểm giao' },
+  { id: 'hub', label: 'Nhận chuyến tại Hub' },
+  { id: 'delivery', label: 'Giao hàng' },
+  { id: 'complete', label: 'Hoàn tất' },
+];
+const stepContent: Record<TransportStep, { title: string; description: string }> = {
+  overview: { title: 'Chào mừng đến LogiHub', description: 'Tổng hợp công việc giao nhận theo cùng dữ liệu đơn hàng demo.' },
+  trips: { title: 'Chuyến giao được phân công', description: 'Các chuyến do Admin điều phối, xếp theo ngày và ca giao.' },
+  routes: { title: 'Lộ trình và điểm nhận', description: 'Xem thứ tự đơn trong tuyến. Tuyến do Admin đặt, không tính đường đi tự động.' },
+  hub: { title: 'Nhận chuyến tại Hub', description: 'Kiểm tra xe và danh sách đơn đã tập kết trước khi bắt đầu giao.' },
+  delivery: { title: 'Giao hàng và cập nhật', description: 'Cập nhật chuyến sau khi hoàn thành các điểm giao trong tuyến.' },
+  complete: { title: 'Chuyến đã hoàn tất', description: 'Lịch sử các chuyến đã được xác nhận giao trong bản demo.' },
+};
 const statusLabel: Record<ShipmentStatus, string> = {
   PENDING: 'Chờ điều phối', ASSIGNED: 'Đã phân chuyến', IN_TRANSIT: 'Đang giao', DELIVERED: 'Đã giao',
 };
@@ -32,7 +49,7 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [updatingId, setUpdatingId] = useState('');
-  const [filter, setFilter] = useState<'ACTIVE' | 'ALL' | 'DELIVERED'>('ACTIVE');
+  const [activeStep, setActiveStep] = useState<TransportStep>('overview');
 
   const loadData = async () => {
     try {
@@ -55,10 +72,12 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
   }, []);
 
   const visibleShipments = useMemo(() => data.shipments.filter(shipment => {
-    if (filter === 'ACTIVE') return shipment.status !== 'DELIVERED';
-    if (filter === 'DELIVERED') return shipment.status === 'DELIVERED';
+    if (activeStep === 'hub') return shipment.status === 'ASSIGNED';
+    if (activeStep === 'delivery') return shipment.status === 'IN_TRANSIT';
+    if (activeStep === 'complete') return shipment.status === 'DELIVERED';
+    if (activeStep === 'overview') return shipment.status !== 'DELIVERED';
     return true;
-  }), [data.shipments, filter]);
+  }), [data.shipments, activeStep]);
   const activeCount = data.shipments.filter(shipment => shipment.status !== 'DELIVERED').length;
   const deliveredCount = data.shipments.filter(shipment => shipment.status === 'DELIVERED').length;
   const totalStops = data.shipments.filter(shipment => shipment.status !== 'DELIVERED').reduce((sum, shipment) => sum + shipment.orderIds.length, 0);
@@ -69,6 +88,7 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
       setError('');
       await advanceShipmentStatus(shipment.id, next);
       setNotice(next === 'IN_TRANSIT' ? 'Đã ghi nhận chuyến bắt đầu giao trong dữ liệu demo.' : 'Đã ghi nhận hoàn tất giao hàng trong dữ liệu demo.');
+      setActiveStep(next === 'IN_TRANSIT' ? 'delivery' : 'complete');
       await loadData();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Không cập nhật được trạng thái chuyến.');
@@ -93,7 +113,13 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
       <div className="transport-masthead-actions"><div className="transport-demo-chip"><span/> Chế độ demo · dữ liệu giả lập</div><div className="transport-signed-in">{session.displayName}<small>Tài khoản giao nhận demo</small></div><button className="transport-signout" onClick={onSignOut}>Thoát</button></div>
     </header>
 
-    <section className="transport-hero">
+    <nav className="transport-step-nav" aria-label="Các bước giao nhận">
+      {stepNavigation.map((step, index) => <button key={step.id} className={activeStep === step.id ? 'active' : ''} aria-current={activeStep === step.id ? 'step' : undefined} onClick={() => setActiveStep(step.id)}>
+        <span>{index === 0 ? '⌂' : index + 1}</span><strong>{step.label}</strong>
+      </button>)}
+    </nav>
+
+    {activeStep === 'overview' ? <section className="transport-hero">
       <div className="transport-hero-copy">
         <p className="transport-eyebrow">Điều phối sau Hub</p>
         <h1>Mỗi chuyến,<br/><em>một nhịp giao hàng.</em></h1>
@@ -105,17 +131,10 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
         <div className="route-art-caption"><span>Hub</span><span>Điểm giao</span></div>
         <small>Minh họa tuyến · không dùng GPS</small>
       </div>
-    </section>
+    </section> : <section className="transport-step-banner"><div><span className="transport-eyebrow">BƯỚC {stepNavigation.findIndex(step => step.id === activeStep) + 1} · GIAO NHẬN QUA HUB</span><h1>{stepContent[activeStep].title}</h1><p>{stepContent[activeStep].description}</p></div><div className="transport-step-count"><strong>{visibleShipments.length.toString().padStart(2, '0')}</strong><span>{activeStep === 'complete' ? 'chuyến hoàn tất' : 'chuyến trong bước này'}</span></div></section>}
 
     <main className="transport-content">
-      <div className="transport-section-heading">
-        <div><h2>Chuyến giao</h2><p>Danh sách chuyến đã được Admin điều phối</p></div>
-        <div className="transport-filter" role="group" aria-label="Lọc chuyến giao">
-          <button className={filter === 'ACTIVE' ? 'selected' : ''} onClick={() => setFilter('ACTIVE')}>Đang xử lý</button>
-          <button className={filter === 'ALL' ? 'selected' : ''} onClick={() => setFilter('ALL')}>Tất cả</button>
-          <button className={filter === 'DELIVERED' ? 'selected' : ''} onClick={() => setFilter('DELIVERED')}>Đã giao</button>
-        </div>
-      </div>
+      <div className="transport-section-heading"><div><h2>{stepContent[activeStep].title}</h2><p>{stepContent[activeStep].description}</p></div>{activeStep !== 'overview' && <span className="transport-count-label">{visibleShipments.length} chuyến</span>}</div>
 
       <div className="transport-metrics">
         <div><span>Chuyến đang xử lý</span><strong>{activeCount.toString().padStart(2, '0')}</strong><small>Đã phân công, chưa hoàn tất</small></div>
@@ -123,12 +142,18 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
         <div><span>Chuyến hoàn tất</span><strong>{deliveredCount.toString().padStart(2, '0')}</strong><small>Ghi nhận trong dữ liệu demo</small></div>
       </div>
 
+      {activeStep === 'overview' && <div className="transport-quick-steps">
+        <button onClick={() => setActiveStep('trips')}><span>02</span><strong>Xem chuyến được giao</strong><small>Ngày, ca và danh sách đơn</small><b>↗</b></button>
+        <button onClick={() => setActiveStep('hub')}><span>04</span><strong>Nhận chuyến tại Hub</strong><small>Kiểm tra xe trước khi xuất phát</small><b>↗</b></button>
+        <button onClick={() => setActiveStep('delivery')}><span>05</span><strong>Cập nhật giao hàng</strong><small>Đồng bộ trạng thái đơn demo</small><b>↗</b></button>
+      </div>}
+
       {error && <ErrorMessage message={error} onRetry={() => void loadData()}/>}
       {notice && <div className="transport-notice" role="status">{notice}</div>}
-      {loading ? <LoadingSpinner/> : visibleShipments.length === 0 ? <section className="transport-empty">
+      {loading ? <LoadingSpinner/> : activeStep === 'overview' ? <section className="transport-overview-note"><div className="transport-overview-stamp"><TruckIcon/></div><div><strong>Luồng giao nhận mô phỏng</strong><p>Admin tạo chuyến từ đơn đã nhập Hub. Tài khoản giao nhận xem tuyến rồi xác nhận bắt đầu giao và hoàn tất chuyến.</p></div><button onClick={() => setActiveStep('trips')}>Mở danh sách chuyến <span>↗</span></button></section> : visibleShipments.length === 0 ? <section className="transport-empty">
         <div className="transport-empty-icon"><TruckIcon/></div>
-        <h3>{filter === 'DELIVERED' ? 'Chưa có chuyến hoàn tất' : filter === 'ACTIVE' ? 'Không có chuyến đang xử lý' : 'Chưa có chuyến giao nào'}</h3>
-        <p>Admin tạo chuyến từ các đơn đã nhập Hub. Khi có chuyến mới, thông tin sẽ xuất hiện tại đây.</p>
+        <h3>{activeStep === 'hub' ? 'Chưa có chuyến chờ nhận tại Hub' : activeStep === 'delivery' ? 'Chưa có chuyến đang giao' : activeStep === 'complete' ? 'Chưa có chuyến hoàn tất' : 'Chưa có chuyến giao nào'}</h3>
+        <p>{activeStep === 'hub' ? 'Khi Admin phân công chuyến từ đơn đã nhập Hub, chuyến sẽ xuất hiện tại bước này.' : activeStep === 'complete' ? 'Các chuyến đã giao sẽ được lưu trong lịch sử demo tại đây.' : 'Khi có chuyến mới, thông tin sẽ xuất hiện tại đây.'}</p>
       </section> : <div className="transport-trip-list">
         {visibleShipments.map((shipment, index) => {
           const next = nextStatus[shipment.status];

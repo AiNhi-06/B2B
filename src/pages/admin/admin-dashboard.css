@@ -1,75 +1,65 @@
 .freso-admin-shell {
-  --admin-navy: #14231e;
-  --admin-panel: #1c3028;
-  --admin-line: #334b3f;
-  --admin-green: #7dbd74;
+  --admin-navy: #0f1d18;
+  --admin-panel: #1a2b23;
+  --admin-line: #30443a;
+  --admin-green: #88c677;
+  min-height: 650px;
+  display: grid;
+  grid-template-columns: 240px minmax(0,1fr);
   overflow: hidden;
-  border: 1px solid #203b2d;
+  border: 1px solid #243a2e;
   border-radius: 14px;
-  background: #f2f6f2;
+  color: #edf4ee;
+  background: #101b16;
+  box-shadow: 0 12px 36px rgb(15 33 23 / 12%);
 }
-.freso-admin-shell .portal-layout {
-  grid-template-columns: 230px minmax(0,1fr);
-  gap: 0;
-}
-.freso-admin-shell .portal-sidebar {
-  min-height: 640px;
-  padding: 22px 14px 16px;
-  color: #e8f1ea;
-  background: var(--admin-navy);
-}
-.freso-admin-shell .portal-identity {
-  padding: 0 7px 19px;
-  border-bottom: 1px solid var(--admin-line);
-}
-.freso-admin-shell .portal-mark {
-  color: #183126;
-  background: var(--admin-green);
-}
-.freso-admin-shell .portal-identity strong { color: #f3f8f3; font-size: 14px; }
-.freso-admin-shell .portal-identity span:last-child { color: #a1b8a7; }
-.freso-admin-shell .portal-sidebar nav { padding-top: 14px; gap: 4px; }
-.freso-admin-shell .portal-link {
-  min-height: 38px;
-  padding: 9px 10px;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  color: #c3d1c7;
-  font-size: 11px;
-}
-.freso-admin-shell .portal-link:hover { color: #fff; background: var(--admin-panel); }
-.freso-admin-shell .portal-link.active {
-  border-color: #417652;
-  color: #f7fff6;
-  background: #24543a;
-  box-shadow: inset 3px 0 #a6d36e;
-}
-.freso-admin-shell .portal-footnote {
-  margin-top: 24px;
-  padding: 11px 10px;
-  border: 1px solid var(--admin-line);
-  border-radius: 8px;
-  color: #a7c0ad;
-  background: #192a22;
-  font-size: 10px;
-}
-.freso-admin-shell .portal-content {
-  min-height: 640px;
-  padding: 24px clamp(16px, 3vw, 34px);
-  background: #f3f6f3;
-}
+.admin-console-sidebar { min-width: 0; padding: 19px 13px 14px; display: flex; flex-direction: column; background: var(--admin-navy); }
+.admin-console-brand { min-height: 54px; padding: 0 5px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--admin-line); }
+.admin-console-mark { width: 37px; height: 37px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 10px; color: #173225; background: var(--admin-green); font-size: 20px; font-weight: 850; }
+.admin-console-brand strong { display: block; color: #f2f7f2; font-size: 13px; letter-spacing: .04em; }
+.admin-console-brand strong b { margin-left: 3px; padding: 2px 5px; border: 1px solid #385743; border-radius: 4px; color: #abd88a; background: #1c3727; font-size: 9px; }
+.admin-console-brand small { display: block; margin-top: 3px; color: #9eb2a3; font-size: 9px; }
+.admin-console-profile { margin: 13px 0 14px; padding: 10px 9px; display: flex; align-items: center; gap: 8px; border: 1px solid #283d32; border-radius: 8px; background: #1a2b23; }
+.admin-profile-avatar { width: 30px; height: 30px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; color: #a6d48c; background: #2a4933; font-size: 11px; font-weight: 800; }
+.admin-console-profile strong, .admin-console-profile small { display: block; }
+.admin-console-profile strong { color: #eff6ef; font-size: 10px; }
+.admin-console-profile small { margin-top: 2px; color: #9eb2a3; font-size: 8px; }
+.admin-console-profile i { width: 7px; height: 7px; margin-left: auto; border-radius: 50%; background: #81be6d; }
+.admin-console-nav { display: grid; gap: 14px; }
+.admin-nav-group h2 { margin: 0 0 5px; padding: 0 8px; color: #849b8b; font-size: 9px; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.admin-console-link { min-height: 34px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; border: 1px solid transparent; border-radius: 6px; color: #c1d0c5; font-size: 10px; text-decoration: none; }
+.admin-console-link:hover { color: #fff; background: var(--admin-panel); }
+.admin-console-link.active { border-color: #345c41; color: #f5fbf3; background: #245036; box-shadow: inset 3px 0 #a4d47a; }
+.admin-link-mark { width: 20px; flex: 0 0 auto; color: #95b39a; font-size: 9px; text-align: center; }
+.admin-console-link.active .admin-link-mark { color: #c9e69e; }
+.admin-sidebar-foot { margin-top: auto; padding: 11px 8px 2px; color: #bdd0c0; font-size: 9px; }
+.admin-demo-dot { width: 6px; height: 6px; margin-right: 6px; display: inline-block; border-radius: 50%; background: #c4df72; }
+.admin-sidebar-foot small { margin: 5px 0 0 12px; display: block; color: #82988a; font-size: 8px; }
+.admin-console-main { min-width: 0; background: #f1f5f1; }
+.admin-console-topbar { min-height: 56px; padding: 0 23px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #dce5dc; color: #718176; background: #fff; }
+.admin-console-topbar > div { display: flex; align-items: center; gap: 8px; font-size: 9px; }
+.admin-console-topbar > div > span { color: #27704a; font-weight: 800; letter-spacing: .04em; }
+.admin-console-topbar > div > i { color: #b6c2b8; font-style: normal; }
+.admin-console-topbar strong { color: #32463a; font-size: 10px; }
+.admin-topbar-demo { padding: 5px 8px; border: 1px solid #dce9d8; border-radius: 999px; color: #547456; background: #f5f8ef; font-size: 9px; white-space: nowrap; }
+.admin-topbar-demo i { width: 6px; height: 6px; margin-right: 5px; display: inline-block; border-radius: 50%; background: #77a75f; }
+.admin-console-content { min-width: 0; padding: 22px clamp(15px, 2.5vw, 28px); }
 .freso-admin-shell .page-heading h1 { color: #172d22; letter-spacing: -.035em; }
 .freso-admin-shell .card { border-radius: 10px; box-shadow: 0 1px 2px rgba(20,45,30,.04); }
 @media (max-width: 900px) {
-  .freso-admin-shell .portal-layout { grid-template-columns: 184px minmax(0,1fr); gap: 0; }
+  .freso-admin-shell { grid-template-columns: 204px minmax(0,1fr); }
+  .admin-console-content { padding: 18px 14px; }
 }
 @media (max-width: 700px) {
-  .freso-admin-shell { border-radius: 10px; }
-  .freso-admin-shell .portal-layout { grid-template-columns: minmax(0,1fr); }
-  .freso-admin-shell .portal-sidebar { min-height: auto; padding: 13px 12px 8px; }
-  .freso-admin-shell .portal-identity { padding: 0 4px 11px; }
-  .freso-admin-shell .portal-sidebar nav { padding-top: 9px; }
-  .freso-admin-shell .portal-link { flex: 0 0 auto; min-height: 34px; padding: 8px 10px; }
-  .freso-admin-shell .portal-footnote { display: none; }
-  .freso-admin-shell .portal-content { min-height: 400px; padding: 17px 12px; }
+  .freso-admin-shell { min-height: 0; grid-template-columns: minmax(0,1fr); border-radius: 10px; }
+  .admin-console-sidebar { padding: 12px 11px 8px; }
+  .admin-console-brand { min-height: 42px; padding: 0 3px 9px; }
+  .admin-console-profile, .admin-sidebar-foot { display: none; }
+  .admin-console-nav { margin-top: 8px; display: flex; gap: 15px; overflow-x: auto; }
+  .admin-nav-group { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
+  .admin-nav-group h2 { display: none; }
+  .admin-console-link { min-height: 34px; flex: 0 0 auto; padding: 6px 8px; white-space: nowrap; }
+  .admin-link-mark { display: none; }
+  .admin-console-topbar { min-height: 46px; padding: 0 12px; }
+  .admin-console-content { padding: 14px 11px; }
 }
