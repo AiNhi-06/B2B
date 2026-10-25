@@ -10,7 +10,6 @@ import { LabelsPage } from './LabelsPage';
 import { ShipmentsPage } from './ShipmentsPage';
 import { AdminOverviewPage } from './AdminOverviewPage';
 import { AdminSuppliersPage } from './AdminSuppliersPage';
-import { TransportDashboard } from './TransportDashboard';
 import { HubProductPhotos } from '../../components/shared/HubProductPhotos';
 import { PortalLayout } from '../../components/shared/PortalLayout';
 import './admin-dashboard.css';
@@ -20,6 +19,5 @@ export function AdminDashboard() {
     {to:'/admin/suppliers',label:'Nhà cung cấp'},{to:'/admin/orders',label:'Quản lý đơn hàng'},
     {to:'/admin/aggregate',label:'Gom nhu cầu (22h)'},{to:'/admin/labels',label:'Tem sọt demo'},
     {to:'/admin/shipments',label:'Điều phối chuyến giao'},
-    {to:'/admin/transport',label:'Màn hình vận chuyển'},
-  ]}><Routes><Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/><Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/><Route index element={<AdminOverviewPage/>}/><Route path="products" element={<PricingPage/>}/><Route path="suppliers" element={<AdminSuppliersPage/>}/><Route path="orders" element={<AdminOrdersPage/>}/><Route path="aggregate" element={<AggregatePage/>}/><Route path="labels" element={<LabelsPage/>}/><Route path="shipments" element={<ShipmentsPage/>}/><Route path="transport" element={<TransportDashboard/>}/><Route path="*" element={<Navigate to="/admin" replace/>}/></Routes></PortalLayout></div></HubProductPhotos>;
+  ]}><Routes><Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/><Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/><Route index element={<AdminOverviewPage/>}/><Route path="products" element={<PricingPage/>}/><Route path="suppliers" element={<AdminSuppliersPage/>}/><Route path="orders" element={<AdminOrdersPage/>}/><Route path="aggregate" element={<AggregatePage/>}/><Route path="labels" element={<LabelsPage/>}/><Route path="shipments" element={<ShipmentsPage/>}/><Route path="*" element={<Navigate to="/admin" replace/>}/></Routes></PortalLayout></div></HubProductPhotos>;
 }

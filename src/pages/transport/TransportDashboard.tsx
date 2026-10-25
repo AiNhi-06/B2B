@@ -9,6 +9,7 @@ import {
   subscribeDemoData,
 } from '../../services/demoService';
 import { ErrorMessage, LoadingSpinner } from '../../components/shared/Feedback';
+import type { PortalSession } from '../../types/portalSession';
 import './transport-dashboard.css';
 
 type TransportData = {
@@ -25,7 +26,7 @@ const statusLabel: Record<ShipmentStatus, string> = {
   PENDING: 'Chờ điều phối', ASSIGNED: 'Đã phân chuyến', IN_TRANSIT: 'Đang giao', DELIVERED: 'Đã giao',
 };
 
-export function TransportDashboard() {
+export function TransportDashboard({ session, onSignOut }: { session: PortalSession; onSignOut: () => void }) {
   const [data, setData] = useState<TransportData>(initialData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -89,7 +90,7 @@ export function TransportDashboard() {
         <span className="transport-brand-mark" aria-hidden="true"><TruckIcon/></span>
         <div><strong>FARMGO <span>Giao nhận</span></strong><small>Bảng chuyến qua Hub</small></div>
       </div>
-      <div className="transport-demo-chip"><span/> Chế độ demo · dữ liệu giả lập</div>
+      <div className="transport-masthead-actions"><div className="transport-demo-chip"><span/> Chế độ demo · dữ liệu giả lập</div><div className="transport-signed-in">{session.displayName}<small>Tài khoản giao nhận demo</small></div><button className="transport-signout" onClick={onSignOut}>Thoát</button></div>
     </header>
 
     <section className="transport-hero">

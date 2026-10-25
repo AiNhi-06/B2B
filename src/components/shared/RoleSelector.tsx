@@ -21,7 +21,7 @@ export function RoleSelector() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [error, setError] = useState('');
   useEffect(() => {
-    const role: Role = location.pathname.startsWith('/supplier') ? 'SUPPLIER' : location.pathname.startsWith('/admin') ? 'ADMIN' : 'CUSTOMER';
+    const role: Role = location.pathname.startsWith('/supplier') ? 'SUPPLIER' : 'CUSTOMER';
     void setDemoSession({role}).catch(err => setError(err instanceof Error ? err.message : 'Không chuyển được vai trò demo.'));
   }, [location.pathname]);
 
@@ -65,7 +65,6 @@ export function RoleSelector() {
       setSession((prev) => ({ ...prev, role: newRole }));
       if (newRole === 'SUPPLIER') navigate('/supplier');
       else if (newRole === 'CUSTOMER') navigate('/customer');
-      else if (newRole === 'ADMIN') navigate('/admin');
     } catch (err) {
       console.error('Failed to switch role:', err);
     }
@@ -94,8 +93,6 @@ export function RoleSelector() {
   const currentPath = location.pathname;
   const activeRole: Role = currentPath.startsWith('/supplier')
     ? 'SUPPLIER'
-    : currentPath.startsWith('/admin')
-    ? 'ADMIN'
     : 'CUSTOMER';
 
   return (
@@ -115,13 +112,6 @@ export function RoleSelector() {
           onClick={() => handleRoleChange('CUSTOMER')}
         >
           Bên mua F&B
-        </button>
-        <button
-          type="button"
-          className={`role-tab-btn ${activeRole === 'ADMIN' ? 'active' : ''}`} aria-pressed={activeRole === 'ADMIN'}
-          onClick={() => handleRoleChange('ADMIN')}
-        >
-          Quản trị & Hub
         </button>
       </div>
 
