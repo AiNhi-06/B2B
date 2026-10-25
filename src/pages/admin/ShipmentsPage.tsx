@@ -261,10 +261,3 @@ export function ShipmentsPage() {
     </div>
   );
 }
-
-
-
-
-
-
-\r\n

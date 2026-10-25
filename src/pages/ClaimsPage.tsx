@@ -51,6 +51,3 @@ export function ClaimsPage() {
   const s = useDemoData(async () => { const session = await api.getDemoSession(); return { session, now: await api.getDemoClock(), finance: await api.getFinance(), claims: await api.getClaims(), orders: session.role === 'CUSTOMER' ? await api.getCustomerOrders(session.activeCustomerId!) : await api.getAllOrders() }; });
   return <><div className="page-heading"><div><h1>Khiếu nại & phản hồi</h1><p>Hạn gửi và SLA xử lý được tính từ thời điểm giao hàng.</p></div></div>{s.error && <ErrorMessage message={s.error} />}{s.data?.session.role === 'CUSTOMER' && <ClaimForm key={s.data!.session.activeCustomerId} orders={s.data.orders} now={s.data.now} busy={s.busy} run={s.run} />}{s.data?.claims.length === 0 && <section className="card">Chưa có khiếu nại nào.</section>}{s.data?.claims.map(c => <Decision key={`${c.id}-${s.data!.session.role}`} claim={c} order={s.data!.orders.find(o=>o.id===c.orderId)} refunded={s.data!.finance.ledger.some(e=>e.claimId===c.id && e.kind==='REFUND')} role={s.data!.session.role} now={s.data!.now} busy={s.busy} run={s.run} />)}</>;
 }
-
-
-\r\n

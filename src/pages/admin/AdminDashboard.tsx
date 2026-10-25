@@ -87,5 +87,3 @@ function AdminTopbarActions() {
     {(state.error || batchMessage) && <span className={state.error ? 'admin-topbar-feedback is-error' : 'admin-topbar-feedback'} role="status">{state.error || batchMessage}</span>}
   </div>;
 }
-
-\r\n
