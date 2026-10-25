@@ -37,9 +37,66 @@ function QualityDetails({ product, supplierName, qc, admin, busy, run }: { produ
   </div>;
 }
 
+function AdminSupplierQuality({ suppliers, profiles, reviews, products, busy, run }: { suppliers: Awaited<ReturnType<typeof api.getSuppliers>>; profiles: Awaited<ReturnType<typeof api.getBusinessProfiles>>; reviews: QualityReview[]; products: ProductListing[]; busy: boolean; run: QualityRun }) {
+  const [expandedSupplier, setExpandedSupplier] = useState<string>();
+  const [expandedProduct, setExpandedProduct] = useState<string>();
+  const getStatus = (supplierId: string) => {
+    const profile = profiles.find(item => item.id === supplierId && item.role === 'SUPPLIER');
+    if (!profile) return { label: 'Chưa có hồ sơ', style: 'legacy' };
+    if (profile.status === 'PENDING') return { label: 'Chờ duyệt', style: 'pending' };
+    if (profile.status === 'APPROVED') return { label: 'Đang hoạt động', style: 'approved' };
+    if (profile.status === 'REJECTED') return { label: 'Cần bổ sung', style: 'rejected' };
+    return { label: profile.legacy ? 'Dữ liệu cũ' : 'Bản nháp', style: 'legacy' };
+  };
+
+  return <div className="admin-supplier-quality-layout">
+    <section className="card admin-quality-table-card admin-supplier-list-card">
+      <header className="admin-quality-table-heading"><h2>Danh sách vựa trái cây / nông trại</h2><span>{suppliers.length} nhà cung cấp</span></header>
+      <div className="table-responsive admin-quality-table-scroll"><table className="data-table admin-supplier-table"><thead><tr><th>Tên nhà cung cấp</th><th>Chứng nhận</th><th>Điểm uy tín SQS</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <tbody>{suppliers.map(supplier => {
+          const profile = profiles.find(item => item.id === supplier.id && item.role === 'SUPPLIER');
+          const supplierProducts = products.filter(product => product.supplierId === supplier.id);
+          const supplierReviews = reviews.filter(review => review.supplierId === supplier.id);
+          const docs = [profile?.certificateImage && 'VSATTP', profile?.vietGapImage && 'VietGAP'].filter(Boolean) as string[];
+          const status = getStatus(supplier.id);
+          const expanded = expandedSupplier === supplier.id;
+          return <Fragment key={supplier.id}>
+            <tr className={expanded ? 'admin-supplier-row is-expanded' : 'admin-supplier-row'}>
+              <td><strong>{supplier.name}</strong><small className="approval-business-meta">{supplier.regionLabel || supplier.gardenAddress || 'Chưa khai khu vực'}</small></td>
+              <td>{docs.length ? <span className="supplier-certificate-list">{docs.map(doc => <span key={doc}>{doc}</span>)}</span> : <span className="supplier-missing-value">Chưa bổ sung</span>}</td>
+              <td><strong className="supplier-sqs-score">Chưa tính</strong><small className="approval-business-meta">{supplierReviews.length} lô có dữ liệu QC / {supplierProducts.length}</small></td>
+              <td><span className={`approval-table-status approval-status-${status.style}`}>{status.label}</span></td>
+              <td><button type="button" className="btn-secondary approval-open-button" aria-expanded={expanded} onClick={() => { setExpandedSupplier(expanded ? undefined : supplier.id); setExpandedProduct(undefined); }}>{expanded ? 'Thu gọn' : 'Xem hồ sơ'}</button></td>
+            </tr>
+            {expanded && <tr className="approval-expanded-row"><td colSpan={5}><div className="supplier-products-panel">
+              <header><div><strong>Chất lượng theo lô hàng</strong><span>{supplier.phone} · {supplier.regionLabel || supplier.gardenAddress || 'Chưa khai khu vực'}</span></div><span>{supplierProducts.length} mặt hàng</span></header>
+              {supplierProducts.length ? <div className="table-responsive"><table className="data-table supplier-products-table"><thead><tr><th>Mặt hàng</th><th>Giá khai báo</th><th>Brix</th><th>Yield</th><th>QC</th><th></th></tr></thead><tbody>{supplierProducts.map(product => {
+                const qc = reviews.find(review => review.productId === product.id);
+                const expandedQc = expandedProduct === product.id;
+                const qcStatus = qc ? statusLabel[qc.status] : product.legacy ? 'Dữ liệu cũ' : 'Chưa nộp QC';
+                return <Fragment key={product.id}><tr><td><button type="button" className="supplier-product-expand" aria-expanded={expandedQc} onClick={() => setExpandedProduct(expandedQc ? undefined : product.id)}>{product.name}</button></td><td>{money(product.publicPricePerKg)}/kg</td><td>{qc?.brix !== undefined ? `${qc.brix}°` : '—'}</td><td>{qc?.yieldPercent !== undefined ? `${qc.yieldPercent}%` : '—'}</td><td><span className={`quality-table-status quality-table-status-${qc?.status.toLowerCase() ?? 'legacy'}`}>{qcStatus}</span></td><td><button type="button" className="supplier-detail-link" aria-expanded={expandedQc} onClick={() => setExpandedProduct(expandedQc ? undefined : product.id)}>{expandedQc ? 'Ẩn chi tiết' : 'Xem QC'}</button></td></tr>{expandedQc && <tr className="quality-detail-row"><td colSpan={6}><QualityDetails product={product} supplierName={supplier.name} qc={qc} admin busy={busy} run={run} /></td></tr>}</Fragment>;
+              })}</tbody></table></div> : <p className="quality-table-empty">Nhà cung cấp chưa có mặt hàng trong danh mục.</p>}
+            </div></td></tr>}
+          </Fragment>;
+        })}
+          {suppliers.length === 0 && <tr><td colSpan={5} className="quality-table-empty">Chưa có nhà cung cấp nào.</td></tr>}
+        </tbody>
+      </table></div>
+    </section>
+    <aside className="card sqs-criteria-card"><header><h2>Tiêu chí chấm điểm SQS</h2><p>Supplier Quality Score · trọng số minh họa</p></header>
+      <div className="sqs-criteria-list">
+        <article><div><strong>Tỷ lệ giao đúng hẹn (OTD)</strong><b>40%</b></div><p>Chưa đủ dữ liệu giao hàng để tổng hợp điểm.</p></article>
+        <article><div><strong>Tỷ lệ hàng đạt QC / Brix</strong><b>40%</b></div><p>Theo dõi kết quả kiểm định từng lô trên danh sách.</p></article>
+        <article><div><strong>Tỷ lệ xử lý khiếu nại SLA 2h</strong><b>20%</b></div><p>Thông tin khiếu nại được quản lý tại mục riêng.</p></article>
+      </div>
+      <footer>Điểm SQS chưa được tính trong dữ liệu hiện có.</footer>
+    </aside>
+  </div>;
+}
+
 export function QualityPage() {
   const [expandedId, setExpandedId] = useState<string>();
-  const s = useDemoData(async () => { const session = await api.getDemoSession(); const suppliers = await api.getSuppliers(); return { session, suppliers, reviews: await api.getQualityReviews(), products: (await Promise.all((session.role === 'ADMIN' ? suppliers.map(supplier => supplier.id) : [session.activeSupplierId!]).map(api.getSupplierListings))).flat() }; });
+  const s = useDemoData(async () => { const session = await api.getDemoSession(); const suppliers = await api.getSuppliers(); return { session, suppliers, profiles: await api.getBusinessProfiles(), reviews: await api.getQualityReviews(), products: (await Promise.all((session.role === 'ADMIN' ? suppliers.map(supplier => supplier.id) : [session.activeSupplierId!]).map(api.getSupplierListings))).flat() }; });
   const admin = s.data?.session.role === 'ADMIN';
   const products = s.data ? [...s.data.products].sort((a, b) => {
     const rank = (product: ProductListing) => {
@@ -48,6 +105,8 @@ export function QualityPage() {
     };
     return rank(a) - rank(b) || a.name.localeCompare(b.name, 'vi');
   }) : [];
+
+  if (admin && s.data) return <><div className="page-heading"><div><h1>Kiểm duyệt nhà cung cấp</h1><p>Hồ sơ, chứng nhận và chất lượng nguồn cung trong dữ liệu mô phỏng.</p></div></div>{s.error && <ErrorMessage message={s.error} />}<AdminSupplierQuality suppliers={s.data.suppliers} profiles={s.data.profiles} reviews={s.data.reviews} products={s.data.products} busy={s.busy} run={s.run} /></>;
 
   return <><div className="page-heading"><div><h1>Chất lượng & QC</h1><p>Phân hạng, Yield và Brix do NCC khai; Admin xét duyệt mô phỏng.</p></div></div>{s.error && <ErrorMessage message={s.error} />}
     {s.data && <section className="card admin-quality-table-card">

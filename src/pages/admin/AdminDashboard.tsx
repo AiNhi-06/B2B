@@ -20,7 +20,7 @@ const navigation = [
   { title: 'Quản trị hệ thống', items: [
     { to: '/admin/approvals', label: 'Duyệt Doanh Nghiệp F&B', mark: '▣' },
     { to: '/admin/suppliers', label: 'Nhà cung cấp', mark: '❋' },
-    { to: '/admin/quality', label: 'Quản lý QC & Yield Rate', mark: '◈' },
+    { to: '/admin/quality', label: 'Kiểm duyệt nhà cung cấp', mark: '◈' },
     { to: '/admin/claims', label: 'Khiếu nại SLA 2h', mark: '⚠' },
     { to: '/admin/shipments', label: 'Đơn hàng & Milk-Run', mark: '▰' },
     { to: '/admin/finance', label: 'Đối soát & Ví Escrow', mark: '₫' },
@@ -29,7 +29,7 @@ const navigation = [
 
 const pageTitles: Record<string, string> = {
   '/admin': 'Tổng quan vận hành', '/admin/approvals': 'Duyệt doanh nghiệp',
-  '/admin/suppliers': 'Nhà cung cấp', '/admin/quality': 'Chất lượng & QC',
+  '/admin/suppliers': 'Nhà cung cấp', '/admin/quality': 'Kiểm duyệt nhà cung cấp',
   '/admin/claims': 'Khiếu nại', '/admin/orders': 'Đơn hàng',
   '/admin/aggregate': 'Gom nhu cầu', '/admin/shipments': 'Đơn hàng & Milk-Run',
   '/admin/products': 'Danh mục & giá', '/admin/labels': 'Tem sọt',

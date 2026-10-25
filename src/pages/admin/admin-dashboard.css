@@ -396,3 +396,78 @@ html:has(.freso-admin-shell) { scrollbar-gutter: stable; }
   .shipment-route-footer > div { justify-content: stretch; }
   .shipment-route-footer button { width: 100%; }
 }
+
+/* Business approval directory and supplier SQS review layout */
+.freso-admin-shell .approval-directory-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.approval-toolbar { min-height: 64px; padding: 11px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e3eae5; background: #f8faf9; }
+.approval-toolbar input { width: min(100%,340px); }
+.approval-toolbar select { width: min(100%,210px); }
+.approval-table-scroll { min-width: 0; overflow-x: auto; }
+.freso-admin-shell .approval-table { min-width: 1020px; font-size: 12px; }
+.freso-admin-shell .approval-table th { padding: 12px 14px; border-bottom: 1px solid #dfe8e1; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .035em; white-space: nowrap; }
+.freso-admin-shell .approval-table td { padding: 12px 14px; border-bottom: 1px solid #edf1ee; color: #53665a; vertical-align: middle; }
+.approval-table-row:hover,.approval-table-row.is-expanded { background: #f7fbf8; }
+.approval-business-name { display: block; color: #263d30; font-size: 12px; }
+.approval-business-meta { display: block; margin-top: 4px; color: #718176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.approval-table-status { display: inline-flex; align-items: center; max-width: 190px; padding: 5px 8px; border: 1px solid #dce5df; border-radius: 999px; color: #53665a; background: #f6f8f6; font-size: 10px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+.approval-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.approval-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.approval-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.approval-status-draft,.approval-status-legacy { border-color: #dbe2dd; color: #596a60; background: #f5f7f5; }
+.approval-doc-summary { color: #187751; font-size: 11px; font-weight: 650; white-space: nowrap; }
+.approval-open-button { min-height: 36px !important; padding: 0 12px !important; white-space: nowrap; }
+.approval-expanded-row > td { padding: 0 !important; background: #f8faf8; }
+.approval-expanded-panel { padding: 16px 18px 18px; border-bottom: 1px solid #e2eae4; }
+.approval-expanded-facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid #e3ebe5; border-radius: 9px; background: #e3ebe5; }
+.approval-expanded-facts > div { min-width: 0; padding: 10px 12px; display: grid; align-content: start; gap: 5px; background: #fff; }
+.approval-expanded-facts span { color: #718176; font-size: 10px; }
+.approval-expanded-facts strong { overflow-wrap: anywhere; color: #293d31; font-size: 12px; }
+.approval-expanded-panel .evidence-row { margin: 12px 0 0; }
+.approval-expanded-panel .approval-review-form { max-width: 760px; margin-top: 14px; padding-top: 14px; display: grid; gap: 10px; border-top: 1px solid #e4ebe6; }
+.approval-expanded-panel .approval-review-form label { display: grid; gap: 5px; color: #52665c; font-size: 11px; font-weight: 650; }
+.approval-expanded-panel .approval-review-form input { width: 100%; }
+.approval-expanded-panel .approval-review-form .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.approval-table-empty { padding: 24px !important; color: #65766b !important; text-align: center; }
+.approval-table-footer { min-height: 42px; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid #e3eae5; color: #718176; font-size: 10px; }
+.admin-supplier-quality-layout { display: grid; grid-template-columns: minmax(0,2fr) minmax(290px,.95fr); align-items: start; gap: 16px; }
+.admin-supplier-list-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.freso-admin-shell .admin-supplier-table { min-width: 680px; font-size: 12px; }
+.freso-admin-shell .admin-supplier-table th { padding: 11px 12px; border-bottom: 1px solid #dfe8e1; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .035em; white-space: nowrap; }
+.freso-admin-shell .admin-supplier-table td { padding: 10px; border-bottom: 1px solid #edf1ee; color: #53665a; vertical-align: middle; }
+.admin-supplier-row:hover,.admin-supplier-row.is-expanded { background: #f7fbf8; }
+.supplier-certificate-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.supplier-certificate-list > span { padding: 4px 6px; border: 1px solid #dce8df; border-radius: 5px; color: #187751; background: #f6fbf7; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.supplier-sqs-score { color: #65766b; font-size: 11px; }
+.supplier-products-panel { padding: 14px 16px 16px; border-bottom: 1px solid #e2eae4; }
+.supplier-products-panel > header { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.supplier-products-panel > header > div { display: grid; gap: 4px; }
+.supplier-products-panel > header strong { color: #293d31; font-size: 12px; }
+.supplier-products-panel > header span { color: #718176; font-size: 10px; }
+.supplier-products-panel > header > span { flex: 0 0 auto; }
+.freso-admin-shell .supplier-products-table { min-width: 660px; font-size: 11px; }
+.freso-admin-shell .supplier-products-table th,.freso-admin-shell .supplier-products-table td { padding: 9px 10px; }
+.supplier-product-expand,.supplier-detail-link { padding: 0; border: 0; color: #087f58; background: transparent; font: inherit; font-weight: 700; cursor: pointer; text-align: left; }
+.supplier-product-expand:hover,.supplier-detail-link:hover { text-decoration: underline; }
+.supplier-product-expand:focus-visible,.supplier-detail-link:focus-visible { outline: 2px solid #087f49; outline-offset: 3px; border-radius: 3px; }
+.sqs-criteria-card { min-width: 0; margin: 0; padding: 16px; }
+.sqs-criteria-card > header { padding-bottom: 12px; border-bottom: 1px solid #e7ede9; }
+.sqs-criteria-card h2 { margin: 0; color: #293d31; font-size: 14px; line-height: 1.35; }
+.sqs-criteria-card > header p { margin: 4px 0 0; color: #718176; font-size: 10px; }
+.sqs-criteria-list { display: grid; gap: 9px; padding-top: 12px; }
+.sqs-criteria-list article { padding: 11px 12px; border: 1px solid #e0e8e3; border-radius: 9px; background: #fafcfb; }
+.sqs-criteria-list article > div { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.sqs-criteria-list strong { color: #354b3d; font-size: 11px; line-height: 1.4; }
+.sqs-criteria-list b { flex: 0 0 auto; color: #087f58; font-size: 11px; white-space: nowrap; }
+.sqs-criteria-list p { margin: 6px 0 0; color: #718176; font-size: 10px; line-height: 1.45; }
+.sqs-criteria-card > footer { margin-top: 11px; color: #718176; font-size: 10px; line-height: 1.45; }
+@media (max-width: 1150px) {
+  .admin-supplier-quality-layout { grid-template-columns: minmax(0,1fr); }
+  .sqs-criteria-card { order: -1; }
+}
+@media (max-width: 700px) {
+  .approval-toolbar { align-items: stretch; flex-direction: column; }
+  .approval-toolbar input,.approval-toolbar select { width: 100%; }
+  .approval-expanded-facts { grid-template-columns: minmax(0,1fr); }
+  .approval-table-footer { align-items: flex-start; flex-direction: column; }
+  .sqs-criteria-card { padding: 13px; }
+}
