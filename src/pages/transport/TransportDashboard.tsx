@@ -108,7 +108,7 @@ export function TransportDashboard({ session, onSignOut }: { session: PortalSess
     <header className="transport-masthead">
       <div className="transport-brand">
         <span className="transport-brand-mark" aria-hidden="true"><TruckIcon/></span>
-        <div><strong>FARMGO <span>Giao nhận</span></strong><small>Bảng chuyến qua Hub</small></div>
+        <div><strong>FRESO <span>Express LogiHub</span></strong><small>HỆ THỐNG VẬN CHUYỂN NÔNG SẢN B2B</small></div>
       </div>
       <div className="transport-masthead-actions"><div className="transport-demo-chip"><span/> Chế độ demo · dữ liệu giả lập</div><div className="transport-signed-in">{session.displayName}<small>Tài khoản giao nhận demo</small></div><button className="transport-signout" onClick={onSignOut}>Thoát</button></div>
     </header>

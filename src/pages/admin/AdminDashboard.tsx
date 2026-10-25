@@ -11,6 +11,7 @@ import { ShipmentsPage } from './ShipmentsPage';
 import { AdminOverviewPage } from './AdminOverviewPage';
 import { AdminSuppliersPage } from './AdminSuppliersPage';
 import { HubProductPhotos } from '../../components/shared/HubProductPhotos';
+import { DemoClock } from '../../components/shared/DemoClock';
 import './admin-dashboard.css';
 
 const navigation = [
@@ -40,14 +41,14 @@ const pageTitles: Record<string, string> = {
   '/admin/finance': 'Tiền & đối soát',
 };
 
-export function AdminDashboard() {
+export function AdminDashboard({ displayName, onSignOut }: { displayName: string; onSignOut: () => void }) {
   const location = useLocation();
   const title = pageTitles[location.pathname] ?? 'Tổng quan vận hành';
 
   return <HubProductPhotos><div className="freso-admin-shell">
     <aside className="admin-console-sidebar">
-      <div className="admin-console-brand"><span className="admin-console-mark">F</span><span><strong>FARMGO <b>HQ</b></strong><small>FruitHub · Trung tâm điều hành</small></span></div>
-      <div className="admin-console-profile"><span className="admin-profile-avatar">A</span><span><strong>Quản trị demo</strong><small>Phiên mô phỏng đang mở</small></span><i/></div>
+      <div className="admin-console-brand"><span className="admin-console-mark">F</span><span><strong>FRESO <b>HQ</b></strong><small>admin.freso.vn · FruitHub</small></span></div>
+      <div className="admin-console-profile"><span className="admin-profile-avatar">{displayName.slice(0, 1).toUpperCase()}</span><span><strong>{displayName}</strong><small>Quản trị demo</small></span><i/></div>
       <nav aria-label="Điều hướng Admin" className="admin-console-nav">
         {navigation.map(group => <section key={group.title} className="admin-nav-group">
           <h2>{group.title}</h2>
@@ -56,10 +57,10 @@ export function AdminDashboard() {
           </NavLink>)}
         </section>)}
       </nav>
-      <div className="admin-sidebar-foot"><span className="admin-demo-dot"/> Demo mode <small>Dữ liệu giả lập · lưu trên trình duyệt</small></div>
+      <div className="admin-sidebar-foot"><div><span>FRESO Engine API</span><strong><i/> DEMO ONLINE</strong></div><div><span>Trạng thái phiên</span><strong>Đang hoạt động</strong></div><small>Dữ liệu giả lập · lưu trên trình duyệt</small></div>
     </aside>
     <section className="admin-console-main">
-      <header className="admin-console-topbar"><div><span>CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><span className="admin-topbar-demo"><i/> Cổng vận hành demo</span></header>
+      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><DemoClock/><div className="admin-topbar-user"><span>{displayName.slice(0, 1).toUpperCase()}</span><strong>{displayName}<small>Quản trị demo</small></strong><button onClick={onSignOut}>Đăng xuất</button></div></header>
       <main className="admin-console-content"><Routes>
         <Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/>
         <Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/>

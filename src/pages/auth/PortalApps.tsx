@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { setDemoRole } from '../../services/demoService';
-import { DemoClock } from '../../components/shared/DemoClock';
 import { getPortalSession, registerDemoTransport, signInDemoPortal, signOutDemoPortal } from '../../services/portalSessionService';
 import type { PortalName, PortalSession } from '../../types/portalSession';
 import { AdminDashboard } from '../admin/AdminDashboard';
@@ -42,12 +41,7 @@ export function AdminPortalApp() {
   if (location.pathname === '/admin/login') return <Navigate to="/admin" replace />;
 
   return <div className="isolated-portal isolated-admin">
-    <header className="isolated-topbar">
-      <Link to="/admin" className="isolated-brand"><span className="isolated-brand-mark">F</span><span><strong>FARMGO HQ</strong><small>Trung tâm quản trị</small></span></Link>
-      <div className="isolated-user"><span className="isolated-avatar">{session.displayName.slice(0, 1).toUpperCase()}</span><span className="isolated-user-name">{session.displayName}<small>Quản trị demo</small></span><button onClick={signOut}>Đăng xuất</button></div>
-    </header>
-    <div className="admin-demo-tools"><DemoClock/></div>
-    <main className="isolated-main"><AdminDashboard /></main>
+    <AdminDashboard displayName={session.displayName} onSignOut={signOut} />
   </div>;
 }
 
@@ -122,23 +116,17 @@ function PortalLogin({ portal, mode = 'login', error, onSignIn, onRegister }: {
   };
 
   return <main className={`portal-auth-page ${isTransport ? 'auth-transport' : 'auth-admin'}`}>
-    <section className="auth-visual">
-      <Link to="/customer" className="auth-brand"><span>F</span> FARMGO</Link>
-      <div className="auth-visual-copy">
-        <p>{isTransport ? 'FARMGO · GIAO NHẬN' : 'FARMGO · HỆ THỐNG QUẢN TRỊ'}</p>
-        <h1>{isTransport ? <>Giao đúng nhịp.<br/>Nông sản đúng độ tươi.</> : <>Một điểm nhìn<br/>cho toàn Hub.</>}</h1>
-        <span>{isTransport ? 'Theo dõi chuyến demo từ Hub đến từng điểm nhận.' : 'Điều hành đơn, nguồn cung và chuyến giao trên dữ liệu mô phỏng.'}</span>
-      </div>
-      <div className="auth-visual-footer"><span>FARMGO</span><span>DỮ LIỆU DEMO · KHÔNG KẾT NỐI DỊCH VỤ THẬT</span></div>
-    </section>
+    <header className="auth-portal-masthead">
+      <Link to="/customer" className="auth-portal-brand"><span>{isTransport ? '↗' : 'F'}</span><span><strong>{isTransport ? 'FRESO Express' : 'FRESO HQ'}</strong><small>{isTransport ? 'LogiHub · Vận chuyển nông sản B2B' : 'Central System · Trung tâm điều hành'}</small></span></Link>
+      <span className="auth-portal-demo">DỮ LIỆU MÔ PHỎNG</span>
+    </header>
     <section className="auth-form-side">
       <div className="auth-form-wrap">
         <Link to="/customer" className="auth-mobile-brand">← Về mua & cung ứng</Link>
+        {isTransport && <div className="auth-mode-switch"><Link className={!registering ? 'active' : ''} to="/transport/login">Đăng nhập</Link><Link className={registering ? 'active' : ''} to="/transport/register">Đăng ký nhà xe</Link></div>}
         <p className="auth-form-kicker">{isTransport ? 'CỔNG GIAO NHẬN' : 'KHU VỰC QUẢN TRỊ'}</p>
         <h2>{registering ? 'Tạo tài khoản demo' : isTransport ? 'Đăng nhập vận chuyển' : 'Đăng nhập Admin'}</h2>
         <p className="auth-form-description">{registering ? 'Tạo hồ sơ để mở bảng chuyến giao mô phỏng.' : isTransport ? 'Đăng nhập bằng tài khoản bất kỳ để xem bảng chuyến demo.' : 'Đăng nhập để tiếp tục vào trung tâm điều hành FARMGO.'}</p>
-
-        {isTransport && <div className="auth-mode-switch"><Link className={!registering ? 'active' : ''} to="/transport/login">Đăng nhập</Link><Link className={registering ? 'active' : ''} to="/transport/register">Đăng ký</Link></div>}
 
         <form className="auth-form" onSubmit={submit}>
           {registering && <label>Tên hiển thị<input autoComplete="name" value={displayName} onChange={event => setDisplayName(event.target.value)} placeholder="Tên của bạn" required/></label>}
