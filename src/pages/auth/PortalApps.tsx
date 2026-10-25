@@ -117,7 +117,7 @@ function PortalLogin({ portal, mode = 'login', error, onSignIn, onRegister }: {
 
   return <main className={`portal-auth-page ${isTransport ? 'auth-transport' : 'auth-admin'}`}>
     <header className="auth-portal-masthead">
-      <Link to="/customer" className="auth-portal-brand"><span>{isTransport ? '↗' : 'F'}</span><span><strong>{isTransport ? 'FRESO Express' : 'FRESO HQ'}</strong><small>{isTransport ? 'LogiHub · Vận chuyển nông sản B2B' : 'Central System · Trung tâm điều hành'}</small></span></Link>
+      <Link to="/customer" className="auth-portal-brand"><span>{isTransport ? '↗' : 'F'}</span><span><strong>{isTransport ? 'FARMGO Express' : 'FARMGO HQ'}</strong><small>{isTransport ? 'LogiHub · Vận chuyển nông sản B2B' : 'Central System · Trung tâm điều hành'}</small></span></Link>
       <span className="auth-portal-demo">DỮ LIỆU MÔ PHỎNG</span>
     </header>
     <section className="auth-form-side">
