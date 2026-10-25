@@ -85,6 +85,61 @@
 .freso-admin-shell .overview-metrics > div { border-color: #dbe5de; background: #fff; }
 .freso-admin-shell .overview-metrics span { color: #52665c; }
 .freso-admin-shell .admin-console-content a:not(.btn-primary):not(.btn-secondary) { color: #087f49; }
+.freso-admin-shell .admin-claim-card { margin: 0 0 16px; padding: 0; overflow: hidden; border-color: #dbe5de; border-radius: 12px; }
+.claim-card-heading { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e8efea; background: linear-gradient(90deg,#fbfdfb,#fff 65%); }
+.claim-eyebrow,.claim-section-label { display: block; color: #65766b; font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.claim-card-heading h2 { margin: 4px 0 3px; font-size: 17px; line-height: 1.25; letter-spacing: -.015em; }
+.claim-card-heading p { margin: 0; color: #64746a; font-size: 12px; }
+.claim-card-heading p strong { color: #30463a; font-weight: 650; }
+.claim-status-pill,.quality-status-pill { flex: 0 0 auto; padding: 6px 10px; border: 1px solid #d5e5d9; border-radius: 999px; color: #17613d; background: #edf8f0; font-size: 11px; font-weight: 750; }
+.claim-status-pill-open,.quality-pill-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.claim-status-pill-responded { border-color: #b8d5f5; color: #1c5586; background: #eff7ff; }
+.claim-status-pill-approved,.quality-pill-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.claim-status-pill-rejected,.quality-pill-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.quality-pill-legacy { border-color: #dbe2dd; color: #596a60; background: #f5f7f5; }
+.claim-card-facts { padding: 13px 20px; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; border-bottom: 1px solid #edf1ee; background: #fff; }
+.claim-card-facts > div { min-width: 0; display: grid; gap: 4px; }
+.claim-card-facts span,.claim-note > span { color: #718076; font-size: 10px; font-weight: 650; }
+.claim-card-facts strong { overflow-wrap: anywhere; color: #293c31; font-size: 12px; font-weight: 650; line-height: 1.4; }
+.freso-admin-shell .admin-claim-card .claim-card-body { padding: 18px 20px; display: grid; grid-template-columns: minmax(0,1.2fr) minmax(220px,.8fr); gap: 16px 24px; }
+.claim-card-body > div:first-child { min-width: 0; }
+.freso-admin-shell .claim-card-body p { margin: 6px 0 0; color: #33473b; font-size: 13px; line-height: 1.55; }
+.claim-lines { align-self: start; display: grid; gap: 0; border: 1px solid #e5ece7; border-radius: 9px; background: #f8faf8; }
+.claim-lines > div,.claim-resolution-lines > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+.claim-lines > div + div { border-top: 1px solid #e5ece7; }
+.claim-lines span,.claim-lines strong,.claim-resolution-lines span,.claim-resolution-lines strong { font-size: 12px; line-height: 1.4; }
+.claim-lines span { color: #394c40; }
+.claim-lines strong { flex: 0 0 auto; color: #1f6743; font-variant-numeric: tabular-nums; }
+.claim-resolution-lines,.claim-evidence,.claim-note { grid-column: 1/-1; }
+.claim-resolution-lines { border-left: 3px solid #1a9a61; border-radius: 5px; background: #f2faf4; }
+.claim-resolution-lines span { color: #5c7163; }
+.claim-resolution-lines strong { color: #1d5b3c; }
+.claim-evidence .evidence-row { margin: 8px 0 0; }
+.claim-note { padding: 11px 13px; border: 1px solid #e2e9e4; border-radius: 8px; background: #f8faf8; }
+.claim-note-resolution { border-color: #cfe6d6; background: #f3faf5; }
+.freso-admin-shell .claim-note p { margin-top: 4px; }
+.freso-admin-shell .admin-claim-card .sla-warning { grid-column: 1/-1; margin: 0 20px; border: 1px solid #f0d48f; font-size: 12px; }
+.claim-decision-form { padding: 16px 20px 18px; border-top: 1px solid #e8efea; background: #fbfcfb; }
+.claim-decision-fields { display: grid; grid-template-columns: minmax(150px,.55fr) minmax(0,1.45fr); align-items: end; gap: 14px; }
+.freso-admin-shell .claim-decision-fields label { display: grid; gap: 6px; margin: 0; color: #405448; font-size: 11px; font-weight: 650; }
+.freso-admin-shell .claim-decision-fields .form-grid { display: block; margin: 0; }
+.freso-admin-shell .claim-decision-fields .form-grid label { margin: 0; }
+.freso-admin-shell .claim-decision-fields input { width: 100%; box-sizing: border-box; }
+.freso-admin-shell .claim-decision-fields textarea { min-height: 42px; height: 42px; box-sizing: border-box; resize: vertical; }
+.freso-admin-shell .admin-claim-card .action-row { justify-content: flex-end; margin: 12px 0 0; }
+.freso-admin-shell .admin-claim-card .action-row button { min-height: 40px; }
+.freso-admin-shell .quality-heading-copy { min-width: 0; flex: 1; }
+.quality-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.quality-heading-row h2 { min-width: 0; }
+.quality-metrics { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 6px; }
+.quality-metrics span { padding: 4px 7px; border: 1px solid #e0e9e3; border-radius: 6px; color: #405b49; background: #f8faf8; font-size: 10px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.freso-admin-shell .admin-quality-card .quality-empty-state,.freso-admin-shell .admin-quality-card .quality-note { margin: 8px 0 0; color: #5b6e61; font-size: 12px; line-height: 1.45; }
+.freso-admin-shell .admin-quality-card .quality-note { padding-top: 8px; border-top: 1px solid #edf1ee; }
+.freso-admin-shell .admin-quality-card .action-row { margin-bottom: 0; }
+@media (max-width: 1050px) {
+  .claim-card-body { grid-template-columns: minmax(0,1fr) minmax(180px,.8fr); }
+  .claim-decision-fields { grid-template-columns: minmax(0,1fr); }
+}
 @media (max-width: 900px) {
   .freso-admin-shell { grid-template-columns: 220px minmax(0,1fr); }
   .admin-console-content { padding: 18px 14px; }
@@ -109,4 +164,13 @@
   .admin-topbar-actions { gap: 7px; }
   .admin-escrow-chip { flex-wrap: wrap; white-space: normal; }
   .admin-console-content { padding: 14px 11px; }
+  .claim-card-heading,.claim-card-facts,.freso-admin-shell .admin-claim-card .claim-card-body,.claim-decision-form { padding-inline: 14px; }
+  .claim-card-facts { grid-template-columns: minmax(0,1fr); gap: 9px; }
+  .claim-card-facts > div { grid-template-columns: 105px minmax(0,1fr); align-items: baseline; }
+  .freso-admin-shell .admin-claim-card .claim-card-body { grid-template-columns: minmax(0,1fr); }
+  .claim-resolution-lines,.claim-evidence,.claim-note { grid-column: auto; }
+  .freso-admin-shell .admin-claim-card .sla-warning { margin-inline: 14px; }
+  .claim-decision-form { padding-bottom: 14px; }
+  .claim-decision-fields { gap: 10px; }
+  .quality-heading-row { flex-wrap: wrap; }
 }

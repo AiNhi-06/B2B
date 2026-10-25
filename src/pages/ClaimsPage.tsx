@@ -9,8 +9,32 @@ const labels = { OPEN: 'Chờ xử lý', RESPONDED: 'NCC đã phản hồi', APP
 function Decision({ claim: c, role, now, busy, run, refunded, order }: { claim: Claim; order?: Order; refunded: boolean; role: Role; now: string; busy: boolean; run: (a: () => Promise<unknown>) => Promise<boolean> }) {
   const [note, setNote] = useState(''); const [lines, setLines] = useState<ClaimLine[]>(c.lines);
   const open = api.openClaim(c); const overdue = open && Date.parse(now) >= Date.parse(c.submittedAt) + 7200000;
-  return <article className="card"><div className="section-heading"><h2>{c.id} · {c.orderId}</h2><span className="governance-badge">{labels[c.status]}</span></div><p>NCC {order?.items.find(i=>i.supplierId===c.supplierId)?.supplierName || c.supplierId} · Gửi {new Date(c.submittedAt).toLocaleString('vi-VN')} · SLA đến {new Date(Date.parse(c.submittedAt) + 7200000).toLocaleString('vi-VN')}</p>{overdue && <p className="sla-warning" role="status">Quá SLA xử lý 2 giờ — cần Admin xét, không tự hoàn.</p>}<p>{c.reason}</p>{c.lines.map(l => <p key={l.productId}>{order?.items.find(i=>i.productId===l.productId)?.productName || l.productId}: {l.quantityKg} kg yêu cầu</p>)}<div>{c.approvedLines?.map(l=><p key={l.productId}>Đã duyệt: {order?.items.find(i=>i.productId===l.productId)?.productName || l.productId} · {l.quantityKg} kg</p>)}</div><div className="evidence-row">{c.images.map((src, i) => <img key={i} src={src} className="evidence-photo" alt={`Ảnh bằng chứng ${i + 1}`} />)}</div>{c.response && <p>NCC: {c.response}</p>}{c.decisionNote && <p>Admin: {c.decisionNote} · Quyết định hoàn {money(c.refundVnd ?? 0)}{c.status === 'APPROVED' && (refunded ? ' · Đã ghi hoàn vào sổ tiền' : ' · Chưa có giao dịch hoàn Escrow; quyết định lịch sử')}</p>}
-    {open && role !== 'CUSTOMER' && <><label>{role === 'ADMIN' ? 'Ghi chú quyết định' : 'Phản hồi của NCC'}<textarea value={note} onChange={e => setNote(e.target.value)} /></label>{role === 'ADMIN' && <div className="form-grid">{lines.map((l, i) => <label key={l.productId}>Kg duyệt · {l.productId}<input type="number" min="0" max={c.lines.find(v => v.productId === l.productId)!.quantityKg} step="1" value={l.quantityKg} onChange={e => setLines(lines.map((v, j) => j === i ? { ...v, quantityKg: Number(e.target.value) } : v))} /></label>)}</div>}<div className="action-row">{role === 'ADMIN' ? <><button disabled={busy} className="btn-primary" onClick={() => void run(() => api.decideClaim({ claimId: c.id, approved: true, lines: lines.filter(l => l.quantityKg > 0), note }))}>Duyệt hoàn</button><button disabled={busy} className="btn-secondary" onClick={() => void run(() => api.decideClaim({ claimId: c.id, approved: false, note }))}>Từ chối</button></> : <button disabled={busy} className="btn-primary" onClick={() => void run(() => api.respondToClaim({ claimId: c.id, response: note }))}>Gửi phản hồi</button>}</div></>}
+  const supplierName = order?.items.find(i => i.supplierId === c.supplierId)?.supplierName || c.supplierId;
+  return <article className={`card admin-claim-card claim-status-${c.status.toLowerCase()}`}>
+    <header className="claim-card-heading">
+      <div><span className="claim-eyebrow">Yêu cầu khiếu nại</span><h2>{c.id}</h2><p>Đơn hàng <strong>{c.orderId}</strong></p></div>
+      <span className={`claim-status-pill claim-status-pill-${c.status.toLowerCase()}`}>{labels[c.status]}</span>
+    </header>
+    <div className="claim-card-facts">
+      <div><span>Nhà cung cấp</span><strong>{supplierName}</strong></div>
+      <div><span>Thời điểm gửi</span><strong>{new Date(c.submittedAt).toLocaleString('vi-VN')}</strong></div>
+      <div><span>Hạn xử lý</span><strong>{new Date(Date.parse(c.submittedAt) + 7200000).toLocaleString('vi-VN')}</strong></div>
+    </div>
+    {overdue && <p className="sla-warning" role="status">Quá SLA xử lý 2 giờ — cần Admin xét, không tự hoàn.</p>}
+    <section className="claim-card-body"><div><span className="claim-section-label">Lý do khiếu nại</span><p>{c.reason}</p></div>
+      <div className="claim-lines">{c.lines.map(line => <div key={line.productId}><span>{order?.items.find(i => i.productId === line.productId)?.productName || line.productId}</span><strong>{line.quantityKg} kg yêu cầu</strong></div>)}</div>
+      {!!c.approvedLines?.length && <div className="claim-resolution-lines">{c.approvedLines.map(line => <div key={line.productId}><span>Khối lượng được duyệt</span><strong>{order?.items.find(i => i.productId === line.productId)?.productName || line.productId} · {line.quantityKg} kg</strong></div>)}</div>}
+      {c.images.length > 0 && <div className="claim-evidence"><span className="claim-section-label">Ảnh bằng chứng</span><div className="evidence-row">{c.images.map((src, i) => <img key={i} src={src} className="evidence-photo" alt={`Ảnh bằng chứng ${i + 1}`} />)}</div></div>}
+      {c.response && <div className="claim-note"><span>Phản hồi nhà cung cấp</span><p>{c.response}</p></div>}
+      {c.decisionNote && <div className="claim-note claim-note-resolution"><span>Kết quả xử lý · Hoàn {money(c.refundVnd ?? 0)}{c.status === 'APPROVED' ? (refunded ? ' · Đã ghi sổ Escrow' : ' · Không có giao dịch Escrow') : ''}</span><p>{c.decisionNote}</p></div>}
+    </section>
+    {open && role !== 'CUSTOMER' && <form className="claim-decision-form" onSubmit={event => event.preventDefault()}>
+      <div className="claim-decision-fields">
+        {role === 'ADMIN' && <div className="form-grid">{lines.map((line, index) => <label key={line.productId}>Kg duyệt · {order?.items.find(i => i.productId === line.productId)?.productName || line.productId}<input type="number" min="0" max={c.lines.find(item => item.productId === line.productId)!.quantityKg} step="1" value={line.quantityKg} onChange={event => setLines(lines.map((value, i) => i === index ? { ...value, quantityKg: Number(event.target.value) } : value))} /></label>)}</div>}
+        <label>{role === 'ADMIN' ? 'Ghi chú quyết định' : 'Phản hồi của nhà cung cấp'}<textarea value={note} onChange={event => setNote(event.target.value)} placeholder="Nhập nội dung xử lý…" /></label>
+      </div>
+      <div className="action-row">{role === 'ADMIN' ? <><button disabled={busy} className="btn-primary" onClick={() => void run(() => api.decideClaim({ claimId: c.id, approved: true, lines: lines.filter(line => line.quantityKg > 0), note }))}>Duyệt hoàn</button><button disabled={busy} className="btn-secondary" onClick={() => void run(() => api.decideClaim({ claimId: c.id, approved: false, note }))}>Từ chối</button></> : <button disabled={busy} className="btn-primary" onClick={() => void run(() => api.respondToClaim({ claimId: c.id, response: note }))}>Gửi phản hồi</button>}</div>
+    </form>}
   </article>;
 }
 function ClaimForm({ orders, now, busy, run }: { orders: Order[]; now: string; busy: boolean; run: (a: () => Promise<unknown>) => Promise<boolean> }) {
