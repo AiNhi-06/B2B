@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { setDemoRole } from '../../services/demoService';
 import { DemoClock } from '../../components/shared/DemoClock';
-import { PhaseAdvancer } from '../../components/shared/PhaseAdvancer';
 import { getPortalSession, registerDemoTransport, signInDemoPortal, signOutDemoPortal } from '../../services/portalSessionService';
 import type { PortalName, PortalSession } from '../../types/portalSession';
 import { AdminDashboard } from '../admin/AdminDashboard';
@@ -47,7 +46,7 @@ export function AdminPortalApp() {
       <Link to="/admin" className="isolated-brand"><span className="isolated-brand-mark">F</span><span><strong>FARMGO HQ</strong><small>Trung tâm quản trị</small></span></Link>
       <div className="isolated-user"><span className="isolated-avatar">{session.displayName.slice(0, 1).toUpperCase()}</span><span className="isolated-user-name">{session.displayName}<small>Quản trị demo</small></span><button onClick={signOut}>Đăng xuất</button></div>
     </header>
-    <div className="admin-demo-tools"><DemoClock/></div><PhaseAdvancer/>
+    <div className="admin-demo-tools"><DemoClock/></div>
     <main className="isolated-main"><AdminDashboard /></main>
   </div>;
 }
