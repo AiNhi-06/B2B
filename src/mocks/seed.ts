@@ -79,8 +79,6 @@ export function addAdminShowcaseProfiles(state: DemoState): DemoState {
   return state;
 }
 export function addAdminOperationsShowcase(state: DemoState): DemoState {
-  if (state.orders.some(order => order.id.startsWith('showcase-'))) return state;
-
   const now = Date.parse(state.demoNow);
   const minutesAgo = (minutes: number) => new Date(now - minutes * 60_000).toISOString();
   const deliveryDate = new Date(now + 24 * 60 * 60_000).toISOString().slice(0, 10);
@@ -96,32 +94,36 @@ export function addAdminOperationsShowcase(state: DemoState): DemoState {
     { id: 'showcase-order-102', customerId: 'customer-1', deliveryAddressId: 'address-1', items: [item('avocado-034', 'Bơ 034', 'supplier-1', 'Nhà vườn Chú Sáu', 10, 20_000)], subtotalVnd: 200_000, shippingFeeVnd: 30_000, totalVnd: 230_000, status: 'DELIVERED', paymentStatus: 'PAID', deliveryDate: deliveredDate, deliverySlot: 'MORNING', paymentRequestKey: 'showcase-hold-102', placedAt: minutesAgo(120), deliveredAt: minutesAgo(35) },
     { id: 'showcase-order-101', customerId: 'customer-2', deliveryAddressId: 'address-2', items: [item('mango-mekong', 'Xoài Cát Hòa Lộc', 'supplier-2', 'Hợp tác xã Miền Tây', 10, 32_000)], subtotalVnd: 320_000, shippingFeeVnd: 40_000, totalVnd: 360_000, status: 'DELIVERED', paymentStatus: 'PAID', deliveryDate: deliveredDate, deliverySlot: 'AFTERNOON', paymentRequestKey: 'showcase-hold-101', placedAt: minutesAgo(300), deliveredAt: minutesAgo(210) },
   ];
-  state.orders.push(...orders);
-  for (const order of orders) for (const line of order.items) {
+  const newOrders = orders.filter(order => !state.orders.some(existing => existing.id === order.id));
+  state.orders.push(...newOrders);
+  for (const order of newOrders) for (const line of order.items) {
     const product = state.products.find(entry => entry.id === line.productId)!;
     product.availableKg = Math.max(0, product.availableKg - line.quantityKg);
   }
-  state.confirmations.push(
+  const confirmations: SupplierConfirmation[] = [
     { supplierId: 'supplier-2', orderIds: ['showcase-order-103'], confirmedAt: minutesAgo(210), vehiclePlate: '51D-246.80', estimatedArrivalAt: minutesAgo(100) },
     { supplierId: 'supplier-1', orderIds: ['showcase-order-102'], confirmedAt: minutesAgo(110) },
     { supplierId: 'supplier-2', orderIds: ['showcase-order-101'], confirmedAt: minutesAgo(290) },
-  );
-  state.shipments.push(
+  ];
+  state.confirmations.push(...confirmations.filter(row => !state.confirmations.some(existing => JSON.stringify(existing.orderIds) === JSON.stringify(row.orderIds))));
+  const shipments: Shipment[] = [
     { id: 'showcase-shipment-103', deliveryDate, deliverySlot: 'MORNING', orderIds: ['showcase-order-103'], routeLabel: 'Tuyến Thủ Đức · Quận 1', driverName: 'Nguyễn Văn Minh', driverPhone: '0900000099', vehiclePlate: '51D-246.80', status: 'IN_TRANSIT', trackingLabel: 'Đang giao · hành trình mô phỏng' },
     { id: 'showcase-shipment-102', deliveryDate: deliveredDate, deliverySlot: 'MORNING', orderIds: ['showcase-order-102'], routeLabel: 'Tuyến Phú Nhuận · Quận 1', driverName: 'Trần Quốc Huy', driverPhone: '0900000088', vehiclePlate: '51D-135.79', status: 'DELIVERED', trackingLabel: 'Đã giao · xác nhận mô phỏng' },
     { id: 'showcase-shipment-101', deliveryDate: deliveredDate, deliverySlot: 'AFTERNOON', orderIds: ['showcase-order-101'], routeLabel: 'Tuyến Quận 1 · Bình Thạnh', driverName: 'Lê Hoàng Nam', driverPhone: '0900000077', vehiclePlate: '51D-864.20', status: 'DELIVERED', trackingLabel: 'Đã giao · xác nhận mô phỏng' },
-  );
+  ];
+  state.shipments.push(...shipments.filter(row => !state.shipments.some(existing => existing.id === row.id)));
 
   const recentReviewAt = minutesAgo(90);
   const completedReviewAt = minutesAgo(300);
   state.products.find(product => product.id === 'tomato-dalat')!.legacy = false;
   state.products.find(product => product.id === 'carrot-dalat')!.legacy = false;
   state.products.find(product => product.id === 'cabbage-dalat')!.legacy = false;
-  state.qualityReviews.push(
+  const qualityReviews: QualityReview[] = [
     { productId: 'tomato-dalat', supplierId: 'supplier-1', grade: 'A', yieldPercent: 92, brix: 5.2, status: 'PENDING', revision: 1, submittedAt: recentReviewAt },
     { productId: 'carrot-dalat', supplierId: 'supplier-1', grade: 'B', yieldPercent: 88, brix: 7.1, status: 'REJECTED', revision: 1, note: 'Vui lòng bổ sung kết quả kiểm định lô hàng.', submittedAt: completedReviewAt, reviewedAt: recentReviewAt },
     { productId: 'cabbage-dalat', supplierId: 'supplier-1', grade: 'A', yieldPercent: 94, status: 'APPROVED', revision: 1, note: 'Đã duyệt thông số lô hàng mẫu.', submittedAt: completedReviewAt, reviewedAt: recentReviewAt },
-  );
+  ];
+  state.qualityReviews.push(...qualityReviews.filter(row => !state.qualityReviews.some(existing => existing.productId === row.productId)));
 
   const escrowRows = [
     { orderId: 'showcase-order-105', supplierId: 'supplier-1', goodsVnd: 400_000, status: 'HELD' as const },
@@ -130,17 +132,19 @@ export function addAdminOperationsShowcase(state: DemoState): DemoState {
     { orderId: 'showcase-order-102', supplierId: 'supplier-1', goodsVnd: 200_000, status: 'HELD' as const },
     { orderId: 'showcase-order-101', supplierId: 'supplier-2', goodsVnd: 320_000, refundedVnd: 64_000, status: 'SETTLED' as const, feeVnd: 7_680, supplierNetVnd: 248_320, settledAt: minutesAgo(90) },
   ];
-  state.allocations.push(...escrowRows.map((row, index) => ({ id: `showcase-allocation-${index + 1}`, refundedVnd: 0, ...row })));
-  for (const [index, order] of orders.entries()) state.ledger.push({ id: `showcase-ledger-hold-${index + 1}`, key: `hold:${order.id}`, kind: 'HOLD', orderId: order.id, amountVnd: order.totalVnd, createdAt: order.placedAt });
-  state.ledger.push(
+  state.allocations.push(...escrowRows.map((row, index) => ({ id: `showcase-allocation-${index + 1}`, refundedVnd: 0, ...row })).filter(row => !state.allocations.some(existing => existing.orderId === row.orderId && existing.supplierId === row.supplierId)));
+  for (const [index, order] of orders.entries()) if (!state.ledger.some(entry => entry.key === `hold:${order.id}`)) state.ledger.push({ id: `showcase-ledger-hold-${index + 1}`, key: `hold:${order.id}`, kind: 'HOLD', orderId: order.id, amountVnd: order.totalVnd, createdAt: order.placedAt });
+  const financeLedger: LedgerEntry[] = [
     { id: 'showcase-ledger-refund-101', key: 'refund:showcase-claim-101', kind: 'REFUND', orderId: 'showcase-order-101', supplierId: 'supplier-2', claimId: 'showcase-claim-101', amountVnd: 64_000, createdAt: minutesAgo(180) },
     { id: 'showcase-ledger-settle-101', key: 'settle:showcase-allocation-5', kind: 'SETTLEMENT', orderId: 'showcase-order-101', supplierId: 'supplier-2', amountVnd: 256_000, feeVnd: 7_680, createdAt: minutesAgo(90) },
-  );
-  state.claims.push(
+  ];
+  state.ledger.push(...financeLedger.filter(row => !state.ledger.some(existing => existing.key === row.key)));
+  const claims: Claim[] = [
     { id: 'showcase-claim-102', orderId: 'showcase-order-102', customerId: 'customer-1', supplierId: 'supplier-1', lines: [{ productId: 'avocado-034', quantityKg: 2 }], reason: 'Một phần bơ bị dập trong quá trình giao nhận.', images: [], status: 'OPEN', submittedAt: minutesAgo(20) },
     { id: 'showcase-claim-101', orderId: 'showcase-order-101', customerId: 'customer-2', supplierId: 'supplier-2', lines: [{ productId: 'mango-mekong', quantityKg: 2 }], reason: 'Đã xử lý hoàn 2 kg theo biên bản đối soát mẫu.', images: [], status: 'APPROVED', submittedAt: minutesAgo(190), approvedLines: [{ productId: 'mango-mekong', quantityKg: 2 }], refundVnd: 64_000, decisionNote: 'Đã xác nhận chất lượng lô hàng.', decidedAt: minutesAgo(180) },
-  );
-  state.withdrawals.push({ id: 'showcase-withdrawal-201', supplierId: 'supplier-2', amountVnd: 100_000, status: 'PENDING', requestKey: 'showcase-withdrawal-request-201', createdAt: minutesAgo(30), note: 'Yêu cầu đối soát đợt gần nhất.' });
+  ];
+  state.claims.push(...claims.filter(row => !state.claims.some(existing => existing.id === row.id)));
+  if (!state.withdrawals.some(row => row.id === 'showcase-withdrawal-201')) state.withdrawals.push({ id: 'showcase-withdrawal-201', supplierId: 'supplier-2', amountVnd: 100_000, status: 'PENDING', requestKey: 'showcase-withdrawal-request-201', createdAt: minutesAgo(30), note: 'Yêu cầu đối soát đợt gần nhất.' });
   return state;
 }
 export function addGovernance(state: DemoState): DemoState {

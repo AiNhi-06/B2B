@@ -51,20 +51,14 @@ function current(): DemoState {
       let parsed: unknown;
       try { parsed = JSON.parse(saved); } catch { throw new Error('Không đọc được dữ liệu demo đã lưu. Dữ liệu chưa bị ghi đè.'); }
       const upgraded = upgradeStoredState(parsed);
-      const hadShowcase = upgraded.profiles.some(profile => profile.id.startsWith('showcase-'));
-      const hadOperationalShowcase = upgraded.orders.some(order => order.id.startsWith('showcase-'));
-      addAdminShowcaseProfiles(upgraded);
-      addAdminOperationsShowcase(upgraded);
-      if ((parsed as { version: number }).version !== 5 || !hadShowcase || !hadOperationalShowcase) storage()?.setItem(KEY, JSON.stringify(upgraded));
       state = upgraded;
     } else state = createSeed();
   }
-  // Also reconcile already-open v5 sessions after a hot reload, while preserving their existing records.
-  const hasShowcaseProfiles = state.profiles.some(profile => profile.id.startsWith('showcase-'));
-  const hasShowcaseOperations = state.orders.some(order => order.id.startsWith('showcase-'));
+  // Reconcile each fixture by stable ID so partially seeded sessions are repaired without resetting user data.
+  const before = JSON.stringify(state);
   addAdminShowcaseProfiles(state);
   addAdminOperationsShowcase(state);
-  if (!hasShowcaseProfiles || !hasShowcaseOperations) storage()?.setItem(KEY, JSON.stringify(state));
+  if (JSON.stringify(state) !== before) storage()?.setItem(KEY, JSON.stringify(state));
   return state;
 }
 export function readState(): DemoState { return structuredClone(current()); }
