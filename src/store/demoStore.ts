@@ -59,6 +59,12 @@ function current(): DemoState {
       state = upgraded;
     } else state = createSeed();
   }
+  // Also reconcile already-open v5 sessions after a hot reload, while preserving their existing records.
+  const hasShowcaseProfiles = state.profiles.some(profile => profile.id.startsWith('showcase-'));
+  const hasShowcaseOperations = state.orders.some(order => order.id.startsWith('showcase-'));
+  addAdminShowcaseProfiles(state);
+  addAdminOperationsShowcase(state);
+  if (!hasShowcaseProfiles || !hasShowcaseOperations) storage()?.setItem(KEY, JSON.stringify(state));
   return state;
 }
 export function readState(): DemoState { return structuredClone(current()); }
