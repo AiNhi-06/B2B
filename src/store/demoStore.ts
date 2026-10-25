@@ -1,4 +1,4 @@
-import { createSeed, addGovernance, commodities, type DemoState } from '../mocks/seed';
+import { createSeed, addAdminShowcaseProfiles, addGovernance, commodities, type DemoState } from '../mocks/seed';
 import type { DemoDataEvent, ProductListing } from '../types/index';
 
 const KEY = 'b2b-demo-v1';
@@ -51,7 +51,9 @@ function current(): DemoState {
       let parsed: unknown;
       try { parsed = JSON.parse(saved); } catch { throw new Error('Không đọc được dữ liệu demo đã lưu. Dữ liệu chưa bị ghi đè.'); }
       const upgraded = upgradeStoredState(parsed);
-      if ((parsed as { version: number }).version !== 5) storage()?.setItem(KEY, JSON.stringify(upgraded));
+      const hadShowcase = upgraded.profiles.some(profile => profile.id.startsWith('showcase-'));
+      addAdminShowcaseProfiles(upgraded);
+      if ((parsed as { version: number }).version !== 5 || !hadShowcase) storage()?.setItem(KEY, JSON.stringify(upgraded));
       state = upgraded;
     } else state = createSeed();
   }

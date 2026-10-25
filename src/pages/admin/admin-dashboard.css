@@ -56,14 +56,6 @@
 .admin-batch-button:focus-visible { outline: 3px solid #fcd34d; outline-offset: 2px; }
 .admin-topbar-feedback { position: absolute; top: calc(100% + 7px); right: 16px; z-index: 30; max-width: min(400px, calc(100vw - 32px)); padding: 9px 12px; border: 1px solid #bbf7d0; border-radius: 7px; color: #166534; background: #f0fdf4; box-shadow: 0 8px 22px rgb(15 23 42 / 13%); font-size: 10px; }
 .admin-topbar-feedback.is-error { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
-.admin-clock-menu { position: relative; flex: 0 0 auto; }
-.admin-clock-menu > summary { padding: 7px 9px; border: 1px solid #334155; border-radius: 7px; color: #cbd5e1; background: #1e293b; font-size: 9px; white-space: nowrap; cursor: pointer; list-style: none; }
-.admin-clock-menu > summary::-webkit-details-marker { display: none; }
-.admin-clock-menu[open] > summary { border-color: #10b981; color: #a7f3d0; }
-.admin-clock-menu .demo-clock { position: absolute; top: calc(100% + 7px); right: 0; z-index: 40; width: min(650px, calc(100vw - 32px)); padding: 12px; border: 1px solid #dbe5de; border-radius: 9px; color: #174b35; background: #fff; box-shadow: 0 12px 30px rgb(15 23 42 / 16%); font-size: 10px; }
-.admin-clock-menu .demo-clock > span { white-space: nowrap; }
-.admin-clock-menu .demo-clock button { min-height: 32px; padding: 5px 8px; border-color: #a9cbb5; border-radius: 6px; color: #174b35; background: #f8fffa; font-size: 9px; white-space: nowrap; }
-.admin-clock-menu .action-row { margin: 0; gap: 5px; }
 .admin-console-content { min-width: 0; padding: 24px clamp(18px, 2.5vw, 34px); color: #172d24; }
 .admin-application-grid, .admin-quality-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); align-items: start; gap: 12px; }
 .freso-admin-shell .admin-application-card, .freso-admin-shell .admin-quality-card { min-width: 0; margin: 0; padding: 16px; }
@@ -96,7 +88,6 @@
   .admin-console-content { padding: 18px 14px; }
   .admin-console-topbar { align-items: flex-start; flex-wrap: wrap; }
   .admin-topbar-actions { order: 3; flex: 1 1 100%; flex-wrap: wrap; }
-  .admin-clock-menu { margin-left: auto; }
 }
 @media (max-width: 700px) {
   .freso-admin-shell { min-height: 100svh; grid-template-columns: minmax(0,1fr); }
@@ -115,6 +106,5 @@
   .admin-topbar-crumb { min-width: 0; font-size: 9px; }
   .admin-topbar-actions { gap: 7px; }
   .admin-escrow-chip { flex-wrap: wrap; white-space: normal; }
-  .admin-clock-menu .demo-clock { right: -5px; }
   .admin-console-content { padding: 14px 11px; }
 }

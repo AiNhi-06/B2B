@@ -11,7 +11,6 @@ import { LabelsPage } from './LabelsPage';
 import { ShipmentsPage } from './ShipmentsPage';
 import { AdminSuppliersPage } from './AdminSuppliersPage';
 import { HubProductPhotos } from '../../components/shared/HubProductPhotos';
-import { DemoClock } from '../../components/shared/DemoClock';
 import * as api from '../../services/demoService';
 import { useDemoData } from '../../components/shared/useDemoData';
 import { money } from '../../components/shared/useCatalog';
@@ -56,7 +55,7 @@ export function AdminDashboard({ displayName, onSignOut }: { displayName: string
       <div className="admin-sidebar-foot"><div><span>FARMGO Engine</span><strong><i/> MÔ PHỎNG</strong></div><div><span>Chế độ</span><strong>Mô phỏng</strong></div><small>Không kết nối dịch vụ thật</small></div>
     </aside>
     <section className="admin-console-main">
-      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/><details className="admin-clock-menu"><summary>Đồng hồ</summary><DemoClock/></details></header>
+      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/></header>
       <main className="admin-console-content"><Routes>
         <Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/>
         <Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/>

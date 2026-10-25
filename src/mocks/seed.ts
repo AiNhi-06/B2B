@@ -63,7 +63,18 @@ export function createSeed(): DemoState {
     commodities: structuredClone(commodities),
     orders: [], confirmations: [], shipments: [], nextId: 1,
   };
-  return addGovernance(seed);
+  addGovernance(seed);
+  return addAdminShowcaseProfiles(seed);
+}
+export function addAdminShowcaseProfiles(state: DemoState): DemoState {
+  if (state.profiles.some(profile => profile.id.startsWith('showcase-'))) return state;
+  const submittedAt = state.demoNow;
+  state.profiles.push(
+    { id: 'showcase-supplier-pending', role: 'SUPPLIER', businessName: 'Vườn trái cây An Phú', phone: '0900000031', taxCode: 'DEMO-MST-NCC-03', contactName: 'Nguyễn Minh An', address: 'Đức Trọng, Lâm Đồng', capacityKg: 850, status: 'PENDING', legacy: false, submittedAt },
+    { id: 'showcase-customer-pending', role: 'CUSTOMER', businessName: 'Bếp Xanh Sài Gòn', phone: '0900000032', taxCode: 'DEMO-MST-FB-03', contactName: 'Trần Ngọc Hà', address: '12 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM', status: 'PENDING', legacy: false, submittedAt },
+    { id: 'showcase-supplier-rejected', role: 'SUPPLIER', businessName: 'Nông trại Bình Minh', phone: '0900000033', taxCode: 'DEMO-MST-NCC-04', contactName: 'Lê Quốc Bảo', address: 'Cai Lậy, Tiền Giang', capacityKg: 620, status: 'REJECTED', legacy: false, submittedAt, reviewedAt: submittedAt, rejectionReason: 'Vui lòng bổ sung hồ sơ chứng nhận.' },
+  );
+  return state;
 }
 export function addGovernance(state: DemoState): DemoState {
   state.profiles = [...state.suppliers.map(s => ({ id: s.id, role: 'SUPPLIER' as const, businessName: s.name, phone: s.phone, taxCode: s.taxCode ?? '', contactName: '', address: s.gardenAddress, status: 'DRAFT' as const, legacy: true })), ...state.customers.map(c => ({ id: c.id, role: 'CUSTOMER' as const, businessName: c.businessName, phone: c.phone, taxCode: c.taxCode ?? '', contactName: '', address: state.addresses.find(a => a.customerId === c.id)?.address ?? '', status: 'DRAFT' as const, legacy: true }))];
