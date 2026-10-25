@@ -7,8 +7,8 @@
   width: 100%;
   display: grid;
   grid-template-columns: 256px minmax(0,1fr);
-  color: #cbd5e1;
-  background: #020617;
+  color: #172d24;
+  background: #eef3ef;
   font-family: Inter, 'Segoe UI', sans-serif;
 }
 .admin-console-sidebar { min-width: 0; padding: 19px 13px 14px; display: flex; flex-direction: column; background: var(--admin-navy); }
@@ -33,36 +33,36 @@
 .admin-sidebar-foot { margin-top: auto; padding: 11px 8px 2px; color: #bdd0c0; font-size: 9px; }
 .admin-demo-dot { width: 6px; height: 6px; margin-right: 6px; display: inline-block; border-radius: 50%; background: #c4df72; }
 .admin-sidebar-foot small { margin: 5px 0 0 12px; display: block; color: #82988a; font-size: 8px; }
-.admin-console-main { min-width: 0; min-height: 100svh; background: #020617; }
-.admin-console-topbar { min-height: 64px; padding: 9px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid #1e293b; color: #94a3b8; background: #0f172a; }
+.admin-console-main { min-width: 0; min-height: 100svh; background: #f1f5f1; }
+.admin-console-topbar { min-height: 64px; padding: 9px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid #dce5dc; color: #718176; background: #fff; }
 .admin-topbar-crumb { min-width: 180px; display: flex; align-items: center; gap: 8px; font-size: 10px; }
-.admin-topbar-crumb > span { color: #34d399; font-weight: 800; letter-spacing: .04em; }
-.admin-topbar-crumb > i { color: #475569; font-style: normal; }
-.admin-console-topbar .admin-topbar-crumb strong { color: #f8fafc; font-size: 11px; }
-.admin-console-topbar .demo-clock { min-width: 0; flex: 1; padding: 0; border: 0; color: #cbd5e1; background: transparent; font-size: 9px; }
+.admin-topbar-crumb > span { color: #27704a; font-weight: 800; letter-spacing: .04em; }
+.admin-topbar-crumb > i { color: #b6c2b8; font-style: normal; }
+.admin-console-topbar .admin-topbar-crumb strong { color: #32463a; font-size: 11px; }
+.admin-console-topbar .demo-clock { min-width: 0; flex: 1; padding: 5px 8px; border: 1px solid #dce9d8; border-radius: 8px; color: #174b35; background: #edf7ef; font-size: 9px; }
 .admin-console-topbar .demo-clock > span { white-space: nowrap; }
-.admin-console-topbar .demo-clock > span strong { color: #f8fafc; font-size: inherit; }
+.admin-console-topbar .demo-clock > span strong { color: #174b35; font-size: inherit; }
 .admin-console-topbar .action-row { margin: 0; gap: 5px; }
-.admin-console-topbar .demo-clock button { min-height: 31px; padding: 4px 8px; border-color: #334155; border-radius: 6px; color: #cbd5e1; background: #1e293b; font-size: 9px; white-space: nowrap; }
+.admin-console-topbar .demo-clock button { min-height: 31px; padding: 4px 8px; border-color: #a9cbb5; border-radius: 6px; color: #174b35; background: #fff; font-size: 9px; white-space: nowrap; }
 .admin-topbar-user { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
-.admin-topbar-user > span { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid #475569; border-radius: 8px; color: #a7f3d0; background: #1e293b; font-size: 11px; font-weight: 800; }
-.admin-console-topbar .admin-topbar-user strong { color: #f1f5f9; font-size: 10px; }
-.admin-topbar-user small { display: block; margin-top: 2px; color: #94a3b8; font-size: 8px; font-weight: 400; }
-.admin-topbar-user button { min-height: 31px; padding: 0 9px; border: 1px solid #334155; border-radius: 6px; color: #cbd5e1; background: #1e293b; font-size: 9px; cursor: pointer; }
-.admin-topbar-user button:hover { border-color: #64748b; background: #334155; }
-.admin-topbar-user button:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
-.admin-console-content { min-width: 0; padding: 24px clamp(18px, 2.5vw, 34px); color: #cbd5e1; }
-.freso-admin-shell .page-heading h1, .freso-admin-shell h2, .freso-admin-shell h3, .freso-admin-shell h4 { color: #f8fafc; }
-.freso-admin-shell .page-heading p, .freso-admin-shell .section-heading p { color: #94a3b8; }
-.freso-admin-shell .card { border-color: #334155; border-radius: 10px; color: #cbd5e1; background: #1e293b; box-shadow: 0 8px 20px rgb(0 0 0 / 14%); }
-.freso-admin-shell .card-title { color: #f1f5f9; }
-.freso-admin-shell .data-table th { border-color: #334155; color: #94a3b8; background: #0f172a; }
-.freso-admin-shell .data-table td { border-color: #334155; color: #cbd5e1; }
-.freso-admin-shell input, .freso-admin-shell select, .freso-admin-shell textarea { border-color: #475569; color: #e2e8f0; background: #0f172a; }
-.freso-admin-shell input::placeholder, .freso-admin-shell textarea::placeholder { color: #94a3b8; }
-.freso-admin-shell .overview-metrics > div { border-color: #334155; background: #1e293b; }
-.freso-admin-shell .overview-metrics span { color: #94a3b8; }
-.freso-admin-shell .admin-console-content a { color: #6ee7b7; }
+.admin-topbar-user > span { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid #d6e5d8; border-radius: 8px; color: #27704a; background: #edf7ef; font-size: 11px; font-weight: 800; }
+.admin-console-topbar .admin-topbar-user strong { color: #32463a; font-size: 10px; }
+.admin-topbar-user small { display: block; margin-top: 2px; color: #718176; font-size: 8px; font-weight: 400; }
+.admin-topbar-user button { min-height: 31px; padding: 0 9px; border: 1px solid #d4e1d6; border-radius: 6px; color: #395448; background: #fff; font-size: 9px; cursor: pointer; }
+.admin-topbar-user button:hover { border-color: #9bb8a0; background: #f5f8f5; }
+.admin-topbar-user button:focus-visible { outline: 2px solid #25834f; outline-offset: 2px; }
+.admin-console-content { min-width: 0; padding: 24px clamp(18px, 2.5vw, 34px); color: #172d24; }
+.freso-admin-shell .page-heading h1, .freso-admin-shell h2, .freso-admin-shell h3, .freso-admin-shell h4 { color: #172d24; }
+.freso-admin-shell .page-heading p, .freso-admin-shell .section-heading p { color: #52665c; }
+.freso-admin-shell .card { border-color: #dbe5de; border-radius: 10px; color: #172d24; background: #fff; box-shadow: 0 1px 2px rgba(20,45,30,.04); }
+.freso-admin-shell .card-title { color: #172d24; }
+.freso-admin-shell .data-table th { border-color: #dbe5de; color: #52665c; background: #f8fafc; }
+.freso-admin-shell .data-table td { border-color: #dbe5de; color: #172d24; }
+.freso-admin-shell input, .freso-admin-shell select, .freso-admin-shell textarea { border-color: #cbd5e1; color: #172d24; background: #fff; }
+.freso-admin-shell input::placeholder, .freso-admin-shell textarea::placeholder { color: #718176; }
+.freso-admin-shell .overview-metrics > div { border-color: #dbe5de; background: #fff; }
+.freso-admin-shell .overview-metrics span { color: #52665c; }
+.freso-admin-shell .admin-console-content a { color: #087f49; }
 @media (max-width: 900px) {
   .freso-admin-shell { grid-template-columns: 220px minmax(0,1fr); }
   .admin-console-content { padding: 18px 14px; }
