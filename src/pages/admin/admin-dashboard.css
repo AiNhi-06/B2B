@@ -230,3 +230,59 @@
   .admin-quality-table { min-width: 940px; }
   .quality-detail-facts { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+/* Finance dashboard */
+.finance-page { display: grid; gap: 18px; }
+.finance-page .finance-page-heading { margin-bottom: 0; align-items: center; }
+.finance-page-heading h1 { text-transform: capitalize; }
+.finance-overview { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.finance-overview-card { min-width: 0; min-height: 108px; margin: 0 !important; padding: 18px !important; display: grid; align-content: start; gap: 7px; }
+.finance-overview-card > span { color: #607267; font-size: 12px; }
+.finance-overview-card > strong { color: #087f58; font-size: clamp(21px,2vw,28px); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.finance-overview-card > small { color: #718176; font-size: 10px; }
+.finance-overview-fees > strong { color: #0e9b9b; }
+.finance-overview-pending > strong { color: #bf8210; }
+.finance-batch-button { min-height: 40px; padding-inline: 15px; white-space: nowrap; }
+.freso-admin-shell .finance-section { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.finance-section-heading { min-height: 58px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e1e9e3; background: #f8faf9; }
+.finance-section-heading h2 { margin: 0; color: #263d30; font-size: 14px; line-height: 1.35; }
+.finance-section-heading p { margin: 4px 0 0; color: #65766b; font-size: 11px; line-height: 1.4; }
+.finance-section-heading > span { flex: 0 0 auto; padding: 5px 8px; border: 1px solid #dce8df; border-radius: 999px; color: #42604e; background: #fff; font-size: 10px; font-weight: 700; }
+.finance-table-scroll { overflow-x: auto; }
+.freso-admin-shell .finance-table { min-width: 940px; font-size: 12px; }
+.freso-admin-shell .finance-table th { padding: 12px 14px; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .025em; white-space: nowrap; }
+.freso-admin-shell .finance-table td { padding: 12px 14px; color: #34483b; vertical-align: middle; }
+.finance-request-id { color: #078654; font-variant-numeric: tabular-nums; }
+.finance-fee-value { color: #bd4d58 !important; font-weight: 750; white-space: nowrap; }
+.finance-net-value { color: #078654 !important; font-weight: 750; white-space: nowrap; }
+.finance-cell-note { display: block; margin-top: 4px; color: #718176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.finance-bank-placeholder { color: #687b6e; font-size: 11px; }
+.finance-status { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #dce5df; border-radius: 999px; color: #53665a; background: #f6f8f6; font-size: 10px; font-weight: 700; line-height: 1.3; white-space: nowrap; }
+.finance-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.finance-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.finance-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.finance-row-actions { min-width: 370px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.finance-row-actions button { min-height: 34px; padding: 0 10px; }
+.finance-note-field { min-width: 170px; flex: 1 1 180px; margin: 0 !important; }
+.finance-note-field input { width: 100%; min-height: 36px; box-sizing: border-box; font-size: 11px; }
+.finance-empty { margin: 0; padding: 18px; color: #65766b; font-size: 12px; }
+.freso-admin-shell .finance-withdraw-box { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,280px) auto; align-items: end; gap: 14px; }
+.finance-withdraw-box h2 { margin: 0 0 4px; font-size: 15px; }
+.finance-withdraw-box p { margin: 0; color: #65766b; font-size: 12px; }
+.finance-withdraw-box label { margin: 0; }
+.finance-supplier-balances { grid-template-columns: minmax(0,1fr); }
+@media (max-width: 900px) {
+  .finance-overview { gap: 10px; }
+  .finance-overview-card { padding: 14px !important; }
+  .finance-overview-card > strong { font-size: 21px; }
+}
+@media (max-width: 700px) {
+  .finance-page .finance-page-heading { align-items: stretch; flex-direction: column; }
+  .finance-batch-button { width: 100%; white-space: normal; }
+  .finance-overview { grid-template-columns: minmax(0,1fr); }
+  .finance-overview-card { min-height: 0; }
+  .finance-section-heading { padding-inline: 13px; align-items: flex-start; }
+  .finance-section-heading > span { font-size: 9px; }
+  .freso-admin-shell .finance-withdraw-box { grid-template-columns: minmax(0,1fr); align-items: stretch; }
+  .finance-note-field { flex-basis: 100%; }
+}
