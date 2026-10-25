@@ -63,6 +63,8 @@
 .admin-application-heading h2 { min-width: 0; margin: 0; font-size: 17px; line-height: 1.3; }
 .admin-application-details { display: grid; gap: 5px; margin-top: 10px; }
 .freso-admin-shell .admin-application-details p, .freso-admin-shell .admin-application-card > p { margin: 0; line-height: 1.45; }
+.freso-admin-shell .admin-application-card > label { display: grid; gap: 6px; margin: 12px 0; }
+.freso-admin-shell .admin-application-card > label input { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
 .freso-admin-shell .admin-quality-card .quality-title { align-items: center; gap: 12px; }
 .freso-admin-shell .admin-quality-card .quality-title h2 { margin: 0 0 4px; font-size: 17px; }
 .freso-admin-shell .admin-quality-card .quality-title p { margin: 0; line-height: 1.45; }
