@@ -65,8 +65,26 @@ export function createSeed(): DemoState {
     orders: [], confirmations: [], shipments: [], nextId: 1,
   };
   addGovernance(seed);
+  addAdminShowcaseProducts(seed);
   addAdminShowcaseProfiles(seed);
   return addAdminOperationsShowcase(seed);
+}
+export function addAdminShowcaseProducts(state: DemoState): DemoState {
+  const fixtures: ProductListing[] = [
+    { id: 'mango-mekong', commodityId: 'mango-cat-hoa-loc', supplierId: 'supplier-2', name: 'Xoài Cát Hòa Lộc', unit: 'kg', availableKg: 240, publicPricePerKg: 32000, uses: ['JUICE', 'SMOOTHIE', 'FRESH'], originLabel: 'Tiền Giang', packagingLabel: 'Sọt 15 kg', active: true },
+    { id: 'carrot-dalat', commodityId: 'carrot', supplierId: 'supplier-1', name: 'Cà rốt Đà Lạt', unit: 'kg', availableKg: 600, publicPricePerKg: 13000, uses: ['JUICE', 'KITCHEN'], originLabel: 'Lâm Đồng', packagingLabel: 'Bao 15 kg', active: true },
+    { id: 'tomato-dalat', commodityId: 'tomato', supplierId: 'supplier-1', name: 'Cà chua Đà Lạt', unit: 'kg', availableKg: 450, publicPricePerKg: 16000, uses: ['JUICE', 'KITCHEN'], originLabel: 'Lâm Đồng', active: true },
+    { id: 'cabbage-dalat', commodityId: 'cabbage', supplierId: 'supplier-1', name: 'Bắp cải xanh', unit: 'kg', availableKg: 280, publicPricePerKg: 10000, uses: ['KITCHEN'], originLabel: 'Lâm Đồng', active: true },
+  ];
+  for (const fixture of fixtures) {
+    if (state.products.some(product => product.id === fixture.id) || !state.suppliers.some(supplier => supplier.id === fixture.supplierId)) continue;
+    state.products.push({ ...fixture, uses: [...fixture.uses], legacy: false });
+  }
+  for (const id of ['mango-cat-hoa-loc', 'carrot', 'tomato', 'cabbage']) {
+    const fixture = commodities.find(commodity => commodity.id === id);
+    if (fixture && !state.commodities.some(commodity => commodity.id === id)) state.commodities.push({ ...fixture });
+  }
+  return state;
 }
 export function addAdminShowcaseProfiles(state: DemoState): DemoState {
   if (state.profiles.some(profile => profile.id.startsWith('showcase-'))) return state;
@@ -83,7 +101,7 @@ export function addAdminOperationsShowcase(state: DemoState): DemoState {
   const minutesAgo = (minutes: number) => new Date(now - minutes * 60_000).toISOString();
   const deliveryDate = new Date(now + 24 * 60 * 60_000).toISOString().slice(0, 10);
   const deliveredDate = new Date(now).toISOString().slice(0, 10);
-  if (!['avocado-034', 'mango-mekong', 'dragon-fruit', 'tomato-dalat', 'carrot-dalat', 'cabbage-dalat'].every(id => state.products.some(product => product.id === id))) return state;
+  if (!['avocado-034', 'mango-mekong', 'dragon-fruit'].every(id => state.products.some(product => product.id === id))) return state;
   const item = (productId: string, productName: string, supplierId: string, supplierName: string, quantityKg: number, unitPriceVnd: number, qcSnapshot?: QualityReview) => ({
     productId, productName, supplierId, supplierName, quantityKg, unitPriceVnd, lineTotalVnd: quantityKg * unitPriceVnd, qcSnapshot,
   });

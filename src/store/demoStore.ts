@@ -1,4 +1,4 @@
-import { createSeed, addAdminOperationsShowcase, addAdminShowcaseProfiles, addGovernance, commodities, type DemoState } from '../mocks/seed';
+import { createSeed, addAdminOperationsShowcase, addAdminShowcaseProducts, addAdminShowcaseProfiles, addGovernance, commodities, type DemoState } from '../mocks/seed';
 import type { DemoDataEvent, ProductListing } from '../types/index';
 
 const KEY = 'b2b-demo-v1';
@@ -56,6 +56,7 @@ function current(): DemoState {
   }
   // Reconcile each fixture by stable ID so partially seeded sessions are repaired without resetting user data.
   const before = JSON.stringify(state);
+  addAdminShowcaseProducts(state);
   addAdminShowcaseProfiles(state);
   addAdminOperationsShowcase(state);
   if (JSON.stringify(state) !== before) storage()?.setItem(KEY, JSON.stringify(state));
