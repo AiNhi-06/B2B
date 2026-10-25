@@ -55,15 +55,15 @@ export function AdminDashboard({ displayName, onSignOut }: { displayName: string
       <div className="admin-sidebar-foot"><div><span>FARMGO Engine</span><strong><i/> MÔ PHỎNG</strong></div><div><span>Chế độ</span><strong>Mô phỏng</strong></div><small>Không kết nối dịch vụ thật</small></div>
     </aside>
     <section className="admin-console-main">
-      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/></header>
-      <main className="admin-console-content"><Routes>
+      <header className="admin-console-topbar"><div className="admin-topbar-inner"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/></div></header>
+      <main className="admin-console-content"><div className="admin-page-wrapper"><Routes>
         <Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/>
         <Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/>
         <Route index element={<Navigate to="/admin/approvals" replace/>}/><Route path="products" element={<PricingPage/>}/>
         <Route path="suppliers" element={<AdminSuppliersPage/>}/><Route path="orders" element={<AdminOrdersPage/>}/>
         <Route path="aggregate" element={<AggregatePage/>}/><Route path="labels" element={<LabelsPage/>}/>
         <Route path="shipments" element={<ShipmentsPage/>}/><Route path="*" element={<Navigate to="/admin" replace/>}/>
-      </Routes></main>
+      </Routes></div></main>
     </section>
   </div></HubProductPhotos>;
 }
@@ -87,3 +87,5 @@ function AdminTopbarActions() {
     {(state.error || batchMessage) && <span className={state.error ? 'admin-topbar-feedback is-error' : 'admin-topbar-feedback'} role="status">{state.error || batchMessage}</span>}
   </div>;
 }
+
+\r\n

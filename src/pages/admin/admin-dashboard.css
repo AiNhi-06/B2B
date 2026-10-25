@@ -323,3 +323,76 @@
   .freso-admin-shell .approval-review-form .action-row { display: grid; grid-template-columns: minmax(0,1fr); }
   .freso-admin-shell .approval-review-form .action-row button { width: 100%; }
 }
+
+/* Shared admin frame and consistent viewport gutter */
+html:has(.freso-admin-shell) { scrollbar-gutter: stable; }
+.freso-admin-shell .admin-console-content { min-width: 0; padding-inline: clamp(18px,2.5vw,34px); }
+.admin-page-wrapper { width: 100%; max-width: 1600px; min-width: 0; margin-inline: auto; }
+.admin-console-topbar { padding-inline: clamp(18px,2.5vw,34px); }
+.admin-topbar-inner { width: 100%; max-width: 1600px; min-width: 0; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.admin-nav-group h2 { padding-inline: 9px; color: #a8bad0; font-size: 11px; }
+.admin-console-link { font-size: 14px; line-height: 1.35; }
+.admin-topbar-crumb { font-size: 13px; }
+.admin-console-profile strong { font-size: 13px; }
+.admin-console-profile small { color: #9de8be; font-size: 12px; line-height: 1.4; }
+.admin-sidebar-foot { color: #a8bad0; font-size: 12px; }
+.admin-sidebar-foot strong { color: #e2eaf4; font-size: 12px; }
+.admin-sidebar-foot small { color: #a8bad0; font-size: 12px; line-height: 1.4; }
+.freso-admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+.freso-admin-shell select,
+.freso-admin-shell textarea { min-width: 0; min-height: 42px; height: 42px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; color: #172d24; background: #fff; box-shadow: none; font: inherit; font-size: 13px; line-height: 1.4; }
+.freso-admin-shell textarea { resize: vertical; }
+.freso-admin-shell input[type="file"] { min-height: 42px; height: auto; padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+.freso-admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):focus-visible,
+.freso-admin-shell select:focus-visible,
+.freso-admin-shell textarea:focus-visible,
+.freso-admin-shell input[type="file"]:focus-visible { outline: 0; border-color: #15945d; box-shadow: 0 0 0 3px rgb(21 148 93 / 18%); }
+.freso-admin-shell input[type="checkbox"], .freso-admin-shell input[type="radio"] { accent-color: #087f49; }
+.freso-admin-shell .admin-application-card:not(.is-pending) { grid-template-columns: minmax(0,1fr); }
+.freso-admin-shell .admin-application-card:not(.is-pending) .approval-card-main { width: 100%; }
+.freso-admin-shell .admin-application-heading .governance-badge { flex: 0 0 auto; }
+.suppliers-page-heading p { max-width: none; }
+.freso-admin-shell .supplier-directory-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.supplier-directory-heading { min-height: 50px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #dbe5de; background: #f8faf9; }
+.supplier-directory-heading h2 { margin: 0; font-size: 14px; }
+.supplier-directory-heading > span { color: #607267; font-size: 11px; }
+.supplier-directory-card .table-responsive { min-width: 0; overflow-x: auto; }
+.freso-admin-shell .supplier-directory-card .data-table { min-width: 680px; }
+.freso-admin-shell .supplier-directory-card .data-table th,
+.freso-admin-shell .supplier-directory-card .data-table td { padding-inline: 16px; }
+.supplier-missing-value { color: #77847b; font-style: italic; }
+.supplier-directory-empty { padding: 18px; color: #65766b; font-size: 12px; }
+.record-source-id { display: block; margin-top: 3px; color: #738176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.claim-card-heading .record-source-id { overflow-wrap: anywhere; }
+.admin-shipments-page { display: grid; gap: 16px; }
+.admin-shipments-page > .page-heading { margin: 0; }
+.admin-shipments-page > .card { min-width: 0; margin: 0; }
+.admin-shipments-page .card-title { margin: 0 0 12px; color: #263d30; font-size: 16px; }
+.shipment-route-card { min-width: 0; }
+.shipment-route-heading { min-width: 0; gap: 16px; }
+.shipment-route-heading > div:first-child { min-width: 0; }
+.shipment-route-heading strong { overflow-wrap: anywhere; line-height: 1.4; }
+.shipment-source-id { margin: 3px 0; color: #738176; font-size: 10px; }
+.shipment-gps-tag { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 10px; border: 1px solid #d8e2dc; border-radius: 7px; color: #52665c; background: #f4f7f5; font-size: 12px; }
+.shipment-route-footer { gap: 12px; flex-wrap: wrap; }
+.shipment-route-footer > div { min-width: 0; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.shipment-route-footer button { min-height: 40px; }
+@media (max-width: 900px) {
+  .admin-console-topbar { align-items: center; }
+  .admin-topbar-inner { align-items: flex-start; flex-wrap: wrap; }
+  .admin-page-wrapper { max-width: none; }
+  .freso-admin-shell .supplier-directory-card .data-table { min-width: 640px; }
+}
+@media (max-width: 700px) {
+  .admin-console-link { font-size: 13px; }
+  .admin-topbar-crumb { font-size: 12px; }
+  .admin-nav-group h2 { font-size: 11px; }
+  .admin-console-profile small { font-size: 12px; }
+  .admin-sidebar-foot, .admin-sidebar-foot strong, .admin-sidebar-foot small { font-size: 12px; }
+  .admin-console-topbar { padding-inline: 12px; }
+  .freso-admin-shell .admin-console-content { padding-inline: 12px; }
+  .admin-shipments-page .shipment-route-heading { align-items: flex-start !important; flex-direction: column; }
+  .shipment-route-footer { align-items: stretch !important; flex-direction: column; }
+  .shipment-route-footer > div { justify-content: stretch; }
+  .shipment-route-footer button { width: 100%; }
+}
