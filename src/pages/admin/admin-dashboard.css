@@ -286,3 +286,40 @@
   .freso-admin-shell .finance-withdraw-box { grid-template-columns: minmax(0,1fr); align-items: stretch; }
   .finance-note-field { flex-basis: 100%; }
 }
+/* Business approval cards */
+.admin-approval-groups { display: grid; gap: 24px; }
+.admin-approval-group { min-width: 0; }
+.admin-approval-group > header { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.admin-approval-group > header h2 { margin: 0; color: #263d30; font-size: 15px; }
+.admin-approval-group > header p { margin: 3px 0 0; color: #65766b; font-size: 11px; }
+.admin-approval-group > header > span { min-width: 27px; height: 27px; padding: 0 7px; display: grid; place-items: center; border: 1px solid #dce8df; border-radius: 999px; color: #17613d; background: #fff; font-size: 11px; font-weight: 750; }
+.admin-application-grid { grid-template-columns: minmax(0,1fr); gap: 9px; }
+.freso-admin-shell .admin-application-card { min-width: 0; padding: 14px 16px; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(320px,.9fr); align-items: center; gap: 14px 22px; }
+.approval-card-main { min-width: 0; }
+.admin-application-heading { align-items: center; }
+.admin-application-heading h3 { min-width: 0; margin: 0; color: #263d30; font-size: 14px; line-height: 1.35; }
+.freso-admin-shell .admin-application-details { gap: 5px; margin-top: 8px; }
+.freso-admin-shell .admin-application-details p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 8px; color: #52665c; font-size: 11px; line-height: 1.45; }
+.freso-admin-shell .admin-application-details p strong { color: #34483b; font-weight: 700; }
+.admin-application-details p i { color: #9aa89e; font-style: normal; }
+.freso-admin-shell .admin-application-card .approval-review-form { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; padding-left: 18px; border-left: 1px solid #e5ece7; }
+.freso-admin-shell .approval-review-form label { display: grid; gap: 5px; margin: 0; color: #52665c; font-size: 10px; font-weight: 650; }
+.freso-admin-shell .approval-review-form input { width: 100%; min-width: 0; min-height: 38px; padding: 8px 10px; box-sizing: border-box; }
+.freso-admin-shell .approval-review-form .action-row { flex-wrap: wrap; gap: 7px; margin: 0; }
+.freso-admin-shell .approval-review-form .action-row button { min-height: 38px; padding-inline: 12px; }
+.approval-rejection-reason { margin: 7px 0 0; color: #9b2c2c; font-size: 11px; }
+.approval-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.approval-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.approval-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.admin-approval-empty { margin: 0; padding: 18px; color: #65766b; font-size: 12px; }
+@media (max-width: 900px) {
+  .freso-admin-shell .admin-application-card { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .freso-admin-shell .admin-application-card .approval-review-form { padding: 12px 0 0; border-top: 1px solid #e5ece7; border-left: 0; }
+}
+@media (max-width: 700px) {
+  .admin-approval-groups { gap: 18px; }
+  .freso-admin-shell .admin-application-card { padding: 12px; }
+  .admin-application-heading { align-items: flex-start; flex-direction: column; }
+  .freso-admin-shell .approval-review-form .action-row { display: grid; grid-template-columns: minmax(0,1fr); }
+  .freso-admin-shell .approval-review-form .action-row button { width: 100%; }
+}
