@@ -128,7 +128,7 @@ export function LabelsPage() {
                 </div>
 
                 <div className="demo-chip" style={{ width: '100%', textAlign: 'center', display: 'block' }}>
-                  QR demo — không dùng để quét thực tế
+                  QR mô phỏng — không dùng để quét thực tế
                 </div>
               </div>
             );

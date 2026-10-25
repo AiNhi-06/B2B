@@ -56,7 +56,7 @@ export function ShipmentsPage() {
   const groupKey = (o: Order) => `${o.deliveryDate ?? 'LEGACY'}|${o.deliverySlot ?? 'LEGACY'}`;
   const groups = [...new Set(eligibleOrders.map(groupKey))];
   const selectedGroup = groups.includes(scheduleGroup) ? scheduleGroup : groups[0] ?? '';
-  const scheduleLabel = (date?: string, slot?: string) => date ? `${date} · ${slot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Demo cũ — chưa có lịch giao';
+  const scheduleLabel = (date?: string, slot?: string) => date ? `${date} · ${slot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Dữ liệu cũ — chưa có lịch giao';
   const toggleSelectOrder = (orderId: string) => {
     setSelectedOrderIds((prev) =>
       prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]

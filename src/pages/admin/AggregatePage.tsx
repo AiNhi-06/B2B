@@ -70,7 +70,7 @@ export function AggregatePage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem' }}>🔄 Gom Nhu Cầu Demo (mốc 22:00)</h2>
+          <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem' }}>🔄 Gom Nhu Cầu (mốc 22:00)</h2>
           <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
             Tổng hợp các đơn đặt hàng nhỏ lẻ từ tất cả các quán cà phê thành đơn hàng sỉ tổng gửi về các nhà vườn.
           </p>

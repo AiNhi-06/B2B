@@ -33,7 +33,7 @@ const pageTitles: Record<string, string> = {
   '/admin/suppliers': 'Nhà cung cấp', '/admin/quality': 'Chất lượng & QC',
   '/admin/claims': 'Khiếu nại', '/admin/orders': 'Đơn hàng',
   '/admin/aggregate': 'Gom nhu cầu', '/admin/shipments': 'Đơn hàng & Milk-Run',
-  '/admin/products': 'Danh mục & giá', '/admin/labels': 'Tem sọt demo',
+  '/admin/products': 'Danh mục & giá', '/admin/labels': 'Tem sọt',
   '/admin/finance': 'Tiền & đối soát',
 };
 
@@ -53,10 +53,10 @@ export function AdminDashboard({ displayName, onSignOut }: { displayName: string
           </NavLink>)}
         </section>)}
       </nav>
-      <div className="admin-sidebar-foot"><div><span>FRESO Engine</span><strong><i/> DEMO</strong></div><div><span>Chế độ</span><strong>Mô phỏng</strong></div><small>Không kết nối dịch vụ thật</small></div>
+      <div className="admin-sidebar-foot"><div><span>FRESO Engine</span><strong><i/> MÔ PHỎNG</strong></div><div><span>Chế độ</span><strong>Mô phỏng</strong></div><small>Không kết nối dịch vụ thật</small></div>
     </aside>
     <section className="admin-console-main">
-      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/><details className="admin-clock-menu"><summary>Đồng hồ demo</summary><DemoClock/></details></header>
+      <header className="admin-console-topbar"><div className="admin-topbar-crumb"><span>⌁ CENTRAL SYSTEM</span><i>/</i><strong>{title}</strong></div><AdminTopbarActions/><details className="admin-clock-menu"><summary>Đồng hồ</summary><DemoClock/></details></header>
       <main className="admin-console-content"><Routes>
         <Route path="finance" element={<FinancePage/>}/><Route path="claims" element={<ClaimsPage/>}/>
         <Route path="quality" element={<QualityPage/>}/><Route path="approvals" element={<ApprovalsPage/>}/>
@@ -77,13 +77,13 @@ function AdminTopbarActions() {
     setBatchMessage('');
     const success = await state.run(async () => {
       const demand = await api.aggregateDemand();
-      setBatchMessage(`Đã gom nhu cầu demo thành ${demand.length} nhóm.`);
+      setBatchMessage(`Đã gom nhu cầu thành ${demand.length} nhóm.`);
     });
     if (!success) setBatchMessage('');
   };
 
   return <div className="admin-topbar-actions">
-    <div className="admin-escrow-chip"><i/>Tổng tiền hàng đang giữ demo: <strong>{state.data ? money(escrowVnd) : 'Đang tải…'}</strong></div>
+    <div className="admin-escrow-chip"><i/>Tổng tiền hàng đang giữ: <strong>{state.data ? money(escrowVnd) : 'Đang tải…'}</strong></div>
     <button className="admin-batch-button" onClick={() => void runBatch()} disabled={state.busy}>⚡ Chạy Batch 21h00</button>
     {(state.error || batchMessage) && <span className={state.error ? 'admin-topbar-feedback is-error' : 'admin-topbar-feedback'} role="status">{state.error || batchMessage}</span>}
   </div>;
