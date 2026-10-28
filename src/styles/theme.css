@@ -586,8 +586,9 @@ button { cursor: pointer; }
 .btn-primary:hover { background: var(--green-dark); }
 .btn-secondary { color: var(--text-primary); }
 .app-header { max-width: none; margin: 0; padding: 16px 28px; background: #fff; border-bottom: 1px solid #dbe5de; }
-.farmgo-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #06643b; font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; }
-.farmgo-brand small { display: block; color: #52665c; font-size: .75rem; font-weight: 500; letter-spacing: 0; margin-top: -3px; }
+.farmgo-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #06643b; }
+.farmgo-brand img { display: block; width: 132px; height: 70px; object-fit: contain; }
+.farmgo-brand-caption { color: #52665c; font-size: .75rem; font-weight: 500; }
 .demo-banner-slim { background: #073c2a; border-color: #195d43; }
 .app-main { max-width: 1540px; padding: 0 28px 90px; }
 .portal-layout { display: grid; grid-template-columns: 215px minmax(0,1fr); gap: 30px; }
@@ -718,7 +719,8 @@ button { cursor: pointer; }
 @media (max-width:600px) {
   .app-header { padding: 14px 16px; gap: 14px; }
   .app-main { padding: 0 16px 100px; }
-  .farmgo-brand { font-size: 1.375rem; }
+  .farmgo-brand img { width: 112px; height: 60px; }
+  .farmgo-brand-caption { display: none; }
   .buyer-hero { grid-template-columns: minmax(0,1fr); }
   .buyer-hero-copy { padding: 28px 24px; }
   .hero-produce { height: 180px; }

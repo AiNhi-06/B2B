@@ -59,7 +59,7 @@
 .portal-auth-page { min-height: 100svh; display: flex; flex-direction: column; }
 .auth-portal-masthead { min-height: 68px; padding: 0 clamp(18px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid #e2e8f0; background: #fff; }
 .auth-portal-brand { display: inline-flex; align-items: center; gap: 10px; color: #047857; text-decoration: none; }
-.auth-portal-brand > span:first-child { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; color: #fff; background: linear-gradient(140deg,#059669,#22c55e); font-size: 18px; font-weight: 850; }
+.auth-portal-brand > img { width: 104px; height: 56px; object-fit: contain; }
 .auth-portal-brand strong, .auth-portal-brand small { display: block; }
 .auth-portal-brand strong { font-size: 15px; letter-spacing: -.02em; }
 .auth-portal-brand small { margin-top: 2px; color: #64748b; font-size: 9px; letter-spacing: .035em; }
@@ -86,7 +86,6 @@
 .auth-admin { color: #19382a; background: #f4f7f3; }
 .auth-admin .auth-portal-masthead { border-color: #dbe5de; background: #fff; }
 .auth-admin .auth-portal-brand { color: #06643b; }
-.auth-admin .auth-portal-brand > span:first-child { color: #fff; background: #087f49; }
 .auth-admin .auth-portal-brand small { color: #52665c; }
 .auth-admin .auth-portal-demo { border-color: #d4e7d9; color: #174b35; background: #edf7ef; }
 .auth-admin .auth-form-wrap { padding: 32px; border: 1px solid #dbe5de; border-radius: 12px; background: #fff; box-shadow: 0 10px 30px rgb(25 55 35 / 9%); }

@@ -12,9 +12,8 @@
   font-family: Inter, 'Segoe UI', sans-serif;
 }
 .admin-console-sidebar { min-width: 0; height: 100svh; padding: 19px 13px 14px; display: flex; flex-direction: column; position: sticky; top: 0; background: var(--admin-navy); }
-.admin-console-brand { min-height: 54px; padding: 0 5px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--admin-line); }
-.admin-console-mark { width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 10px; color: #fff; background: linear-gradient(140deg,#059669,#14b8a6); box-shadow: 0 7px 16px rgb(16 185 129 / 20%); font-size: 20px; font-weight: 850; }
-.admin-console-mark svg { width: 24px; height: 24px; }
+.admin-console-brand { min-height: 66px; padding: 0 5px 15px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--admin-line); }
+.admin-console-logo { width: 104px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 6px; background: #fff; }
 .admin-console-brand strong { display: block; color: #f2f7f2; font-size: 13px; letter-spacing: .04em; }
 .admin-console-brand strong b { margin-left: 3px; padding: 2px 5px; border: 1px solid #385743; border-radius: 4px; color: #abd88a; background: #1c3727; font-size: 9px; }
 .admin-console-brand small { display: block; margin-top: 3px; color: #9eb2a3; font-size: 9px; }

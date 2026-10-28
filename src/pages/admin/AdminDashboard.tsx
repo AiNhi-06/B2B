@@ -42,7 +42,7 @@ export function AdminDashboard({ displayName, onSignOut }: { displayName: string
 
   return <HubProductPhotos><div className="freso-admin-shell">
     <aside className="admin-console-sidebar">
-      <div className="admin-console-brand"><span className="admin-console-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.7 20 6v5.5c0 5.1-3.4 8.1-8 10.5-4.6-2.4-8-5.4-8-10.5V6l8-3.3Z" stroke="currentColor" strokeWidth="2"/><path d="m8.8 11.8 2.1 2.1 4.4-4.6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span><span><strong>FARMGO <b>HQ</b></strong><small>admin.farmgo.vn · FruitHub</small></span></div>
+      <div className="admin-console-brand"><img className="admin-console-logo" src="/farmgo-logo.png" alt="FARMGO"/><span><strong>Trung tâm điều hành <b>HQ</b></strong><small>FruitHub · Dữ liệu mô phỏng</small></span></div>
       <div className="admin-console-profile"><span className="admin-profile-avatar">{displayName.slice(0, 1).toUpperCase()}</span><span className="admin-profile-copy"><strong>{displayName}</strong><small>Head of Operations & QC</small></span><i/><button className="admin-sidebar-signout" onClick={onSignOut} aria-label="Đăng xuất">↗</button></div>
       <nav aria-label="Điều hướng Admin" className="admin-console-nav">
         {navigation.map(group => <section key={group.title} className="admin-nav-group">
