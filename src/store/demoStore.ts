@@ -1,4 +1,4 @@
-import { createSeed, addGovernance, commodities, type DemoState } from '../mocks/seed';
+import { createSeed, addAdminOperationsShowcase, addAdminShowcaseProducts, addAdminShowcaseProfiles, addGovernance, commodities, type DemoState } from '../mocks/seed';
 import type { DemoDataEvent, ProductListing } from '../types/index';
 
 const KEY = 'b2b-demo-v1';
@@ -51,10 +51,15 @@ function current(): DemoState {
       let parsed: unknown;
       try { parsed = JSON.parse(saved); } catch { throw new Error('Không đọc được dữ liệu demo đã lưu. Dữ liệu chưa bị ghi đè.'); }
       const upgraded = upgradeStoredState(parsed);
-      if ((parsed as { version: number }).version !== 5) storage()?.setItem(KEY, JSON.stringify(upgraded));
       state = upgraded;
     } else state = createSeed();
   }
+  // Reconcile each fixture by stable ID so partially seeded sessions are repaired without resetting user data.
+  const before = JSON.stringify(state);
+  addAdminShowcaseProducts(state);
+  addAdminShowcaseProfiles(state);
+  addAdminOperationsShowcase(state);
+  if (JSON.stringify(state) !== before) storage()?.setItem(KEY, JSON.stringify(state));
   return state;
 }
 export function readState(): DemoState { return structuredClone(current()); }

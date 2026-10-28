@@ -1,0 +1,510 @@
+.transport-portal {
+  --tp-ink: #18352b;
+  --tp-leaf: #176b45;
+  --tp-mint: #d9f0df;
+  --tp-citrus: #d6e95b;
+  --tp-paper: #f4f7f2;
+  --tp-line: #dce5dc;
+  color: var(--tp-ink);
+  min-height: 100svh;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-paper);
+  font-family: Inter, 'Segoe UI', sans-serif;
+}
+
+.transport-portal button { font: inherit; }
+.transport-masthead {
+  min-height: 76px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: #123e2b;
+  color: #f7fbf4;
+}
+.transport-brand { display: flex; align-items: center; gap: 12px; }
+.transport-brand-logo { width: 112px; height: 58px; padding: 3px 7px; box-sizing: border-box; border-radius: 7px; background: #fff; object-fit: contain; }
+.transport-brand strong { display: block; color: inherit; font-size: 18px; letter-spacing: -.03em; }
+.transport-brand small { display: block; margin-top: 2px; color: #b9d0c2; font-size: 10px; font-weight: 650; letter-spacing: .05em; }
+.transport-demo-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #3f6852; border-radius: 999px; color: #e4f1e7; font-size: 11px; }
+.transport-demo-chip span { width: 7px; height: 7px; border-radius: 50%; background: var(--tp-citrus); }
+.transport-masthead-actions { display: flex; align-items: center; gap: 12px; }
+.transport-signed-in { color: #f0f6ef; font-size: 10px; font-weight: 700; }
+.transport-signed-in small { display: block; margin-top: 2px; color: #a9c3ad; font-size: 9px; font-weight: 400; }
+.transport-signout { min-height: 34px; padding: 0 11px; border: 1px solid #4d6b56; border-radius: 7px; color: #e7f0e7; background: transparent; font-size: 10px; cursor: pointer; }
+.transport-signout:hover { background: #244633; }
+.transport-step-nav { min-height: 62px; padding: 0 max(clamp(14px, 3vw, 36px), calc((100vw - 1280px) / 2)); display: flex; align-items: stretch; gap: 5px; position: sticky; top: 0; z-index: 20; overflow-x: auto; border-bottom: 1px solid #dfe8dd; background: #fff; }
+.transport-step-nav button { min-width: 138px; min-height: 61px; padding: 0 10px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-bottom: 3px solid transparent; color: #7a887d; background: transparent; text-align: left; cursor: pointer; }
+.transport-step-nav button > span { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #65766a; background: #e9eee8; font-size: 10px; font-weight: 750; }
+.transport-step-nav button strong { font-size: 10px; font-weight: 650; white-space: nowrap; }
+.transport-step-nav button:hover { color: #225d3b; background: #f7faf5; }
+.transport-step-nav button.active { border-bottom-color: #25834f; color: #1d7447; background: #f6fbf4; }
+.transport-step-nav button.active > span { color: #fff; background: #27834f; }
+.transport-step-nav button:focus-visible { outline: 3px solid #a5be43; outline-offset: -3px; }
+
+.transport-hero { min-height: 225px; padding: 30px clamp(22px, 4vw, 56px); display: grid; grid-template-columns: 1.2fr .8fr; gap: 30px; align-items: center; background: #dff0df; }
+.transport-hero-copy { max-width: 520px; }
+.transport-eyebrow { margin: 0 0 11px; color: var(--tp-leaf); font-size: 11px; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.transport-hero h1 { margin: 0; color: #143a29; font-size: clamp(30px, 4vw, 46px); font-weight: 750; line-height: 1.02; letter-spacing: -.055em; }
+.transport-hero h1 em { color: var(--tp-leaf); font-style: normal; }
+.transport-hero-copy > p:last-child { max-width: 430px; margin: 13px 0 0; color: #4a6556; font-size: 13px; line-height: 1.55; }
+.transport-step-banner { min-height: 150px; padding: 25px clamp(22px, 4vw, 56px); display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #e4f0df; }
+.transport-step-banner h1 { margin: 4px 0 0; color: #173c2a; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.045em; }
+.transport-step-banner p { margin: 6px 0 0; color: #607765; font-size: 11px; }
+.transport-step-count { min-width: 120px; padding: 12px 15px; display: grid; justify-items: end; border-left: 1px solid #bdd4bd; }
+.transport-step-count strong { color: #216b43; font-size: 30px; line-height: 1; letter-spacing: -.06em; }
+.transport-step-count span { margin-top: 5px; color: #66816a; font-size: 9px; }
+.transport-route-art { min-height: 150px; padding: 20px 22px 14px; position: relative; overflow: hidden; border: 1px solid #c0ddc2; border-radius: 15px; background: #edf7e8; }
+.transport-route-art::before, .transport-route-art::after { content: ''; position: absolute; width: 145px; height: 145px; border: 1px solid #c9e2c7; border-radius: 50%; right: -22px; top: -80px; }
+.transport-route-art::after { width: 190px; height: 190px; right: -46px; top: -103px; }
+.route-art-label { position: relative; z-index: 1; color: #496954; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.route-art-line { height: 43px; margin: 14px 10px 0 3px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+.route-art-line::before { content: ''; position: absolute; inset: 50% 0 auto; border-top: 2px dashed #82a98c; }
+.route-art-line span { position: relative; width: 13px; height: 13px; border: 3px solid #edf7e8; border-radius: 50%; background: var(--tp-leaf); box-shadow: 0 0 0 1px #7dad8b; }
+.route-art-line span:first-child { width: 19px; height: 19px; background: #d0e84f; box-shadow: 0 0 0 1px #a7bd3c; }
+.route-art-caption { display: flex; justify-content: space-between; color: #31563d; font-size: 10px; font-weight: 700; }
+.transport-route-art > small { display: block; margin-top: 8px; color: #758976; font-size: 10px; }
+
+.transport-content { max-width: 1280px; margin: 0 auto; padding: 25px clamp(16px, 3vw, 40px) 14px; }
+.transport-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 17px; }
+.transport-section-heading h2 { margin: 0; color: #183c2d; font-size: 22px; line-height: 1.2; letter-spacing: -.04em; }
+.transport-section-heading p { margin: 5px 0 0; color: #738176; font-size: 12px; }
+.transport-filter { display: flex; gap: 3px; padding: 3px; border: 1px solid #dce6dc; border-radius: 9px; background: #fff; }
+.transport-filter button { padding: 7px 10px; border: 0; border-radius: 6px; color: #637166; background: transparent; font-size: 11px; cursor: pointer; }
+.transport-filter button.selected { color: #fff; background: #1d6847; }
+.transport-metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 19px; }
+.transport-metrics > div { min-height: 93px; padding: 13px 16px 12px; display: grid; grid-template-columns: 1fr auto; align-content: space-between; border: 1px solid var(--tp-line); border-radius: 11px; background: #fff; }
+.transport-metrics span { color: #617468; font-size: 11px; font-weight: 650; }
+.transport-metrics strong { grid-row: span 2; align-self: center; color: #1d6847; font-size: 33px; font-weight: 700; letter-spacing: -.07em; }
+.transport-metrics small { color: #89968c; font-size: 10px; }
+.transport-quick-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-bottom: 12px; }
+.transport-quick-steps button { min-height: 86px; padding: 12px; display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; align-items: center; gap: 4px 8px; border: 1px solid #dbe5da; border-radius: 9px; color: #244634; background: #fff; text-align: left; cursor: pointer; }
+.transport-quick-steps button:hover { border-color: #91bc91; background: #fbfdf9; }
+.transport-quick-steps button > span { grid-row: span 2; color: #9aaa9c; font-size: 10px; font-weight: 750; }
+.transport-quick-steps button strong { font-size: 10px; }
+.transport-quick-steps button small { grid-column: 2; color: #7b897e; font-size: 9px; }
+.transport-quick-steps button b { grid-column: 3; grid-row: 1 / span 2; color: #428055; font-weight: 500; }
+.transport-overview-note { padding: 15px; display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; border: 1px solid #dbe5da; border-radius: 10px; background: #fff; }
+.transport-overview-stamp { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 11px; color: #2b7148; background: #e6f2e3; }
+.transport-overview-stamp svg { width: 28px; height: 28px; }
+.transport-overview-note strong { color: #294b34; font-size: 11px; }
+.transport-overview-note p { margin: 4px 0 0; color: #78867b; font-size: 10px; line-height: 1.5; }
+.transport-overview-note button { min-height: 34px; padding: 0 10px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid #d5e5d3; border-radius: 6px; color: #256840; background: #f6faf3; font-size: 9px; font-weight: 700; cursor: pointer; }
+.transport-overview-note button:hover { background: #edf6e9; }
+.transport-count-label { padding: 6px 9px; border-radius: 999px; color: #39704c; background: #e6f1e3; font-size: 10px; white-space: nowrap; }
+.transport-notice { margin-bottom: 12px; padding: 10px 13px; border: 1px solid #c4dfc6; border-radius: 8px; color: #205b3d; background: #eaf5e8; font-size: 12px; }
+.transport-empty { min-height: 220px; padding: 30px; display: grid; justify-items: center; align-content: center; border: 1px dashed #cbd9cb; border-radius: 13px; background: #fbfdf9; text-align: center; }
+.transport-empty-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; color: #1c6947; background: #e5f2df; }
+.transport-empty-icon svg { width: 30px; height: 30px; }
+.transport-empty h3 { margin: 13px 0 4px; color: #254735; font-size: 16px; }
+.transport-empty p { max-width: 400px; margin: 0; color: #77857b; font-size: 12px; line-height: 1.55; }
+.transport-trip-list { display: grid; gap: 11px; }
+.transport-trip { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 7px; padding: 15px 16px 15px 9px; border: 1px solid #dbe5da; border-radius: 12px; background: #fff; }
+.trip-index { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #91a197; font-size: 11px; font-weight: 700; }
+.trip-index i { width: 1px; flex: 1; min-height: 18px; background: #dce7dc; }
+.trip-main { min-width: 0; }
+.trip-topline { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.trip-kicker { margin: 0 0 4px; color: #7b897e; font-size: 10px; font-weight: 650; }
+.trip-kicker span { padding: 0 4px; color: #c2cdc2; }
+.trip-topline h3 { margin: 0; color: #1e3d2d; font-size: 17px; letter-spacing: -.03em; }
+.trip-status { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 999px; color: #596e5d; background: #edf1ec; font-size: 10px; font-weight: 700; }
+.trip-status i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-assigned { color: #805a17; background: #fff2cf; }
+.status-in_transit { color: #24608b; background: #e5f2fb; }
+.status-delivered { color: #246747; background: #e3f2e6; }
+.trip-vehicle { margin: 12px 0; padding: 9px 11px; display: flex; flex-wrap: wrap; gap: 8px 25px; border-radius: 7px; background: #f5f8f3; }
+.trip-vehicle span { display: flex; gap: 6px; color: #435a49; font-size: 11px; }
+.trip-vehicle b { color: #859389; font-weight: 550; }
+.trip-stops { border-top: 1px solid #edf1ec; }
+.trip-stops-heading { padding: 10px 2px 5px; display: flex; justify-content: space-between; gap: 12px; color: #718175; font-size: 10px; font-weight: 700; }
+.trip-stops-heading span:last-child { color: #3e664c; font-weight: 600; }
+.trip-stops-heading i { padding: 0 3px; color: #b5c1b6; font-style: normal; }
+.trip-stop { min-width: 0; padding: 8px 2px; display: grid; grid-template-columns: 26px minmax(0,1fr) auto; gap: 8px; align-items: start; border-top: 1px solid #f1f4ef; }
+.stop-number { width: 23px; height: 23px; display: grid; place-items: center; border-radius: 7px; color: #396246; background: #eaf3e5; font-size: 9px; font-weight: 800; }
+.stop-details { min-width: 0; display: grid; gap: 2px; }
+.stop-details strong { color: #294735; font-size: 11px; }
+.stop-details span { overflow: hidden; color: #76847a; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.stop-details small { color: #8b978e; font-size: 10px; }
+.stop-order { color: #8a968c; font-size: 10px; }
+.trip-bottomline { margin-top: 9px; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid #edf1ec; }
+.trip-bottomline p { margin: 0; color: #7a897e; font-size: 10px; }
+.trip-action { min-height: 34px; padding: 0 13px; display: inline-flex; align-items: center; gap: 14px; border: 0; border-radius: 7px; color: #f7fbf5; background: #176b45; font-size: 11px; font-weight: 700; cursor: pointer; }
+.trip-action:hover { background: #115638; }
+.trip-action:disabled { cursor: wait; opacity: .65; }
+.trip-action:focus-visible, .transport-filter button:focus-visible { outline: 3px solid #a5be43; outline-offset: 2px; }
+.trip-done { color: #34714d; font-size: 11px; font-weight: 700; }
+.is-complete { background: #fcfefb; }
+.transport-footnote { margin-top: 15px; padding: 12px 2px 1px; display: flex; justify-content: space-between; gap: 18px; border-top: 1px solid #dfe8de; color: #8b978d; font-size: 9px; }
+.transport-footnote span:first-child { color: #617664; font-weight: 700; }
+
+/* Six-stage transport workspace inspired by the supplied reference screens. */
+.transport-step-nav { justify-content: center; }
+.transport-step-nav button { min-width: max-content; padding-inline: 12px; gap: 9px; color: #52665c; }
+.transport-step-nav button strong { font-size: 13px; }
+.transport-step-nav button > span { width: 25px; height: 25px; font-size: 12px; }
+.transport-step-nav button > i { color: #c4d0c9; font-size: 18px; font-style: normal; }
+.transport-step-nav button:last-child > i { display: none; }
+.transport-step-nav button.active { border: 1px solid #a8e7c9; border-bottom: 3px solid #10a46d; border-radius: 8px 8px 0 0; color: #08875b; }
+.transport-content { max-width: 1360px; padding-top: 27px; }
+.transport-welcome-banner { min-height: 132px; padding: 23px 28px; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-radius: 15px; color: #fff; background: linear-gradient(105deg,#08734b,#0b5a42); box-shadow: 0 8px 18px rgb(17 66 44 / 12%); }
+.transport-welcome-banner h1 { margin: 8px 0 3px; color: #fff; font-size: 27px; letter-spacing: -.035em; }
+.transport-welcome-banner p { margin: 0; color: #d2e9dc; font-size: 14px; }
+.transport-welcome-pill { padding: 5px 9px; border-radius: 99px; color: #d4f8e5; background: rgb(31 183 120 / 25%); font-size: 12px; font-weight: 750; letter-spacing: .02em; }
+.transport-welcome-banner > button { min-height: 44px; padding: 0 17px; display: inline-flex; align-items: center; gap: 12px; border: 0; border-radius: 10px; color: #18281e; background: #f4c316; font-size: 14px; font-weight: 750; cursor: pointer; white-space: nowrap; }
+.transport-welcome-banner > button:hover { background: #ffdc43; }
+.transport-metrics-four { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 13px; margin: 18px 0 20px; }
+.transport-metrics-four > div { min-height: 104px; padding: 15px 17px; border-color: #e1e9ef; border-radius: 13px; }
+.transport-metrics-four span { font-size: 13px; }
+.transport-metrics-four > div > strong { font-size: 31px; }
+.transport-metrics-four small { font-size: 12px; }
+.transport-metrics-four .metric-unit { display: inline; font-size: 13px; font-weight: 600; letter-spacing: 0; }
+.transport-overview-grid { display: grid; grid-template-columns: minmax(0,2fr) minmax(285px,.95fr); align-items: start; gap: 18px; }
+.transport-route-summary,.transport-quick-panel { min-width: 0; padding: 19px; border: 1px solid #e0e8ee; border-radius: 14px; background: #fff; }
+.transport-route-summary > header,.transport-quick-panel > header { min-height: 36px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #edf1f4; }
+.transport-route-summary > header h2,.transport-quick-panel > header h2 { margin: 0 0 12px; color: #243f34; font-size: 16px; }
+.transport-demo-status { flex: 0 0 auto; padding: 5px 8px; border-radius: 20px; color: #11734e; background: #dcf7eb; font-size: 11px; font-weight: 750; }
+.transport-summary-stops { display: grid; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr) 24px minmax(0,1fr); align-items: center; gap: 8px; padding: 17px 0; }
+.transport-summary-stops article { min-height: 92px; padding: 13px; display: grid; align-content: start; gap: 5px; border: 1px solid #e2e9ef; border-radius: 11px; background: #f8fafc; }
+.transport-summary-stops article small { color: #78899a; font-size: 11px; font-weight: 750; letter-spacing: .035em; }
+.transport-summary-stops article strong { color: #253e35; font-size: 14px; }
+.transport-summary-stops article span { color: #6f8090; font-size: 12px; line-height: 1.4; }
+.transport-summary-stops > i { color: #9eb5a7; font-size: 19px; font-style: normal; text-align: center; }
+.transport-overview-callout { min-height: 64px; padding: 11px 13px; display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 10px; border: 1px solid #b5ecd3; border-radius: 10px; color: #077d57; background: #effcf6; }
+.transport-overview-callout > svg { width: 28px; height: 28px; }
+.transport-overview-callout > div { display: grid; gap: 3px; }
+.transport-overview-callout strong { color: #21493a; font-size: 14px; }
+.transport-overview-callout span { color: #668174; font-size: 12px; }
+.transport-overview-callout button { min-height: 38px; padding: 0 13px; border: 0; border-radius: 8px; color: #fff; background: #07986a; font-size: 13px; font-weight: 700; cursor: pointer; }
+.transport-quick-panel { display: grid; gap: 9px; }
+.transport-quick-panel > header { margin-bottom: 1px; }
+.transport-quick-panel > header h2 { margin-bottom: 12px; }
+.transport-quick-panel > button { min-height: 54px; padding: 8px 10px; display: grid; grid-template-columns: 30px minmax(0,1fr) 15px; align-items: center; gap: 9px; border: 1px solid #e4ebf0; border-radius: 10px; color: #243e34; background: #fff; text-align: left; cursor: pointer; }
+.transport-quick-panel > button:hover { border-color: #9cdec0; background: #f7fcf9; }
+.transport-quick-panel > button > span { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 8px; color: #09855c; background: #d8f7e9; font-size: 12px; font-weight: 800; }
+.transport-quick-panel > button > div { min-width: 0; display: grid; gap: 3px; }
+.transport-quick-panel strong { font-size: 13px; }
+.transport-quick-panel small { overflow: hidden; color: #798a98; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.transport-quick-panel > button > b { color: #91a5b4; font-size: 20px; font-weight: 400; }
+.transport-stage-banner { min-height: 112px; padding: 19px 23px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-radius: 14px; color: #fff; background: linear-gradient(105deg,#08724b,#11814e); box-shadow: 0 7px 15px rgb(17 66 44 / 10%); }
+.transport-stage-banner .transport-eyebrow { color: #d2f8e5; }
+.transport-stage-banner h1 { margin: 5px 0 3px; color: #fff; font-size: 25px; letter-spacing: -.03em; }
+.transport-stage-banner p { margin: 0; color: #d8eee1; font-size: 13px; }
+.transport-stage-banner .transport-count-label { color: #096e4b; background: #d9f7e7; }
+.transport-step-trips > .transport-stage-banner { margin-bottom: 16px; }
+.transport-classification-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; margin-bottom: 17px; }
+.transport-classification-grid article { min-height: 108px; padding: 15px 17px; display: grid; align-content: start; gap: 7px; border: 1px solid #e1e8ee; border-radius: 12px; background: #fff; box-shadow: 0 2px 4px rgb(29 52 42 / 4%); }
+.transport-classification-grid article > span { color: #56816a; font-size: 11px; font-weight: 800; letter-spacing: .03em; }
+.transport-classification-grid article > strong { color: #203e30; font-size: 20px; }
+.transport-classification-grid article > small { color: #718276; font-size: 12px; line-height: 1.4; }
+.transport-route-planner { margin-bottom: 16px; padding: 19px; border: 1px solid #e1e8ee; border-radius: 14px; background: #fff; }
+.transport-route-planner-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #e8eef2; }
+.transport-route-planner-head .transport-eyebrow { margin-bottom: 4px; }
+.transport-route-planner-head h2 { margin: 0; color: #203b30; font-size: 19px; }
+.transport-route-planner-head p { margin: 4px 0 0; color: #718276; font-size: 13px; }
+.transport-route-planner-head select { max-width: 320px; min-height: 42px; padding: 0 10px; border: 1px solid #d8e3e9; border-radius: 8px; color: #30483c; background: #fff; font: inherit; font-size: 13px; }
+.transport-route-planner-body { display: grid; grid-template-columns: minmax(280px,.9fr) minmax(0,1.4fr); gap: 17px; padding-top: 16px; }
+.transport-route-timeline { display: grid; gap: 10px; }
+.transport-route-timeline > strong { margin-bottom: 2px; color: #324b3c; font-size: 14px; }
+.route-stop-row { display: grid; grid-template-columns: 30px minmax(0,1fr); align-items: start; gap: 10px; }
+.route-stop-row > span { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: #0b9b6c; font-size: 12px; font-weight: 800; }
+.route-stop-row:first-of-type > span { background: #346ae7; }
+.route-stop-row > div { min-width: 0; padding: 2px 0 9px; display: grid; gap: 3px; border-bottom: 1px solid #edf1f4; }
+.route-stop-row b { color: #294536; font-size: 13px; }
+.route-stop-row small { color: #728277; font-size: 12px; line-height: 1.4; }
+.transport-route-map { min-height: 230px; padding: 18px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #dce7ef; border-radius: 12px; background-color: #f2f7fb; background-image: radial-gradient(#d5e0e9 1px,transparent 1px); background-size: 15px 15px; }
+.transport-route-map .route-art-label { padding: 10px 12px; border-radius: 9px; color: #40576a; background: #fff; letter-spacing: .025em; }
+.route-map-line { min-height: 94px; margin: 0 35px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+.route-map-line::before { content: ''; position: absolute; inset: 50% 0 auto; border-top: 3px dashed #53ad82; }
+.route-map-line i { z-index: 1; width: 22px; height: 22px; border: 4px solid #f2f7fb; border-radius: 50%; background: #0b9c6b; box-shadow: 0 0 0 2px #7ac79e; }
+.route-map-line i:first-child { width: 30px; height: 30px; background: #346ae7; box-shadow: 0 0 0 2px #a8bff4; }
+.route-map-labels { display: flex; justify-content: space-between; gap: 10px; color: #304a3d; font-size: 12px; }
+.transport-route-map p { margin: 17px 0 0; padding: 10px; border-radius: 8px; color: #607587; background: #fff; font-size: 12px; line-height: 1.45; }
+.transport-action-intro { margin-bottom: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; border: 1px solid #c9e8d4; border-radius: 12px; background: #f2fbf2; }
+.transport-action-icon { width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 11px; color: #14744a; background: #dff3df; }
+.transport-action-icon svg { width: 28px; height: 28px; }
+.transport-action-intro > div { flex: 1; }
+.transport-action-intro strong { color: #234735; font-size: 15px; }
+.transport-action-intro p { margin: 4px 0 0; color: #6d8172; font-size: 13px; line-height: 1.45; }
+.transport-delivery-intro { margin-bottom: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-radius: 13px; color: #fff; background: #172338; }
+.transport-delivery-intro .transport-eyebrow { margin: 0; color: #f7b934; }
+.transport-delivery-intro h2 { margin: 5px 0; color: #fff; font-size: 18px; }
+.transport-delivery-intro p { margin: 0; color: #c1ccda; font-size: 13px; }
+.transport-delivery-intro > span { flex: 0 0 auto; padding: 8px 10px; border-radius: 7px; color: #d1fae5; background: #24563f; font-size: 11px; font-weight: 800; }
+.transport-support-note { margin-bottom: 15px; padding: 15px 17px; border: 1px solid #f1dfac; border-radius: 11px; background: #fffbeb; }
+.transport-support-note strong { color: #634c1c; font-size: 15px; }
+.transport-support-note p { margin: 5px 0; color: #78683e; font-size: 13px; line-height: 1.5; }
+.transport-support-note > span { color: #8b7a4e; font-size: 12px; }
+.transport-step-trips .transport-trip-list,.transport-step-hub .transport-trip-list,.transport-step-delivery .transport-trip-list,.transport-step-complete .transport-trip-list { margin-top: 13px; }
+.transport-step-trips .transport-trip,.transport-step-hub .transport-trip,.transport-step-delivery .transport-trip,.transport-step-complete .transport-trip { padding: 17px 18px 17px 11px; border-color: #e0e8ee; box-shadow: 0 2px 5px rgb(29 52 42 / 4%); }
+.transport-step-trips .trip-action,.transport-step-hub .trip-action,.transport-step-delivery .trip-action { min-height: 40px; padding-inline: 15px; font-size: 13px; }
+.transport-step-trips .transport-trip-list { margin-top: 0; }
+
+/* Improve readability across the transport workspace. */
+.transport-brand small,
+.transport-signed-in small,
+.transport-step-count span,
+.transport-route-art > small,
+.transport-quick-steps button > span,
+.transport-quick-steps button small,
+.transport-metrics small,
+.trip-kicker,
+.trip-status,
+.trip-stops-heading,
+.stop-number,
+.stop-details span,
+.stop-details small,
+.stop-order,
+.trip-bottomline p,
+.transport-footnote { font-size: 12px; }
+.transport-demo-chip,
+.transport-signed-in,
+.transport-signout,
+.transport-step-nav button strong,
+.transport-step-nav button > span,
+.transport-step-banner p,
+.route-art-label,
+.route-art-caption,
+.transport-section-heading p,
+.transport-filter button,
+.transport-metrics span,
+.transport-quick-steps button strong,
+.transport-overview-note strong,
+.transport-overview-note button,
+.transport-count-label,
+.trip-index,
+.trip-vehicle span,
+.trip-action,
+.trip-done { font-size: 13px; }
+.transport-eyebrow { font-size: 13px; }
+.transport-hero-copy > p:last-child { font-size: 15px; }
+.transport-step-banner p { font-size: 14px; }
+.transport-section-heading h2 { font-size: 23px; }
+.transport-overview-note p { font-size: 13px; }
+.stop-details strong { font-size: 14px; }
+.trip-topline h3 { font-size: 18px; }
+.trip-stops-heading { font-size: 13px; }
+.trip-vehicle span { font-size: 13px; }
+.transport-notice { font-size: 14px; }
+
+@media (max-width: 720px) {
+  .transport-masthead { min-height: 64px; padding: 0 16px; }
+  .transport-masthead-actions { gap: 8px; }
+  .transport-demo-chip { padding: 7px 9px; font-size: 12px; }
+  .transport-step-nav { justify-content: flex-start; }
+  .transport-step-nav { min-height: 55px; padding-inline: 10px; }
+  .transport-step-nav button { min-width: 125px; min-height: 54px; }
+  .transport-step-nav button { min-width: max-content; padding-inline: 8px; gap: 6px; }
+  .transport-step-nav button strong { font-size: 12px; }
+  .transport-step-nav button > i { font-size: 15px; }
+  .transport-content { padding: 17px 13px 12px; }
+  .transport-welcome-banner { padding: 18px; align-items: stretch; flex-direction: column; gap: 15px; }
+  .transport-welcome-banner h1 { font-size: 23px; }
+  .transport-welcome-banner > button { justify-content: center; }
+  .transport-metrics-four { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .transport-metrics-four > div { min-height: 93px; padding: 12px; }
+  .transport-metrics-four > div > strong { font-size: 26px; }
+  .transport-overview-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .transport-route-summary,.transport-quick-panel { padding: 14px; }
+  .transport-summary-stops { grid-template-columns: minmax(0,1fr); gap: 7px; padding: 12px 0; }
+  .transport-summary-stops > i { transform: rotate(90deg); }
+  .transport-summary-stops article { min-height: 0; }
+  .transport-overview-callout { grid-template-columns: 30px minmax(0,1fr); }
+  .transport-overview-callout button { grid-column: 1 / -1; }
+  .transport-stage-banner { min-height: 0; padding: 16px; align-items: flex-start; }
+  .transport-stage-banner h1 { font-size: 21px; }
+  .transport-stage-banner p { max-width: 48ch; font-size: 12px; }
+  .transport-classification-grid { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .transport-classification-grid article { min-height: 0; padding: 12px 14px; }
+  .transport-route-planner { padding: 14px; }
+  .transport-route-planner-head { align-items: stretch; flex-direction: column; }
+  .transport-route-planner-head select { max-width: none; }
+  .transport-route-planner-body { grid-template-columns: minmax(0,1fr); }
+  .transport-route-map { min-height: 180px; }
+  .transport-action-intro { align-items: flex-start; flex-wrap: wrap; padding: 13px; }
+  .transport-action-intro > .transport-demo-status { margin-left: 56px; }
+  .transport-delivery-intro { align-items: flex-start; flex-direction: column; padding: 15px; }
+  .transport-support-note { padding: 13px; }
+  .transport-step-banner { min-height: 122px; padding: 20px; }
+  .transport-step-count { min-width: 85px; padding: 8px 0 8px 10px; }
+  .transport-step-count strong { font-size: 25px; }
+  .transport-hero { grid-template-columns: 1fr; gap: 19px; padding: 24px 20px; }
+  .transport-route-art { min-height: 130px; }
+  .transport-section-heading { align-items: flex-start; flex-direction: column; }
+  .transport-filter { width: 100%; }
+  .transport-filter button { flex: 1; }
+  .transport-metrics { gap: 7px; }
+  .transport-metrics > div { min-height: 83px; padding: 10px; }
+  .transport-metrics span { font-size: 12px; }
+  .transport-metrics strong { font-size: 27px; }
+  .transport-metrics small { max-width: 100px; font-size: 11px; }
+  .transport-quick-steps { grid-template-columns: minmax(0,1fr); }
+  .transport-quick-steps button { min-height: 64px; }
+  .transport-overview-note { grid-template-columns: 34px minmax(0,1fr); align-items: start; padding: 12px; }
+  .transport-overview-stamp { width: 34px; height: 34px; }
+  .transport-overview-note button { grid-column: 2; justify-content: space-between; }
+  .transport-trip { grid-template-columns: 27px minmax(0,1fr); gap: 3px; padding: 12px 10px 12px 5px; }
+  .transport-trip > .trip-index { font-size: 12px; }
+  .trip-kicker, .trip-status, .trip-vehicle span, .trip-stops-heading, .trip-bottomline p { font-size: 12px; }
+  .trip-topline { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .trip-vehicle { gap: 7px 13px; }
+  .trip-vehicle span { font-size: 12px; }
+  .transport-footnote { flex-direction: column; gap: 5px; }
+}
+
+@media (max-width: 420px) {
+  .transport-brand strong { font-size: 14px; }
+  .transport-brand-logo { width: 92px; height: 50px; }
+  .transport-brand { gap: 8px; }
+  .transport-brand small { max-width: 150px; font-size: 10px; line-height: 1.3; }
+  .transport-demo-chip { max-width: 144px; line-height: 1.3; }
+  .transport-signed-in { display: none; }
+  .transport-hero h1 { font-size: 32px; }
+  .trip-bottomline { align-items: flex-start; flex-direction: column; }
+  .trip-action { width: 100%; justify-content: space-between; }
+  .stop-details span { white-space: normal; }
+  .trip-stops-heading { font-size: 11px; }
+  .transport-metrics-four > div { padding: 10px; }
+  .transport-metrics-four span { font-size: 11px; }
+  .transport-metrics-four > div > strong { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transport-portal *, .transport-portal *::before, .transport-portal *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Reference-matched order batching, pickup scan, delivery scan and service feedback screens. */
+.transport-metrics-four > div:nth-child(3) > strong { font-size: 26px; white-space: nowrap; }
+.transport-metrics-four > div:nth-child(4) > strong { color: #df8b09; }
+.transport-classification-grid .transport-order-type-card { min-width: 0; min-height: 137px; padding: 15px; display: grid; align-content: start; gap: 7px; border: 1px solid #dfe7ec; border-radius: 12px; color: #243c32; background: #fff; text-align: left; box-shadow: 0 3px 7px rgb(29 52 42 / 5%); cursor: pointer; }
+.transport-order-type-card.type-a { border-bottom: 3px solid #06996a; }
+.transport-order-type-card.type-b { border-bottom: 3px solid #3579e8; }
+.transport-order-type-card.type-c { border-bottom: 3px solid #a03be8; }
+.transport-order-type-card.selected { outline: 2px solid #0aaa78; outline-offset: -2px; }
+.transport-order-type-card > span { color: #07865d; font-size: 11px; font-weight: 850; }
+.transport-order-type-card.type-b > span,.transport-order-type-card.type-b footer { color: #2766ce; }
+.transport-order-type-card.type-c > span,.transport-order-type-card.type-c footer { color: #8c36cb; }
+.transport-order-type-card > strong { color: #263d32; font-size: 16px; }
+.transport-order-type-card > small { color: #6e7e88; font-size: 12px; line-height: 1.45; }
+.transport-order-type-card > footer { margin-top: auto; display: flex; justify-content: space-between; gap: 8px; color: #087f58; font-size: 11px; }
+.transport-order-board { overflow: hidden; border: 1px solid #dfe7ec; border-radius: 13px; background: #fff; }
+.transport-order-board > header { min-height: 58px; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid #e8edf1; background: #f9fbfc; }
+.transport-order-board > header > div { display: grid; gap: 3px; }
+.transport-order-board h2 { margin: 0; color: #243d32; font-size: 15px; }
+.transport-order-board > header span { color: #718276; font-size: 12px; }
+.transport-order-board > header button,.transport-order-row > button { min-height: 38px; padding: 0 12px; border: 0; border-radius: 8px; color: #fff; background: #09976a; font-size: 12px; font-weight: 750; cursor: pointer; }
+.transport-order-board > header button:disabled { cursor: default; opacity: .55; }
+.transport-order-row { min-height: 82px; padding: 12px 15px; display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: 17px; border-bottom: 1px solid #edf1f4; }
+.transport-order-row:last-child { border-bottom: 0; }
+.transport-order-main { min-width: 0; display: grid; grid-template-columns: auto minmax(0,1fr); align-items: baseline; gap: 4px 8px; }
+.transport-order-id { padding: 2px 6px; border-radius: 4px; color: #344960; background: #e9eef3; font-size: 10px; }
+.transport-order-main > strong { color: #293f34; font-size: 14px; }
+.transport-order-main > small { grid-column: 1/-1; color: #6d7e8a; font-size: 12px; line-height: 1.4; }
+.transport-order-main > small:last-child { color: #167653; }
+.transport-order-money { min-width: 150px; display: grid; gap: 4px; color: #73828d; font-size: 11px; text-align: right; }
+.transport-order-money span { display: flex; justify-content: flex-end; gap: 5px; }
+.transport-order-money b { color: #078959; }
+.transport-order-money strong { color: #263d32; }
+.transport-order-row > button.is-confirmed { color: #176a4d; background: #dff6e9; }
+.transport-order-empty { margin: 0; padding: 23px; color: #718276; font-size: 13px; text-align: center; }
+.transport-scan-panel { width: min(100%,760px); margin: 0 auto 17px; padding: 24px; border: 1px solid #e0e8ef; border-radius: 15px; background: #fff; box-shadow: 0 2px 8px rgb(20 46 31 / 4%); }
+.transport-scan-heading { text-align: center; }
+.transport-scan-heading > span { display: inline-block; padding: 5px 9px; border-radius: 99px; color: #087c57; background: #dff7eb; font-size: 11px; font-weight: 800; }
+.transport-scan-heading h2 { margin: 9px 0 4px; color: #243d32; font-size: 21px; }
+.transport-scan-heading p { margin: 0; color: #6d7d89; font-size: 13px; }
+.pickup-supplier-select { margin-top: 19px; padding: 14px; display: grid; gap: 8px; border: 1px solid #e0e8ef; border-radius: 10px; color: #536878; background: #f8fafc; font-size: 12px; font-weight: 750; text-transform: uppercase; }
+.pickup-supplier-select select,.transport-otp-mock input,.transport-barcode-panel input,.transport-return-panel select,.transport-return-panel textarea { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #d4dfe7; border-radius: 8px; color: #273e34; background: #fff; font: inherit; font-size: 14px; box-sizing: border-box; }
+.transport-scan-tabs { margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #e4ebf0; }
+.transport-scan-tabs button { min-height: 45px; border: 0; border-bottom: 2px solid transparent; color: #64788a; background: transparent; font-size: 13px; font-weight: 700; cursor: pointer; }
+.transport-scan-tabs button.active { border-color: #0a9b6b; color: #07865d; }
+.transport-camera-mock { width: min(100%,290px); min-height: 235px; margin: 18px auto 15px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 3px solid #0eae7b; border-radius: 16px; color: #f0f6fb; background: #101c32; text-align: center; box-sizing: border-box; }
+.camera-glyph { width: 195px; height: 145px; display: grid; place-items: center; border: 2px dashed #278d70; border-radius: 11px; color: #a9bdd2; font-size: 38px; }
+.transport-camera-mock strong { font-size: 13px; }
+.transport-camera-mock small { max-width: 240px; color: #c2d0dc; font-size: 11px; line-height: 1.4; }
+.camera-scan-pill { padding: 5px 10px; border-radius: 99px; color: #fff; background: #079b6b; font-size: 10px; font-weight: 800; }
+.transport-otp-mock { width: min(100%,360px); margin: 25px auto; display: grid; gap: 8px; }
+.transport-otp-mock label { display: grid; gap: 7px; color: #435a49; font-size: 12px; font-weight: 750; }
+.transport-otp-mock input { font-size: 20px; letter-spacing: .5em; text-align: center; }
+.transport-otp-mock > small { color: #728277; font-size: 12px; text-align: center; }
+.transport-scan-confirm { min-height: 44px; margin: 0 auto; padding: 0 18px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 9px; color: #fff; background: #07986a; font-size: 14px; font-weight: 750; cursor: pointer; }
+.transport-scan-confirm:disabled { cursor: not-allowed; opacity: .5; }
+.transport-scan-success { color: #0b8057; font-size: 13px; font-weight: 750; text-align: center; }
+.transport-demo-disclaimer { display: block; margin-top: 13px; color: #829087; font-size: 11px; text-align: center; }
+.route-supplier-stop { width: 100%; padding: 0; border: 0; border-radius: 7px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.route-supplier-stop > div { padding: 7px; border-radius: 8px; }
+.route-supplier-stop:hover > div,.route-supplier-stop.selected > div { background: #effaf4; }
+.route-supplier-stop.selected > span { background: #1e70d5; }
+.route-recalculate,.route-next-action { min-height: 40px; padding: 0 13px; border: 0; border-radius: 8px; font-size: 12px; font-weight: 750; cursor: pointer; white-space: nowrap; }
+.route-recalculate { color: #536478; background: #eef3f7; }
+.route-next-action { color: #fff; background: #09976a; }
+.route-map-nodes { min-height: 104px; margin: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 8px; position: relative; }
+.route-map-nodes::before { content: ''; position: absolute; inset: 50% 0 auto; border-top: 3px dashed #58b186; }
+.route-map-nodes > span,.route-map-nodes > i { z-index: 1; width: 35px; height: 35px; display: grid; place-items: center; border: 4px solid #f2f7fb; border-radius: 50%; color: #fff; background: #108f66; font-size: 11px; font-style: normal; font-weight: 750; box-shadow: 0 0 0 1px #89c7a4; }
+.route-map-nodes > span { background: #3274df; }
+.route-map-nodes > i.selected { background: #e98a14; box-shadow: 0 0 0 2px #f4c078; }
+.transport-barcode-panel { margin-bottom: 15px; padding: 17px 19px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 18px; border-radius: 13px; color: #fff; background: #172338; box-shadow: 0 5px 12px rgb(16 29 47 / 16%); }
+.transport-barcode-panel > div > span { color: #40d29b; font-size: 11px; font-weight: 850; letter-spacing: .03em; }
+.transport-barcode-panel h2 { margin: 4px 0 2px; color: #fff; font-size: 17px; }
+.transport-barcode-panel p { margin: 0; color: #c1ccda; font-size: 12px; }
+.transport-barcode-panel form { display: flex; gap: 8px; }
+.transport-barcode-panel input { width: 230px; border-color: #39485e; color: #f8fafc; background: #202e43; }
+.transport-barcode-panel input::placeholder { color: #9baabd; }
+.transport-barcode-panel form button { min-height: 42px; padding: 0 14px; border: 0; border-radius: 8px; color: #fff; background: #0ba274; font-size: 13px; font-weight: 750; cursor: pointer; }
+.transport-feedback-panel { display: grid; gap: 13px; }
+.transport-feedback-tabs { display: flex; gap: 0; border-bottom: 1px solid #e2e9ef; background: #fff; }
+.transport-feedback-tabs button { min-height: 48px; padding: 0 17px; border: 0; border-bottom: 2px solid transparent; color: #647789; background: transparent; font-size: 13px; font-weight: 750; cursor: pointer; }
+.transport-feedback-tabs button.active { border-color: #0a9b6b; color: #0a9265; }
+.transport-rating-summary { min-height: 75px; padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #e1e8ee; border-radius: 11px; background: #fff; }
+.transport-rating-summary strong { color: #293f34; font-size: 15px; }
+.transport-rating-summary p { margin: 3px 0 0; color: #72828d; font-size: 12px; }
+.transport-rating-summary > b { color: #e98b08; font-size: 23px; text-align: right; }
+.transport-rating-summary > b small { color: #7c8791; font-size: 12px; }
+.transport-rating-summary > b span { display: block; font-size: 14px; letter-spacing: .08em; }
+.transport-review-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.transport-review-card { min-width: 0; padding: 14px; border: 1px solid #e1e8ee; border-radius: 11px; background: #fff; }
+.transport-review-card > header { display: flex; justify-content: space-between; gap: 10px; }
+.transport-review-card > header strong { color: #293f34; font-size: 13px; }
+.transport-review-card > header small { color: #91a0ae; font-size: 11px; white-space: nowrap; }
+.transport-review-card > p { margin: 5px 0; color: #71818c; font-size: 12px; }
+.transport-review-card > span { color: #f0ad16; font-size: 14px; letter-spacing: .05em; }
+.transport-review-card > span b { color: #33483b; font-size: 12px; letter-spacing: 0; }
+.transport-review-card blockquote { margin: 8px 0 0; padding: 10px; border: 1px solid #edf1f4; border-radius: 8px; color: #4f6474; background: #f7f9fb; font-size: 12px; font-style: italic; line-height: 1.5; }
+.transport-return-panel { padding: 18px; display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 20px; border: 1px solid #e1e8ee; border-radius: 12px; background: #fff; }
+.transport-return-panel h2 { margin: 6px 0; color: #273f34; font-size: 19px; }
+.transport-return-panel p { color: #71818a; font-size: 13px; line-height: 1.5; }
+.transport-return-panel form { display: grid; gap: 10px; }
+.transport-return-panel label { display: grid; gap: 5px; color: #52675c; font-size: 12px; font-weight: 700; }
+.transport-return-panel textarea { min-height: 80px; resize: vertical; }
+.transport-return-panel form button { min-height: 40px; justify-self: end; padding: 0 15px; border: 0; border-radius: 8px; color: #fff; background: #0a9669; font-size: 13px; font-weight: 750; cursor: pointer; }
+.transport-return-panel form button:disabled { cursor: not-allowed; opacity: .5; }
+@media (max-width: 900px) {
+  .transport-order-row { grid-template-columns: minmax(0,1fr) auto; }
+  .transport-order-money { text-align: right; }
+  .transport-order-row > button { grid-column: 1/-1; justify-self: stretch; }
+  .transport-barcode-panel { grid-template-columns: minmax(0,1fr); }
+  .transport-barcode-panel form input { flex: 1; width: auto; }
+  .transport-route-planner-head { flex-wrap: wrap; }
+}
+@media (max-width: 720px) {
+  .transport-classification-grid .transport-order-type-card { min-height: 0; }
+  .transport-order-type-card > footer { flex-wrap: wrap; }
+  .transport-order-board > header { align-items: stretch; flex-direction: column; }
+  .transport-order-row { grid-template-columns: minmax(0,1fr); gap: 9px; padding: 12px; }
+  .transport-order-money { min-width: 0; text-align: left; }
+  .transport-order-money span { justify-content: space-between; }
+  .transport-order-row > button { grid-column: auto; }
+  .transport-scan-panel { padding: 16px 12px; }
+  .transport-scan-heading h2 { font-size: 18px; }
+  .transport-scan-tabs button { padding-inline: 5px; font-size: 11px; }
+  .transport-route-planner-head { align-items: stretch; }
+  .route-recalculate,.route-next-action { width: 100%; }
+  .transport-barcode-panel { padding: 14px; }
+  .transport-barcode-panel form { flex-direction: column; }
+  .transport-barcode-panel form button { width: 100%; }
+  .transport-feedback-tabs { overflow-x: auto; }
+  .transport-feedback-tabs button { min-width: max-content; padding-inline: 11px; font-size: 12px; }
+  .transport-review-grid { grid-template-columns: minmax(0,1fr); }
+  .transport-return-panel { grid-template-columns: minmax(0,1fr); padding: 14px; }
+}

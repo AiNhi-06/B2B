@@ -11,6 +11,11 @@ import { StatusBadge } from '../../components/shared/StatusBadge';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { EmptyState } from '../../components/shared/EmptyState';
 
+const friendlyRecord = (id: string, kind: 'Đơn hàng' | 'Chuyến giao' | 'Khách hàng') => {
+  const suffix = id.match(/(\d+)$/)?.[1];
+  return suffix ? `${kind} #${suffix}` : kind;
+};
+
 export function ShipmentsPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [shipments, setShipments] = useState<Shipment[]>([]);
@@ -56,7 +61,7 @@ export function ShipmentsPage() {
   const groupKey = (o: Order) => `${o.deliveryDate ?? 'LEGACY'}|${o.deliverySlot ?? 'LEGACY'}`;
   const groups = [...new Set(eligibleOrders.map(groupKey))];
   const selectedGroup = groups.includes(scheduleGroup) ? scheduleGroup : groups[0] ?? '';
-  const scheduleLabel = (date?: string, slot?: string) => date ? `${date} · ${slot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Demo cũ — chưa có lịch giao';
+  const scheduleLabel = (date?: string, slot?: string) => date ? `${date} · ${slot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Dữ liệu cũ — chưa có lịch giao';
   const toggleSelectOrder = (orderId: string) => {
     setSelectedOrderIds((prev) =>
       prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
@@ -90,7 +95,7 @@ export function ShipmentsPage() {
     try {
       setError(null);
       await advanceShipmentStatus(shipmentId, next);
-      setActionMsg(`Chuyến xe #${shipmentId} đã chuyển sang [${next}]! Các đơn hàng liên quan đã được đồng bộ trạng thái.`);
+      setActionMsg(`${friendlyRecord(shipmentId, 'Chuyến giao')} đã cập nhật trạng thái; các đơn hàng liên quan đã được đồng bộ.`);
       setTimeout(() => setActionMsg(null), 3500);
       await loadData();
     } catch (err: unknown) {
@@ -100,13 +105,8 @@ export function ShipmentsPage() {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem' }}>🚚 Gom Tuyến Xe Multi-stop & Điều Phối Giao Hàng</h2>
-        <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-          Tối ưu chi phí cước bằng cách gom các quán gần nhau thành một chuyến xe giao nhiều điểm (Multi-drop).
-        </p>
-      </div>
+    <div className="admin-shipments-page">
+      <div className="page-heading"><div><h1>Gom tuyến xe và điều phối giao hàng</h1><p>Tối ưu cước bằng cách ghép các quán gần nhau vào cùng chuyến giao nhiều điểm.</p></div></div>
 
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} onRetry={loadData} />}
@@ -117,8 +117,8 @@ export function ShipmentsPage() {
       )}
 
       {/* 1. Form gom tuyến mới */}
-      <div className="card">
-        <h3 className="card-title">1. Gom Các Đơn Tại Kho Hub Thành Chuyến Xe Mới</h3>
+      <div className="card shipment-builder-card">
+        <h2 className="card-title">Gom đơn tại kho Hub thành chuyến xe mới</h2>
         {eligibleOrders.length === 0 ? (
           <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0 }}>
             Hiện chưa có đơn nào ở trạng thái <code>AT_HUB</code> sẵn sàng gom tuyến. (Đơn cần được Nhà vườn xác nhận và Admin duyệt nhập Hub trước).
@@ -155,8 +155,8 @@ export function ShipmentsPage() {
                     />
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <strong>Đơn #{ord.id}</strong> · {scheduleLabel(ord.deliveryDate,ord.deliverySlot)} — Khách: {ord.customerId} ({totalKg} kg)
-                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đ/c: {ord.deliveryAddressId}</div>
+                        <strong title={ord.id}>{friendlyRecord(ord.id, 'Đơn hàng')}</strong> · {scheduleLabel(ord.deliveryDate,ord.deliverySlot)} — {friendlyRecord(ord.customerId, 'Khách hàng')} ({totalKg} kg)
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Địa chỉ giao: {ord.deliveryAddressId}</div>
                       </div>
                       <StatusBadge status={ord.status} />
                     </div>
@@ -189,8 +189,8 @@ export function ShipmentsPage() {
       </div>
 
       {/* 2. Danh sách chuyến xe hiện tại */}
-      <div className="card">
-        <h3 className="card-title">2. Danh Sách Chuyến Xe Điều Phối</h3>
+      <div className="card shipment-list-card">
+        <h2 className="card-title">Danh sách chuyến xe điều phối</h2>
         {shipments.length === 0 ? (
           <EmptyState
             icon="🚚"
@@ -200,7 +200,7 @@ export function ShipmentsPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {shipments.map((ship) => (
-              <div
+              <div className="shipment-route-card"
                 key={ship.id}
                 style={{
                   border: '1px solid #e2e8f0',
@@ -209,12 +209,13 @@ export function ShipmentsPage() {
                   background: '#f8fafc',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div className="shipment-route-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div>
                     <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>
-                      {ship.routeLabel} (#{ship.id}) · {scheduleLabel(ship.deliveryDate,ship.deliverySlot)}
+                      {ship.routeLabel} · {friendlyRecord(ship.id, 'Chuyến giao')} · {scheduleLabel(ship.deliveryDate,ship.deliverySlot)}
                     </strong>
                     <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      <small className="shipment-source-id" title={ship.id}>Mã nội bộ: {ship.id}</small>
                       Tài xế: {ship.driverName || 'Nguyễn Văn Tài'} ({ship.driverPhone || '0903.123.456'}) | Xe: {ship.vehiclePlate || '59B1-999.88'}
                     </div>
                   </div>
@@ -223,11 +224,11 @@ export function ShipmentsPage() {
 
                 <div style={{ background: '#ffffff', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: 12 }}>
                   <span style={{ color: '#64748b' }}>Bao gồm {ship.orderIds.length} đơn hàng: </span>
-                  <strong>{ship.orderIds.map((id) => `#${id}`).join(', ')}</strong>
+                  <strong>{ship.orderIds.map(id => friendlyRecord(id, 'Đơn hàng')).join(', ')}</strong>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="demo-chip">Hành trình mô phỏng GPS</span>
+                <div className="shipment-route-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="shipment-gps-tag">Hành trình mô phỏng GPS</span>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {ship.status === 'ASSIGNED' && (
                       <button
@@ -236,7 +237,7 @@ export function ShipmentsPage() {
                         style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                         onClick={() => handleAdvanceShipment(ship.id, 'IN_TRANSIT')}
                       >
-                        🚀 Xuất phát giao hàng (IN_TRANSIT)
+                        Bắt đầu giao hàng
                       </button>
                     )}
                     {ship.status === 'IN_TRANSIT' && (
@@ -246,14 +247,10 @@ export function ShipmentsPage() {
                         style={{ padding: '6px 12px', fontSize: '0.8rem', background: '#16a34a' }}
                         onClick={() => handleAdvanceShipment(ship.id, 'DELIVERED')}
                       >
-                        ✅ Bàn giao thành công (DELIVERED)
+                        Xác nhận đã giao hàng
                       </button>
                     )}
-                    {ship.status === 'DELIVERED' && (
-                      <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 600 }}>
-                        Đã hoàn tất chuyến giao
-                      </span>
-                    )}
+
                   </div>
                 </div>
               </div>

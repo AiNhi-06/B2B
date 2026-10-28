@@ -1,0 +1,472 @@
+.freso-admin-shell {
+  --admin-navy: #0f172a;
+  --admin-panel: #1e293b;
+  --admin-line: #1e293b;
+  --admin-green: #10b981;
+  min-height: 100svh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 256px minmax(0,1fr);
+  color: #1e293b;
+  background: #fff;
+  font-family: Inter, 'Segoe UI', sans-serif;
+}
+.admin-console-sidebar { min-width: 0; height: 100svh; padding: 19px 13px 14px; display: flex; flex-direction: column; position: sticky; top: 0; background: var(--admin-navy); }
+.admin-console-brand { min-height: 66px; padding: 0 5px 15px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--admin-line); }
+.admin-console-logo { width: 104px; height: 58px; flex: 0 0 auto; object-fit: contain; border-radius: 6px; background: #fff; }
+.admin-console-brand strong { display: block; color: #f2f7f2; font-size: 13px; letter-spacing: .04em; }
+.admin-console-brand strong b { margin-left: 3px; padding: 2px 5px; border: 1px solid #385743; border-radius: 4px; color: #abd88a; background: #1c3727; font-size: 9px; }
+.admin-console-brand small { display: block; margin-top: 3px; color: #9eb2a3; font-size: 9px; }
+.admin-console-profile { margin: 13px 0 14px; padding: 10px 9px; display: flex; align-items: center; gap: 8px; border: 1px solid #334155; border-radius: 10px; background: #1e293b; }
+.admin-profile-avatar { width: 34px; height: 34px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid #34d399; border-radius: 9px; color: #bbf7d0; background: #334155; font-size: 11px; font-weight: 800; }
+.admin-profile-copy { min-width: 0; flex: 1; }
+.admin-console-profile strong, .admin-console-profile small { display: block; }
+.admin-console-profile strong { overflow: hidden; color: #f8fafc; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.admin-console-profile small { margin-top: 2px; color: #34d399; font-size: 8px; }
+.admin-console-profile > i { width: 8px; height: 8px; margin-left: auto; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 3px rgb(16 185 129 / 15%); }
+.admin-sidebar-signout { width: 24px; height: 24px; flex: 0 0 auto; border: 0; border-radius: 6px; color: #94a3b8; background: transparent; font-size: 14px; cursor: pointer; }
+.admin-sidebar-signout:hover { color: #fff; background: #334155; }
+.admin-sidebar-signout:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+.admin-console-nav { display: grid; gap: 5px; }
+.admin-nav-group h2 { margin: 0 0 7px; padding: 0 9px; color: #64748b; font-size: 9px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.admin-console-link { min-height: 42px; padding: 8px 10px; display: flex; align-items: center; gap: 9px; border: 1px solid transparent; border-radius: 8px; color: #cbd5e1; font-size: 11px; font-weight: 650; text-decoration: none; }
+.admin-console-link:hover { color: #fff; background: var(--admin-panel); }
+.admin-console-link.active { border-color: #059669; color: #fff; background: #059669; box-shadow: 0 4px 12px rgb(5 150 105 / 24%); }
+.admin-link-mark { width: 17px; flex: 0 0 auto; color: #34d399; font-size: 13px; text-align: center; }
+.admin-console-link.active .admin-link-mark { color: #d1fae5; }
+.admin-sidebar-foot { margin-top: auto; padding: 12px 4px 2px; display: grid; gap: 7px; border-top: 1px solid #1e293b; color: #64748b; font-size: 8px; }
+.admin-sidebar-foot > div { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+.admin-sidebar-foot strong { color: #cbd5e1; font-size: 8px; font-weight: 600; }
+.admin-sidebar-foot strong i { width: 6px; height: 6px; margin-right: 4px; display: inline-block; border-radius: 50%; background: #34d399; }
+.admin-sidebar-foot small { display: block; color: #64748b; font-size: 8px; }
+.admin-console-main { min-width: 0; min-height: 100svh; background: #f8fafc; }
+.admin-console-topbar { min-height: 64px; padding: 9px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; position: sticky; top: 0; z-index: 25; border-bottom: 1px solid #1e293b; color: #cbd5e1; background: #0f172a; }
+.admin-topbar-crumb { min-width: 180px; display: flex; align-items: center; gap: 8px; font-size: 10px; }
+.admin-topbar-crumb > span { color: #34d399; font-weight: 800; letter-spacing: .035em; }
+.admin-topbar-crumb > i { color: #64748b; font-style: normal; }
+.admin-console-topbar .admin-topbar-crumb strong { color: #f8fafc; font-size: 11px; }
+.admin-topbar-actions { display: flex; align-items: center; gap: 10px; }
+.admin-escrow-chip { padding: 7px 10px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; background: #1e293b; font-size: 10px; white-space: nowrap; }
+.admin-escrow-chip > i { width: 8px; height: 8px; margin-right: 3px; border-radius: 50%; background: #34d399; }
+.admin-escrow-chip strong { color: #34d399; font-size: 10px; }
+.admin-batch-button { min-height: 34px; padding: 0 12px; border: 0; border-radius: 7px; color: #111827; background: #f59e0b; font-size: 10px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.admin-batch-button:hover { background: #fbbf24; }
+.admin-batch-button:disabled { cursor: wait; opacity: .65; }
+.admin-batch-button:focus-visible { outline: 3px solid #fcd34d; outline-offset: 2px; }
+.admin-topbar-feedback { position: absolute; top: calc(100% + 7px); right: 16px; z-index: 30; max-width: min(400px, calc(100vw - 32px)); padding: 9px 12px; border: 1px solid #bbf7d0; border-radius: 7px; color: #166534; background: #f0fdf4; box-shadow: 0 8px 22px rgb(15 23 42 / 13%); font-size: 10px; }
+.admin-topbar-feedback.is-error { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
+.admin-console-content { min-width: 0; padding: 24px clamp(18px, 2.5vw, 34px); color: #172d24; }
+.admin-application-grid, .admin-quality-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); align-items: start; gap: 12px; }
+.freso-admin-shell .admin-application-card, .freso-admin-shell .admin-quality-card { min-width: 0; margin: 0; padding: 16px; }
+.admin-application-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.admin-application-heading h2 { min-width: 0; margin: 0; font-size: 17px; line-height: 1.3; }
+.admin-application-details { display: grid; gap: 5px; margin-top: 10px; }
+.freso-admin-shell .admin-application-details p, .freso-admin-shell .admin-application-card > p { margin: 0; line-height: 1.45; }
+.freso-admin-shell .admin-application-card > label { display: grid; gap: 6px; margin: 12px 0; }
+.freso-admin-shell .admin-application-card > label input { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.freso-admin-shell .admin-quality-card .quality-title { align-items: center; gap: 12px; }
+.freso-admin-shell .admin-quality-card .quality-title h2 { margin: 0 0 4px; font-size: 17px; }
+.freso-admin-shell .admin-quality-card .quality-title p { margin: 0; line-height: 1.45; }
+.freso-admin-shell .admin-quality-card .quality-title .cart-photo { width: 52px; flex-basis: 52px; }
+.freso-admin-shell .admin-quality-card .quality-title .cart-photo .supplier-photo-frame { height: 52px; }
+.freso-admin-shell .admin-quality-card form > p { margin: 10px 0; line-height: 1.45; }
+.freso-admin-shell .admin-quality-card .form-grid { gap: 10px; margin-top: 14px; }
+.freso-admin-shell .admin-quality-card .form-grid input, .freso-admin-shell .admin-quality-card .form-grid select { min-height: 38px; }
+.freso-admin-shell .admin-application-card .evidence-row:empty { display: none; }
+.freso-admin-shell .page-heading h1, .freso-admin-shell h2, .freso-admin-shell h3, .freso-admin-shell h4 { color: #172d24; }
+.freso-admin-shell .page-heading p, .freso-admin-shell .section-heading p { color: #52665c; }
+.freso-admin-shell .card { border-color: #dbe5de; border-radius: 10px; color: #172d24; background: #fff; box-shadow: 0 1px 2px rgba(20,45,30,.04); }
+.freso-admin-shell .card-title { color: #172d24; }
+.freso-admin-shell .data-table th { border-color: #dbe5de; color: #52665c; background: #f8fafc; }
+.freso-admin-shell .data-table td { border-color: #dbe5de; color: #172d24; }
+.freso-admin-shell input, .freso-admin-shell select, .freso-admin-shell textarea { border-color: #cbd5e1; color: #172d24; background: #fff; }
+.freso-admin-shell input::placeholder, .freso-admin-shell textarea::placeholder { color: #718176; }
+.freso-admin-shell .overview-metrics > div { border-color: #dbe5de; background: #fff; }
+.freso-admin-shell .overview-metrics span { color: #52665c; }
+.freso-admin-shell .admin-console-content a:not(.btn-primary):not(.btn-secondary) { color: #087f49; }
+.freso-admin-shell .admin-claim-card { margin: 0 0 16px; padding: 0; overflow: hidden; border-color: #dbe5de; border-radius: 12px; }
+.claim-card-heading { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e8efea; background: linear-gradient(90deg,#fbfdfb,#fff 65%); }
+.claim-eyebrow,.claim-section-label { display: block; color: #65766b; font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.claim-card-heading h2 { margin: 4px 0 3px; font-size: 17px; line-height: 1.25; letter-spacing: -.015em; }
+.claim-card-heading p { margin: 0; color: #64746a; font-size: 12px; }
+.claim-card-heading p strong { color: #30463a; font-weight: 650; }
+.claim-status-pill,.quality-status-pill { flex: 0 0 auto; padding: 6px 10px; border: 1px solid #d5e5d9; border-radius: 999px; color: #17613d; background: #edf8f0; font-size: 11px; font-weight: 750; }
+.claim-status-pill-open,.quality-pill-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.claim-status-pill-responded { border-color: #b8d5f5; color: #1c5586; background: #eff7ff; }
+.claim-status-pill-approved,.quality-pill-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.claim-status-pill-rejected,.quality-pill-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.quality-pill-legacy { border-color: #dbe2dd; color: #596a60; background: #f5f7f5; }
+.claim-card-facts { padding: 13px 20px; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; border-bottom: 1px solid #edf1ee; background: #fff; }
+.claim-card-facts > div { min-width: 0; display: grid; gap: 4px; }
+.claim-card-facts span,.claim-note > span { color: #718076; font-size: 10px; font-weight: 650; }
+.claim-card-facts strong { overflow-wrap: anywhere; color: #293c31; font-size: 12px; font-weight: 650; line-height: 1.4; }
+.freso-admin-shell .admin-claim-card .claim-card-body { padding: 18px 20px; display: grid; grid-template-columns: minmax(0,1.2fr) minmax(220px,.8fr); gap: 16px 24px; }
+.claim-card-body > div:first-child { min-width: 0; }
+.freso-admin-shell .claim-card-body p { margin: 6px 0 0; color: #33473b; font-size: 13px; line-height: 1.55; }
+.claim-lines { align-self: start; display: grid; gap: 0; border: 1px solid #e5ece7; border-radius: 9px; background: #f8faf8; }
+.claim-lines > div,.claim-resolution-lines > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+.claim-lines > div + div { border-top: 1px solid #e5ece7; }
+.claim-lines span,.claim-lines strong,.claim-resolution-lines span,.claim-resolution-lines strong { font-size: 12px; line-height: 1.4; }
+.claim-lines span { color: #394c40; }
+.claim-lines strong { flex: 0 0 auto; color: #1f6743; font-variant-numeric: tabular-nums; }
+.claim-resolution-lines,.claim-evidence,.claim-note { grid-column: 1/-1; }
+.claim-resolution-lines { border-left: 3px solid #1a9a61; border-radius: 5px; background: #f2faf4; }
+.claim-resolution-lines span { color: #5c7163; }
+.claim-resolution-lines strong { color: #1d5b3c; }
+.claim-evidence .evidence-row { margin: 8px 0 0; }
+.claim-note { padding: 11px 13px; border: 1px solid #e2e9e4; border-radius: 8px; background: #f8faf8; }
+.claim-note-resolution { border-color: #cfe6d6; background: #f3faf5; }
+.freso-admin-shell .claim-note p { margin-top: 4px; }
+.freso-admin-shell .admin-claim-card .sla-warning { grid-column: 1/-1; margin: 0 20px; border: 1px solid #f0d48f; font-size: 12px; }
+.claim-decision-form { padding: 16px 20px 18px; border-top: 1px solid #e8efea; background: #fbfcfb; }
+.claim-decision-fields { display: grid; grid-template-columns: minmax(150px,.55fr) minmax(0,1.45fr); align-items: end; gap: 14px; }
+.freso-admin-shell .claim-decision-fields label { display: grid; gap: 6px; margin: 0; color: #405448; font-size: 11px; font-weight: 650; }
+.freso-admin-shell .claim-decision-fields .form-grid { display: block; margin: 0; }
+.freso-admin-shell .claim-decision-fields .form-grid label { margin: 0; }
+.freso-admin-shell .claim-decision-fields input { width: 100%; box-sizing: border-box; }
+.freso-admin-shell .claim-decision-fields textarea { min-height: 42px; height: 42px; box-sizing: border-box; resize: vertical; }
+.freso-admin-shell .admin-claim-card .action-row { justify-content: flex-end; margin: 12px 0 0; }
+.freso-admin-shell .admin-claim-card .action-row button { min-height: 40px; }
+.freso-admin-shell .quality-heading-copy { min-width: 0; flex: 1; }
+.quality-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.quality-heading-row h2 { min-width: 0; }
+.quality-metrics { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 6px; }
+.quality-metrics span { padding: 4px 7px; border: 1px solid #e0e9e3; border-radius: 6px; color: #405b49; background: #f8faf8; font-size: 10px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.freso-admin-shell .admin-quality-card .quality-empty-state,.freso-admin-shell .admin-quality-card .quality-note { margin: 8px 0 0; color: #5b6e61; font-size: 12px; line-height: 1.45; }
+.freso-admin-shell .admin-quality-card .quality-note { padding-top: 8px; border-top: 1px solid #edf1ee; }
+.freso-admin-shell .admin-quality-card .action-row { margin-bottom: 0; }
+.freso-admin-shell .admin-quality-card .quality-review-form { margin-top: 15px; padding-top: 14px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 12px; border-top: 1px solid #edf1ee; }
+.freso-admin-shell .admin-quality-card .quality-review-form label { min-width: 0; display: grid; gap: 6px; margin: 0; color: #405448; font-size: 11px; font-weight: 650; }
+.freso-admin-shell .admin-quality-card .quality-review-form input { width: 100%; min-width: 0; min-height: 40px; padding: 8px 10px; box-sizing: border-box; }
+.freso-admin-shell .admin-quality-card .quality-review-form .action-row { gap: 8px; margin: 0; }
+.freso-admin-shell .admin-quality-card .quality-review-form .action-row button { min-height: 40px; padding-inline: 12px; }
+.freso-admin-shell .quality-expanded-panel .quality-review-form { max-width: 760px; margin-top: 15px; padding-top: 14px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 12px; border-top: 1px solid #e4ebe6; }
+.freso-admin-shell .quality-expanded-panel .quality-review-form label { min-width: 0; display: grid; gap: 6px; margin: 0; color: #405448; font-size: 11px; font-weight: 650; }
+.freso-admin-shell .quality-expanded-panel .quality-review-form input { width: 100%; min-width: 0; min-height: 40px; padding: 8px 10px; box-sizing: border-box; }
+.freso-admin-shell .quality-expanded-panel .quality-review-form .action-row { gap: 8px; margin: 0; }
+.freso-admin-shell .quality-expanded-panel .quality-review-form .action-row button { min-height: 40px; padding-inline: 12px; }
+.freso-admin-shell .admin-quality-table-card { margin: 0; padding: 0; overflow: hidden; border-radius: 12px; }
+.admin-quality-table-heading { min-height: 48px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e1e9e3; background: #f6faf7; }
+.admin-quality-table-heading h2 { margin: 0; color: #263d30; font-size: 13px; font-weight: 750; letter-spacing: .015em; }
+.admin-quality-table-heading > span { flex: 0 0 auto; color: #607267; font-size: 11px; }
+.admin-quality-table-scroll { border-radius: 0 0 12px 12px; }
+.admin-quality-table { min-width: 1030px; font-size: 12px; }
+.freso-admin-shell .admin-quality-table th { padding: 11px 12px; border-bottom: 1px solid #dfe8e1; color: #52685a; background: #fbfcfb; font-size: 9px; letter-spacing: .045em; white-space: nowrap; }
+.freso-admin-shell .admin-quality-table td { padding: 10px 12px; border-bottom: 1px solid #edf1ee; color: #53665a; vertical-align: middle; }
+.admin-quality-row { cursor: pointer; transition: background-color 140ms ease; }
+.admin-quality-row:hover,.admin-quality-row.is-expanded { background: #f4faf6; }
+.admin-quality-row td:first-child { width: 210px; }
+.quality-row-trigger { width: 100%; min-height: 40px; padding: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 0; color: #24392d; background: transparent; text-align: left; cursor: pointer; }
+.quality-row-trigger > span:first-child { min-width: 0; display: grid; gap: 3px; }
+.quality-row-trigger strong { color: #24392d; font-size: 11px; line-height: 1.35; }
+.quality-row-trigger small { color: #718176; font-size: 9px; }
+.quality-row-chevron { width: 22px; height: 22px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid #dce8df; border-radius: 50%; color: #267048; background: #fff; font-size: 15px; line-height: 1; }
+.quality-row-trigger:hover .quality-row-chevron { border-color: #99c9a9; background: #edf8f0; }
+.quality-row-trigger:focus-visible { outline: 2px solid #087f49; outline-offset: 2px; border-radius: 4px; }
+.quality-table-status { display: inline-flex; max-width: 160px; padding: 5px 8px; border: 1px solid #dce5df; border-radius: 999px; color: #53665a; background: #f6f8f6; font-size: 10px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+.quality-table-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.quality-table-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.quality-table-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.quality-cost-value { color: #986300 !important; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.quality-detail-row > td { padding: 0 !important; background: #f8faf8; }
+.quality-expanded-panel { padding: 18px 20px 20px; border-bottom: 1px solid #e2eae4; }
+.quality-detail-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
+.quality-detail-photo { width: 58px; height: 58px; flex: 0 0 auto; overflow: hidden; border: 1px solid #e1e9e3; border-radius: 9px; background: #fff; }
+.quality-detail-photo .supplier-photo-frame,.quality-detail-photo img,.quality-detail-photo svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.quality-detail-kicker { color: #718176; font-size: 9px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.quality-detail-heading h3 { margin: 2px 0 6px; color: #263d30; font-size: 15px; }
+.quality-detail-heading .quality-status-pill { display: inline-block; }
+.quality-detail-facts { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid #e3ebe5; border-radius: 9px; background: #e3ebe5; }
+.quality-detail-facts > div { min-width: 0; padding: 10px 12px; display: grid; gap: 5px; background: #fff; }
+.quality-detail-facts span { color: #718176; font-size: 10px; }
+.quality-detail-facts strong { overflow-wrap: anywhere; color: #293d31; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.quality-detail-note { margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid #d4aa4e; border-radius: 4px; color: #5d4c27; background: #fff9e9; font-size: 12px; line-height: 1.5; }
+.quality-submit-form { max-width: 760px; margin-top: 16px; padding-top: 15px; border-top: 1px solid #e4ebe6; }
+.quality-submit-form .form-grid { gap: 12px; }
+.quality-submit-form > p { margin: 10px 0; color: #617267; font-size: 11px; line-height: 1.5; }
+.quality-table-empty { padding: 28px; color: #617267; text-align: center; }
+@media (max-width: 1050px) {
+  .claim-card-body { grid-template-columns: minmax(0,1fr) minmax(180px,.8fr); }
+  .claim-decision-fields { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 900px) {
+  .freso-admin-shell { grid-template-columns: 220px minmax(0,1fr); }
+  .admin-console-content { padding: 18px 14px; }
+  .admin-console-topbar { align-items: flex-start; flex-wrap: wrap; }
+  .admin-topbar-actions { order: 3; flex: 1 1 100%; flex-wrap: wrap; }
+}
+@media (max-width: 700px) {
+  .freso-admin-shell { min-height: 100svh; grid-template-columns: minmax(0,1fr); }
+  .admin-console-sidebar { height: auto; padding: 12px 11px 8px; position: relative; }
+  .admin-console-brand { min-height: 42px; padding: 0 3px 9px; }
+  .admin-console-profile { display: none; }
+  .admin-sidebar-foot { display: none; }
+  .admin-console-nav { margin-top: 8px; display: flex; gap: 15px; overflow-x: auto; }
+  .admin-nav-group { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
+  .admin-nav-group h2 { display: none; }
+  .admin-console-link { min-height: 34px; flex: 0 0 auto; padding: 6px 8px; white-space: nowrap; }
+  .admin-link-mark { display: none; }
+  .admin-console-topbar { min-height: 46px; padding: 9px 12px; }
+  .admin-application-grid, .admin-quality-grid { grid-template-columns: minmax(0,1fr); }
+  .admin-application-heading { flex-wrap: wrap; }
+  .admin-topbar-crumb { min-width: 0; font-size: 9px; }
+  .admin-topbar-actions { gap: 7px; }
+  .admin-escrow-chip { flex-wrap: wrap; white-space: normal; }
+  .admin-console-content { padding: 14px 11px; }
+  .claim-card-heading,.claim-card-facts,.freso-admin-shell .admin-claim-card .claim-card-body,.claim-decision-form { padding-inline: 14px; }
+  .claim-card-facts { grid-template-columns: minmax(0,1fr); gap: 9px; }
+  .claim-card-facts > div { grid-template-columns: 105px minmax(0,1fr); align-items: baseline; }
+  .freso-admin-shell .admin-claim-card .claim-card-body { grid-template-columns: minmax(0,1fr); }
+  .claim-resolution-lines,.claim-evidence,.claim-note { grid-column: auto; }
+  .freso-admin-shell .admin-claim-card .sla-warning { margin-inline: 14px; }
+  .claim-decision-form { padding-bottom: 14px; }
+  .claim-decision-fields { gap: 10px; }
+  .quality-heading-row { flex-wrap: wrap; }
+  .freso-admin-shell .admin-quality-card .quality-review-form { grid-template-columns: minmax(0,1fr); }
+  .freso-admin-shell .admin-quality-card .quality-review-form .action-row { justify-content: flex-start; }
+  .freso-admin-shell .quality-expanded-panel .quality-review-form { grid-template-columns: minmax(0,1fr); }
+  .freso-admin-shell .quality-expanded-panel .quality-review-form .action-row { justify-content: flex-start; }
+  .admin-quality-table { min-width: 940px; }
+  .quality-detail-facts { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+/* Finance dashboard */
+.finance-page { display: grid; gap: 18px; }
+.finance-page .finance-page-heading { margin-bottom: 0; align-items: center; }
+.finance-page-heading h1 { text-transform: capitalize; }
+.finance-overview { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.finance-overview-card { min-width: 0; min-height: 108px; margin: 0 !important; padding: 18px !important; display: grid; align-content: start; gap: 7px; }
+.finance-overview-card > span { color: #607267; font-size: 12px; }
+.finance-overview-card > strong { color: #087f58; font-size: clamp(21px,2vw,28px); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.finance-overview-card > small { color: #718176; font-size: 10px; }
+.finance-overview-fees > strong { color: #0e9b9b; }
+.finance-overview-pending > strong { color: #bf8210; }
+.finance-batch-button { min-height: 40px; padding-inline: 15px; white-space: nowrap; }
+.freso-admin-shell .finance-section { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.finance-section-heading { min-height: 58px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e1e9e3; background: #f8faf9; }
+.finance-section-heading h2 { margin: 0; color: #263d30; font-size: 14px; line-height: 1.35; }
+.finance-section-heading p { margin: 4px 0 0; color: #65766b; font-size: 11px; line-height: 1.4; }
+.finance-section-heading > span { flex: 0 0 auto; padding: 5px 8px; border: 1px solid #dce8df; border-radius: 999px; color: #42604e; background: #fff; font-size: 10px; font-weight: 700; }
+.finance-table-scroll { overflow-x: auto; }
+.freso-admin-shell .finance-table { min-width: 940px; font-size: 12px; }
+.freso-admin-shell .finance-table th { padding: 12px 14px; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .025em; white-space: nowrap; }
+.freso-admin-shell .finance-table td { padding: 12px 14px; color: #34483b; vertical-align: middle; }
+.finance-request-id { color: #078654; font-variant-numeric: tabular-nums; }
+.finance-fee-value { color: #bd4d58 !important; font-weight: 750; white-space: nowrap; }
+.finance-net-value { color: #078654 !important; font-weight: 750; white-space: nowrap; }
+.finance-cell-note { display: block; margin-top: 4px; color: #718176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.finance-bank-placeholder { color: #687b6e; font-size: 11px; }
+.finance-status { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #dce5df; border-radius: 999px; color: #53665a; background: #f6f8f6; font-size: 10px; font-weight: 700; line-height: 1.3; white-space: nowrap; }
+.finance-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.finance-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.finance-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.finance-row-actions { min-width: 370px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.finance-row-actions button { min-height: 34px; padding: 0 10px; }
+.finance-note-field { min-width: 170px; flex: 1 1 180px; margin: 0 !important; }
+.finance-note-field input { width: 100%; min-height: 36px; box-sizing: border-box; font-size: 11px; }
+.finance-empty { margin: 0; padding: 18px; color: #65766b; font-size: 12px; }
+.freso-admin-shell .finance-withdraw-box { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,280px) auto; align-items: end; gap: 14px; }
+.finance-withdraw-box h2 { margin: 0 0 4px; font-size: 15px; }
+.finance-withdraw-box p { margin: 0; color: #65766b; font-size: 12px; }
+.finance-withdraw-box label { margin: 0; }
+.finance-supplier-balances { grid-template-columns: minmax(0,1fr); }
+@media (max-width: 900px) {
+  .finance-overview { gap: 10px; }
+  .finance-overview-card { padding: 14px !important; }
+  .finance-overview-card > strong { font-size: 21px; }
+}
+@media (max-width: 700px) {
+  .finance-page .finance-page-heading { align-items: stretch; flex-direction: column; }
+  .finance-batch-button { width: 100%; white-space: normal; }
+  .finance-overview { grid-template-columns: minmax(0,1fr); }
+  .finance-overview-card { min-height: 0; }
+  .finance-section-heading { padding-inline: 13px; align-items: flex-start; }
+  .finance-section-heading > span { font-size: 9px; }
+  .freso-admin-shell .finance-withdraw-box { grid-template-columns: minmax(0,1fr); align-items: stretch; }
+  .finance-note-field { flex-basis: 100%; }
+}
+/* Business approval cards */
+.admin-approval-groups { display: grid; gap: 24px; }
+.admin-approval-group { min-width: 0; }
+.admin-approval-group > header { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.admin-approval-group > header h2 { margin: 0; color: #263d30; font-size: 15px; }
+.admin-approval-group > header p { margin: 3px 0 0; color: #65766b; font-size: 11px; }
+.admin-approval-group > header > span { min-width: 27px; height: 27px; padding: 0 7px; display: grid; place-items: center; border: 1px solid #dce8df; border-radius: 999px; color: #17613d; background: #fff; font-size: 11px; font-weight: 750; }
+.admin-application-grid { grid-template-columns: minmax(0,1fr); gap: 9px; }
+.freso-admin-shell .admin-application-card { min-width: 0; padding: 14px 16px; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(320px,.9fr); align-items: center; gap: 14px 22px; }
+.approval-card-main { min-width: 0; }
+.admin-application-heading { align-items: center; }
+.admin-application-heading h3 { min-width: 0; margin: 0; color: #263d30; font-size: 14px; line-height: 1.35; }
+.freso-admin-shell .admin-application-details { gap: 5px; margin-top: 8px; }
+.freso-admin-shell .admin-application-details p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 8px; color: #52665c; font-size: 11px; line-height: 1.45; }
+.freso-admin-shell .admin-application-details p strong { color: #34483b; font-weight: 700; }
+.admin-application-details p i { color: #9aa89e; font-style: normal; }
+.freso-admin-shell .admin-application-card .approval-review-form { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; padding-left: 18px; border-left: 1px solid #e5ece7; }
+.freso-admin-shell .approval-review-form label { display: grid; gap: 5px; margin: 0; color: #52665c; font-size: 10px; font-weight: 650; }
+.freso-admin-shell .approval-review-form input { width: 100%; min-width: 0; min-height: 38px; padding: 8px 10px; box-sizing: border-box; }
+.freso-admin-shell .approval-review-form .action-row { flex-wrap: wrap; gap: 7px; margin: 0; }
+.freso-admin-shell .approval-review-form .action-row button { min-height: 38px; padding-inline: 12px; }
+.approval-rejection-reason { margin: 7px 0 0; color: #9b2c2c; font-size: 11px; }
+.approval-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.approval-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.approval-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.admin-approval-empty { margin: 0; padding: 18px; color: #65766b; font-size: 12px; }
+@media (max-width: 900px) {
+  .freso-admin-shell .admin-application-card { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .freso-admin-shell .admin-application-card .approval-review-form { padding: 12px 0 0; border-top: 1px solid #e5ece7; border-left: 0; }
+}
+@media (max-width: 700px) {
+  .admin-approval-groups { gap: 18px; }
+  .freso-admin-shell .admin-application-card { padding: 12px; }
+  .admin-application-heading { align-items: flex-start; flex-direction: column; }
+  .freso-admin-shell .approval-review-form .action-row { display: grid; grid-template-columns: minmax(0,1fr); }
+  .freso-admin-shell .approval-review-form .action-row button { width: 100%; }
+}
+
+/* Shared admin frame and consistent viewport gutter */
+html:has(.freso-admin-shell) { scrollbar-gutter: stable; }
+.freso-admin-shell .admin-console-content { min-width: 0; padding-inline: clamp(18px,2.5vw,34px); }
+.admin-page-wrapper { width: 100%; max-width: 1600px; min-width: 0; margin-inline: auto; }
+.admin-console-topbar { padding-inline: clamp(18px,2.5vw,34px); }
+.admin-topbar-inner { width: 100%; max-width: 1600px; min-width: 0; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.admin-nav-group h2 { padding-inline: 9px; color: #a8bad0; font-size: 11px; }
+.admin-console-link { font-size: 14px; line-height: 1.35; }
+.admin-topbar-crumb { font-size: 13px; }
+.admin-console-profile strong { font-size: 13px; }
+.admin-console-profile small { color: #9de8be; font-size: 12px; line-height: 1.4; }
+.admin-sidebar-foot { color: #a8bad0; font-size: 12px; }
+.admin-sidebar-foot strong { color: #e2eaf4; font-size: 12px; }
+.admin-sidebar-foot small { color: #a8bad0; font-size: 12px; line-height: 1.4; }
+.freso-admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+.freso-admin-shell select,
+.freso-admin-shell textarea { min-width: 0; min-height: 42px; height: 42px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; color: #172d24; background: #fff; box-shadow: none; font: inherit; font-size: 13px; line-height: 1.4; }
+.freso-admin-shell textarea { resize: vertical; }
+.freso-admin-shell input[type="file"] { min-height: 42px; height: auto; padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+.freso-admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):focus-visible,
+.freso-admin-shell select:focus-visible,
+.freso-admin-shell textarea:focus-visible,
+.freso-admin-shell input[type="file"]:focus-visible { outline: 0; border-color: #15945d; box-shadow: 0 0 0 3px rgb(21 148 93 / 18%); }
+.freso-admin-shell input[type="checkbox"], .freso-admin-shell input[type="radio"] { accent-color: #087f49; }
+.freso-admin-shell .admin-application-card:not(.is-pending) { grid-template-columns: minmax(0,1fr); }
+.freso-admin-shell .admin-application-card:not(.is-pending) .approval-card-main { width: 100%; }
+.freso-admin-shell .admin-application-heading .governance-badge { flex: 0 0 auto; }
+.suppliers-page-heading p { max-width: none; }
+.freso-admin-shell .supplier-directory-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.supplier-directory-heading { min-height: 50px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #dbe5de; background: #f8faf9; }
+.supplier-directory-heading h2 { margin: 0; font-size: 14px; }
+.supplier-directory-heading > span { color: #607267; font-size: 11px; }
+.supplier-directory-card .table-responsive { min-width: 0; overflow-x: auto; }
+.freso-admin-shell .supplier-directory-card .data-table { min-width: 680px; }
+.freso-admin-shell .supplier-directory-card .data-table th,
+.freso-admin-shell .supplier-directory-card .data-table td { padding-inline: 16px; }
+.supplier-missing-value { color: #77847b; font-style: italic; }
+.supplier-directory-empty { padding: 18px; color: #65766b; font-size: 12px; }
+.record-source-id { display: block; margin-top: 3px; color: #738176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.claim-card-heading .record-source-id { overflow-wrap: anywhere; }
+.admin-shipments-page { display: grid; gap: 16px; }
+.admin-shipments-page > .page-heading { margin: 0; }
+.admin-shipments-page > .card { min-width: 0; margin: 0; }
+.admin-shipments-page .card-title { margin: 0 0 12px; color: #263d30; font-size: 16px; }
+.shipment-route-card { min-width: 0; }
+.shipment-route-heading { min-width: 0; gap: 16px; }
+.shipment-route-heading > div:first-child { min-width: 0; }
+.shipment-route-heading strong { overflow-wrap: anywhere; line-height: 1.4; }
+.shipment-source-id { margin: 3px 0; color: #738176; font-size: 10px; }
+.shipment-gps-tag { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 10px; border: 1px solid #d8e2dc; border-radius: 7px; color: #52665c; background: #f4f7f5; font-size: 12px; }
+.shipment-route-footer { gap: 12px; flex-wrap: wrap; }
+.shipment-route-footer > div { min-width: 0; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.shipment-route-footer button { min-height: 40px; }
+@media (max-width: 900px) {
+  .admin-console-topbar { align-items: center; }
+  .admin-topbar-inner { align-items: flex-start; flex-wrap: wrap; }
+  .admin-page-wrapper { max-width: none; }
+  .freso-admin-shell .supplier-directory-card .data-table { min-width: 640px; }
+}
+@media (max-width: 700px) {
+  .admin-console-link { font-size: 13px; }
+  .admin-topbar-crumb { font-size: 12px; }
+  .admin-nav-group h2 { font-size: 11px; }
+  .admin-console-profile small { font-size: 12px; }
+  .admin-sidebar-foot, .admin-sidebar-foot strong, .admin-sidebar-foot small { font-size: 12px; }
+  .admin-console-topbar { padding-inline: 12px; }
+  .freso-admin-shell .admin-console-content { padding-inline: 12px; }
+  .admin-shipments-page .shipment-route-heading { align-items: flex-start !important; flex-direction: column; }
+  .shipment-route-footer { align-items: stretch !important; flex-direction: column; }
+  .shipment-route-footer > div { justify-content: stretch; }
+  .shipment-route-footer button { width: 100%; }
+}
+
+/* Business approval directory and supplier SQS review layout */
+.freso-admin-shell .approval-directory-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.approval-toolbar { min-height: 64px; padding: 11px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e3eae5; background: #f8faf9; }
+.approval-toolbar input { width: min(100%,340px); }
+.approval-toolbar select { width: min(100%,210px); }
+.approval-table-scroll { min-width: 0; overflow-x: auto; }
+.freso-admin-shell .approval-table { min-width: 1020px; font-size: 12px; }
+.freso-admin-shell .approval-table th { padding: 12px 14px; border-bottom: 1px solid #dfe8e1; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .035em; white-space: nowrap; }
+.freso-admin-shell .approval-table td { padding: 12px 14px; border-bottom: 1px solid #edf1ee; color: #53665a; vertical-align: middle; }
+.approval-table-row:hover,.approval-table-row.is-expanded { background: #f7fbf8; }
+.approval-business-name { display: block; color: #263d30; font-size: 12px; }
+.approval-business-meta { display: block; margin-top: 4px; color: #718176; font-size: 10px; font-weight: 450; line-height: 1.4; }
+.approval-table-status { display: inline-flex; align-items: center; max-width: 190px; padding: 5px 8px; border: 1px solid #dce5df; border-radius: 999px; color: #53665a; background: #f6f8f6; font-size: 10px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+.approval-status-pending { border-color: #f3d48a; color: #815100; background: #fff8e7; }
+.approval-status-approved { border-color: #b6e2c6; color: #17613d; background: #edf8f0; }
+.approval-status-rejected { border-color: #f1c5c5; color: #9b2c2c; background: #fff2f1; }
+.approval-status-draft,.approval-status-legacy { border-color: #dbe2dd; color: #596a60; background: #f5f7f5; }
+.approval-doc-summary { color: #187751; font-size: 11px; font-weight: 650; white-space: nowrap; }
+.approval-open-button { min-height: 36px !important; padding: 0 12px !important; white-space: nowrap; }
+.approval-expanded-row > td { padding: 0 !important; background: #f8faf8; }
+.approval-expanded-panel { padding: 16px 18px 18px; border-bottom: 1px solid #e2eae4; }
+.approval-expanded-facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid #e3ebe5; border-radius: 9px; background: #e3ebe5; }
+.approval-expanded-facts > div { min-width: 0; padding: 10px 12px; display: grid; align-content: start; gap: 5px; background: #fff; }
+.approval-expanded-facts span { color: #718176; font-size: 10px; }
+.approval-expanded-facts strong { overflow-wrap: anywhere; color: #293d31; font-size: 12px; }
+.approval-expanded-panel .evidence-row { margin: 12px 0 0; }
+.approval-expanded-panel .approval-review-form { max-width: 760px; margin-top: 14px; padding-top: 14px; display: grid; gap: 10px; border-top: 1px solid #e4ebe6; }
+.approval-expanded-panel .approval-review-form label { display: grid; gap: 5px; color: #52665c; font-size: 11px; font-weight: 650; }
+.approval-expanded-panel .approval-review-form input { width: 100%; }
+.approval-expanded-panel .approval-review-form .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.approval-table-empty { padding: 24px !important; color: #65766b !important; text-align: center; }
+.approval-table-footer { min-height: 42px; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid #e3eae5; color: #718176; font-size: 10px; }
+.admin-supplier-quality-layout { display: grid; grid-template-columns: minmax(0,2fr) minmax(290px,.95fr); align-items: start; gap: 16px; }
+.admin-supplier-list-card { min-width: 0; margin: 0; padding: 0; overflow: hidden; }
+.freso-admin-shell .admin-supplier-table { min-width: 680px; font-size: 12px; }
+.freso-admin-shell .admin-supplier-table th { padding: 11px 12px; border-bottom: 1px solid #dfe8e1; color: #52685a; background: #fbfcfb; font-size: 10px; letter-spacing: .035em; white-space: nowrap; }
+.freso-admin-shell .admin-supplier-table td { padding: 10px; border-bottom: 1px solid #edf1ee; color: #53665a; vertical-align: middle; }
+.admin-supplier-row:hover,.admin-supplier-row.is-expanded { background: #f7fbf8; }
+.supplier-certificate-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.supplier-certificate-list > span { padding: 4px 6px; border: 1px solid #dce8df; border-radius: 5px; color: #187751; background: #f6fbf7; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.supplier-sqs-score { color: #65766b; font-size: 11px; }
+.supplier-products-panel { padding: 14px 16px 16px; border-bottom: 1px solid #e2eae4; }
+.supplier-products-panel > header { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.supplier-products-panel > header > div { display: grid; gap: 4px; }
+.supplier-products-panel > header strong { color: #293d31; font-size: 12px; }
+.supplier-products-panel > header span { color: #718176; font-size: 10px; }
+.supplier-products-panel > header > span { flex: 0 0 auto; }
+.freso-admin-shell .supplier-products-table { min-width: 660px; font-size: 11px; }
+.freso-admin-shell .supplier-products-table th,.freso-admin-shell .supplier-products-table td { padding: 9px 10px; }
+.supplier-product-expand,.supplier-detail-link { padding: 0; border: 0; color: #087f58; background: transparent; font: inherit; font-weight: 700; cursor: pointer; text-align: left; }
+.supplier-product-expand:hover,.supplier-detail-link:hover { text-decoration: underline; }
+.supplier-product-expand:focus-visible,.supplier-detail-link:focus-visible { outline: 2px solid #087f49; outline-offset: 3px; border-radius: 3px; }
+.sqs-criteria-card { min-width: 0; margin: 0; padding: 16px; }
+.sqs-criteria-card > header { padding-bottom: 12px; border-bottom: 1px solid #e7ede9; }
+.sqs-criteria-card h2 { margin: 0; color: #293d31; font-size: 14px; line-height: 1.35; }
+.sqs-criteria-card > header p { margin: 4px 0 0; color: #718176; font-size: 10px; }
+.sqs-criteria-list { display: grid; gap: 9px; padding-top: 12px; }
+.sqs-criteria-list article { padding: 11px 12px; border: 1px solid #e0e8e3; border-radius: 9px; background: #fafcfb; }
+.sqs-criteria-list article > div { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.sqs-criteria-list strong { color: #354b3d; font-size: 11px; line-height: 1.4; }
+.sqs-criteria-list b { flex: 0 0 auto; color: #087f58; font-size: 11px; white-space: nowrap; }
+.sqs-criteria-list p { margin: 6px 0 0; color: #718176; font-size: 10px; line-height: 1.45; }
+.sqs-criteria-card > footer { margin-top: 11px; color: #718176; font-size: 10px; line-height: 1.45; }
+@media (max-width: 1150px) {
+  .admin-supplier-quality-layout { grid-template-columns: minmax(0,1fr); }
+  .sqs-criteria-card { order: -1; }
+}
+@media (max-width: 700px) {
+  .approval-toolbar { align-items: stretch; flex-direction: column; }
+  .approval-toolbar input,.approval-toolbar select { width: 100%; }
+  .approval-expanded-facts { grid-template-columns: minmax(0,1fr); }
+  .approval-table-footer { align-items: flex-start; flex-direction: column; }
+  .sqs-criteria-card { padding: 13px; }
+}
