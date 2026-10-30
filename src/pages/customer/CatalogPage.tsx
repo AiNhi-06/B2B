@@ -1,3 +1,4 @@
+import { ProductCondition } from './ProductCondition';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FruitPhoto } from '../../components/shared/FruitPhoto';
@@ -10,7 +11,8 @@ export function CatalogPage() {
   const cart = useBuyerCart();
   const [params, setParams] = useSearchParams();
   const [sort, setSort] = useState('name');
-  const [supplier, setSupplier] = useState('');
+  const supplier = params.get('supplier') || '';
+  const setSupplier = (value: string) => setFilter('supplier', value);
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const [message, setMessage] = useState('');
   const category = params.get('category') || '';
@@ -30,10 +32,10 @@ export function CatalogPage() {
       <label>Sắp xếp<select value={sort} onChange={event => setSort(event.target.value)}><option value="name">Theo tên</option><option value="price-up">Giá tăng dần</option><option value="price-down">Giá giảm dần</option></select></label></div>
     {(error || cart.error) && <ErrorMessage message={error || cart.error!} onRetry={retry} />}
     {loading ? <LoadingSpinner /> : <><p className="result-count">{visible.length} báo giá phù hợp · Giá công khai từ nhà cung cấp</p>
-      {visible.length === 0 && <div className="empty-panel"><h2>Chưa tìm thấy mặt hàng</h2><p>Thử đổi từ khóa hoặc bộ lọc.</p><button className="btn-secondary" onClick={() => { setParams({}); setSupplier(''); }}>Xóa bộ lọc</button></div>}
+      {visible.length === 0 && <div className="empty-panel"><h2>Chưa tìm thấy mặt hàng</h2><p>Thử đổi từ khóa hoặc bộ lọc.</p><button className="btn-secondary" onClick={() => { setParams({}); }}>Xóa bộ lọc</button></div>}
       <div className="market-grid">{visible.map(product => { const qty = amounts[product.id] ?? 10; const count = products.filter(item => item.commodityId === product.commodityId).length;
         return <article key={product.id} className="market-card"><Link to={`/customer/products/${product.id}`} className="product-photo-link" aria-label={`Chi tiết ${product.name} từ ${product.supplier.name}`}><FruitPhoto id={product.commodityId} name={product.name} imageUrl={product.imageUrl} /></Link>
-          <div className="market-card-body"><span className="product-category">{categoryLabels[product.category]}</span><h2><Link to={`/customer/products/${product.id}`}>{product.name}</Link></h2>
+          <div className="market-card-body"><span className="product-category">{categoryLabels[product.category]}</span><h2><Link to={`/customer/products/${product.id}`}>{product.name}</Link></h2><ProductCondition id={product.id}/>
             <p className="supplier-name">{product.supplier.name}</p><p className="product-origin">{product.originLabel || product.supplier.regionLabel || 'Chưa có vùng trồng'}{product.packagingLabel ? ` · ${product.packagingLabel}` : ''}</p>
             <div className="market-price">{money(product.publicPricePerKg)}<small>/kg</small></div><span className="stock-label">{product.availableKg > 0 ? `Còn ${product.availableKg.toLocaleString('vi-VN')} kg` : 'Tạm hết hàng'}</span>
             <div className="product-buy"><label className="sr-only" htmlFor={`qty-${product.id}`}>Số kg {product.name} từ {product.supplier.name}</label><input id={`qty-${product.id}`} type="number" min={1} max={product.availableKg} step={1} disabled={product.availableKg === 0} value={qty} onChange={event => setAmounts(previous => ({ ...previous, [product.id]: Number(event.target.value) }))} />

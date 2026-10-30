@@ -63,7 +63,7 @@ export function AddProductPage() {
         <label>Quy cách đóng gói<input value={form.packagingLabel} onChange={event=>field('packagingLabel',event.target.value)} placeholder="Ví dụ: Sọt 20 kg"/></label>
       </div><fieldset className="use-options"><legend>Công dụng</legend>{(Object.keys(useLabels) as ProductUse[]).map(use=><label key={use}><input type="checkbox" checked={form.uses.includes(use)} onChange={()=>field('uses',form.uses.includes(use)?form.uses.filter(value=>value!==use):[...form.uses,use])}/>{useLabels[use]}</label>)}</fieldset>
       {id&&<label className="active-checkbox"><input type="checkbox" checked={form.active} onChange={event=>field('active',event.target.checked)}/>Mở bán sản phẩm</label>}
-      <div className="notice">Giá này được hiển thị công khai cho bên mua và Hub. Phí vận chuyển tính riêng. Quy cách đóng gói là mô tả; số lượng đặt vẫn tính bằng kg.</div>
+      <div className="notice">Giá này được hiển thị công khai cho bên mua. Phí vận chuyển tính riêng. Quy cách đóng gói là mô tả; số lượng đặt vẫn tính bằng kg.</div>
       <div className="form-actions"><Link className="btn-secondary" to="/supplier/products">Hủy</Link><button className="btn-primary" type="submit" disabled={saving||processing}>{saving?'Đang lưu…':id?'Lưu thay đổi':'Đăng lô hàng'}</button></div>
     </fieldset></form>}
   </div>;

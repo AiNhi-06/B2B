@@ -9,7 +9,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     PLACED: { label: 'Đã đặt hàng', className: 'badge-placed' },
     AGGREGATED: { label: 'Đã gom đơn', className: 'badge-aggregated' },
     SUPPLIER_CONFIRMED: { label: 'Vườn đã xác nhận', className: 'badge-supplier_confirmed' },
-    AT_HUB: { label: 'Đã nhập kho Hub', className: 'badge-at_hub' },
+    AT_HUB: { label: 'Đã nhập kho', className: 'badge-at_hub' },
     DISPATCHED: { label: 'Đang giao hàng', className: 'badge-dispatched' },
     DELIVERED: { label: 'Đã giao thành công', className: 'badge-delivered' },
     

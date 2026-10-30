@@ -22,7 +22,7 @@ export function HubProductPhotos({ children }: { children: ReactNode }) {
         const batches = await Promise.all(suppliers.map((supplier) => getSupplierListings(supplier.id)));
         if (!disposed && current === request) { setProducts(batches.flatMap((batch,index) => batch.map(product => ({...product,supplierName:suppliers[index].name})))); setError(undefined); }
       } catch {
-        if (!disposed && current === request) setError('Không tải được ảnh sản phẩm tại Hub. Vui lòng tải lại trang.');
+        if (!disposed && current === request) setError('Không tải được ảnh sản phẩm. Vui lòng tải lại trang.');
       }
     };
     const unsubscribe = subscribeDemoData(() => { void load(); });
@@ -45,7 +45,7 @@ export function HubSupplierName({ supplierId }: { supplierId: string }) {
 export function HubProductGallery() {
   const products = useContext(ProductsContext);
   return (
-    <section className="card" aria-label="Ảnh sản phẩm tại Hub">
+    <section className="card" aria-label="Ảnh sản phẩm">
       <h3 className="card-title">Sản phẩm từ nhà cung ứng</h3>
       {products.length === 0 && <p>Chưa có sản phẩm để hiển thị.</p>}
       <div className="grid-cards">

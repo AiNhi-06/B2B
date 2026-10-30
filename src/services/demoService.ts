@@ -72,12 +72,18 @@ function quote(state: DemoState, input: T.NewOrderInput): T.CheckoutQuote {
     integer(lineTotalVnd, 'Tiền hàng');
     return { qcSnapshot: state.qualityReviews.find(q => q.productId === productId && q.status === 'APPROVED'), productId, productName: product.name, supplierId: product.supplierId, supplierName: find(state.suppliers, product.supplierId).name, quantityKg, unitPriceVnd, lineTotalVnd };
   });
-  const shippingFeeVnd = shippingFees[address.id] ?? (address.deliveryZone === 'DEMO_30000' ? 30000 : undefined);
+  let shippingFeeVnd = shippingFees[address.id] ?? (address.deliveryZone === 'DEMO_30000' ? 30000 : undefined);
   requireValue(shippingFeeVnd !== undefined, 'Chưa có phí vận chuyển demo cho địa chỉ này.', 'deliveryAddressId');
   const subtotalVnd = items.reduce((sum, item) => sum + item.lineTotalVnd, 0);
-  const totalVnd = subtotalVnd + shippingFeeVnd;
+  const options = input.checkoutOptions;
+  if (options !== undefined) {
+    requireValue(options !== null && ['SINGLE', 'GROUP'].includes(options.orderMode) && ['GHN', 'GHTK', 'TRUCK'].includes(options.carrier) && ['BANK', 'COD', 'MOMO', 'ZALOPAY'].includes(options.paymentMethod) && typeof options.insurance === 'boolean', 'Lựa chọn thanh toán demo không hợp lệ.');
+    shippingFeeVnd = options.orderMode === 'GROUP' ? 20000 : { GHN: 35000, GHTK: 30000, TRUCK: 25000 }[options.carrier];
+  }
+  const insuranceFeeVnd = options?.insurance ? Math.round(subtotalVnd * 0.005) : 0;
+  const totalVnd = subtotalVnd + shippingFeeVnd + insuranceFeeVnd;
   integer(totalVnd, 'Tổng tiền');
-  return { items, subtotalVnd, shippingFeeVnd, totalVnd };
+  return { items, subtotalVnd, shippingFeeVnd, totalVnd, ...(options ? { checkoutOptions: { ...options }, insuranceFeeVnd } : {}) };
 }
 function demand(state: DemoState): T.DemandLine[] {
   const lines = new Map<string, T.DemandLine>();
