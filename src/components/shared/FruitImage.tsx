@@ -83,6 +83,13 @@ export function FruitImage({ id = '', name = '', size = 80 }: FruitImageProps) {
     );
   }
 
+  if (/banana|chuối/.test(normalized)) return <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#f5f8df"/><path d="M23 26C16 57 38 84 76 66C51 69 32 50 30 27Z" fill="#f4c930" stroke="#b79419" strokeWidth="2"/><path d="M35 20C29 51 49 74 83 52C60 60 42 43 42 21Z" fill="#ffe26b" stroke="#b79419" strokeWidth="2"/><path d="M29 27L27 19M41 22L40 15" stroke="#537335" strokeWidth="5"/></svg>;
+  if (/lettuce|xà lách/.test(normalized)) return <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#edf6df"/><path d="M50 82C20 79 9 55 22 43C12 27 34 17 44 27C54 9 75 20 75 32C95 36 88 62 77 65C76 81 62 86 50 82Z" fill="#57a93b"/><path d="M50 79C29 63 28 43 45 38C59 20 80 39 69 57C76 68 61 79 50 79Z" fill="#97cf59"/><path d="M50 82L53 40M51 65L36 50M52 60L66 47" stroke="#deefb4" strokeWidth="3" strokeLinecap="round"/></svg>;
+
+  const produceSymbols: Record<string, string> = { pineapple: '🍍', watermelon: '🍉', pomelo: '🍊', guava: '🍐', papaya: '🥭', 'passion-fruit': '🟣', strawberry: '🍓', mandarin: '🍊', cucumber: '🥒', broccoli: '🥦', potato: '🥔', 'sweet-potato': '🍠', pumpkin: '🎃', 'bok-choy': '🥬', spinach: '🥬', lime: '🍋', carrot: '🥕', tomato: '🍅', cabbage: '🥬', orange: '🍊' };
+  const symbol = produceSymbols[id];
+  if (symbol) return <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="18" fill="#edf5e8"/><text x="50" y="72" textAnchor="middle" fontSize="62">{symbol}</text></svg>;
+
   // Generic fresh fruit crate / produce fallback
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">

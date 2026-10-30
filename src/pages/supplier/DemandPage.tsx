@@ -81,7 +81,7 @@ export function DemandPage() {
         vehiclePlate: vehiclePlate.trim() || undefined,
         estimatedArrivalAt: estimatedArrivalAt ? new Date(estimatedArrivalAt).toISOString() : undefined,
       });
-      setSuccessMsg('Đã xác nhận vận chuyển lô hàng thành công! Kho Hub sẽ đón nhận xe lúc 03:00 - 04:00 sáng.');
+      setSuccessMsg('Đã xác nhận vận chuyển lô hàng thành công! Đội tiếp nhận xe lúc 03:00 - 04:00 sáng.');
       await loadData();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Xác nhận cung ứng thất bại.';
@@ -98,10 +98,10 @@ export function DemandPage() {
           Điều phối nông sản • {supplierName}
         </span>
         <h1 style={{ margin: '4px 0 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-          Tổng Hợp Nhu Cầu Cần Giao Kho Hub
+          Tổng Hợp Nhu Cầu Cung Ứng Nông Sản
         </h1>
         <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
-          Số lượng tổng hợp từ các đơn đặt hàng trong ngày. Nhà vườn chuẩn bị sọt và xuất xe về Hub trước 04:00 sáng.
+          Số lượng tổng hợp từ các đơn đặt hàng trong ngày. Nhà vườn chuẩn bị sọt và sẵn sàng xuất xe trước 04:00 sáng.
         </p>
       </div>
 
@@ -117,7 +117,7 @@ export function DemandPage() {
         <EmptyState
           icon="📋"
           title="Chưa có yêu cầu xuất hàng"
-          description="Các quán chưa chốt đơn hôm nay hoặc kho Hub chưa chạy tổng hợp nhu cầu lúc 22:00."
+          description="Các quán chưa chốt đơn hôm nay hoặc hệ thống chưa chạy tổng hợp nhu cầu lúc 22:00."
         />
       )}
 
@@ -135,7 +135,7 @@ export function DemandPage() {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'block', textTransform: 'uppercase', fontWeight: 700 }}>
-                  Tổng xuất về Hub
+                  Tổng khối lượng cần giao
                 </span>
                 <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#15803d' }}>
                   {totalDemandKg.toLocaleString('vi-VN')} kg
@@ -171,24 +171,24 @@ export function DemandPage() {
 
           <div className="card" style={{ background: isAlreadyConfirmed ? '#f0fdf4' : '#ffffff', borderColor: isAlreadyConfirmed ? '#86efac' : '#cbd5e1' }}>
             <h2 style={{ margin: '0 0 10px 0', fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Thông Tin Xe Vận Chuyển Về Kho Hub (03:00 – 04:00 Sáng)</span>
+              <span>Thông Tin Xe Vận Chuyển (03:00 – 04:00 Sáng)</span>
               {isAlreadyConfirmed && <span className="badge badge-delivered">Đã chốt lịch xe</span>}
             </h2>
 
             {isAlreadyConfirmed ? (
               <div style={{ fontSize: '0.9rem', color: '#166534' }}>
                 <p style={{ margin: '0 0 10px 0' }}>
-                  Lô hàng đã được lên lịch xuất bến. Bộ phận kiểm nhận tại kho Hub sẽ đối soát tem và tiếp nhận hàng theo thông tin xe dưới đây:
+                  Lô hàng đã được lên lịch xuất bến. Bộ phận kiểm nhận sẽ đối soát tem và tiếp nhận hàng theo thông tin xe dưới đây:
                 </p>
                 <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', padding: '12px 16px', borderRadius: '6px', display: 'flex', gap: 32 }}>
                   <div>Biển số xe: <strong style={{ color: '#0f172a' }}>{confirmations[0]?.vehiclePlate || 'N/A'}</strong></div>
-                  <div>Giờ dự kiến tới Hub: <strong style={{ color: '#0f172a' }}>{confirmations[0]?.estimatedArrivalAt || 'N/A'}</strong></div>
+                  <div>Giờ dự kiến giao: <strong style={{ color: '#0f172a' }}>{confirmations[0]?.estimatedArrivalAt || 'N/A'}</strong></div>
                 </div>
               </div>
             ) : (
               <div>
                 <p style={{ fontSize: '0.88rem', color: '#475569', margin: '0 0 16px 0' }}>
-                  Xác nhận cam kết đủ số lượng thu hoạch và khai báo biển số xe giao hàng để kho Hub bố trí cửa dỡ hàng:
+                  Xác nhận cam kết đủ số lượng thu hoạch và khai báo biển số xe giao hàng để bố trí tiếp nhận hàng:
                 </p>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
@@ -207,13 +207,13 @@ export function DemandPage() {
                   </div>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.85rem', color: '#0f172a', marginBottom: 4 }}>
-                      Giờ dự kiến giao tới Hub:
+                      Giờ dự kiến giao hàng:
                     </label>
                     <input
                       type="datetime-local"
                       className="account-dropdown"
                       style={{ width: '100%', padding: '9px 12px' }}
-                      aria-label="Ngày giờ dự kiến tới Hub"
+                      aria-label="Ngày giờ dự kiến giao hàng"
                       value={estimatedArrivalAt}
                       onChange={(e) => setEstimatedArrivalAt(e.target.value)}
                     />
@@ -227,7 +227,7 @@ export function DemandPage() {
                   disabled={confirming}
                   style={{ width: '100%', padding: '11px', fontSize: '0.95rem' }}
                 >
-                  {confirming ? 'Đang gửi thông tin...' : 'Xác Nhận Lịch Xe Vận Chuyển Về Hub'}
+                  {confirming ? 'Đang gửi thông tin...' : 'Xác Nhận Lịch Xe Vận Chuyển'}
                 </button>
               </div>
             )}

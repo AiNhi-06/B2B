@@ -675,6 +675,21 @@ button { cursor: pointer; }
 .checkout-summary p,.checkout-summary small { color: #52665c; font-size: .8125rem; }
 .checkout-summary button { width: 100%; margin: 10px 0; }
 .checkout-summary > small { display: block; }
+/* Promo code section — override parent .checkout-summary > div flex row */
+.promo-code-section { display: block !important; border-top: 1px dashed #c6d4ca; padding-top: 16px; margin: 12px 0 4px !important; }
+.promo-code-label { display: block; font-weight: 650; font-size: .875rem; margin-bottom: 8px; }
+.promo-input-row { display: flex; gap: 8px; align-items: center; }
+.promo-input-row input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #a6baac; border-radius: 6px; font-size: .8125rem; text-transform: uppercase; letter-spacing: .04em; }
+.promo-input-row input:focus { border-color: #06643b; outline: 2px solid rgba(6,100,59,.15); }
+.promo-input-row button.btn-secondary { flex: 0 0 auto; width: auto !important; margin: 0 !important; padding: 8px 14px; font-size: .8125rem; }
+.promo-applied { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px; padding: 8px 12px; font-size: .8125rem; }
+.promo-applied-badge { color: #2e7d32; }
+.promo-applied .btn-text { width: auto !important; margin: 0 !important; background: none; border: none; color: #d32f2f; cursor: pointer; font-size: .75rem; padding: 2px 6px; text-decoration: underline; }
+.promo-applied .btn-text:hover { color: #b71c1c; }
+.promo-code-section .promo-error { display: block; color: #d32f2f; margin-top: 6px; font-size: .75rem !important; }
+.promo-code-section .promo-hint { display: block; margin-top: 6px; color: #8e9e94 !important; font-size: .75rem !important; font-style: italic; }
+.promo-discount-line { color: #2e7d32 !important; }
+.promo-discount-line strong { color: #2e7d32 !important; }
 .cart-line { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 18px 0; border-bottom: 1px solid #e5ebe7; font-size: .8125rem; }
 .cart-photo { width: 60px; flex: 0 0 60px; }
 .cart-photo .supplier-photo-frame { height: 60px; border-radius: 6px; }

@@ -67,7 +67,7 @@ export function OrderDetailPage() {
   if (error || !order) return <ErrorMessage message={error || 'Đơn hàng không tồn tại'} />;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}><section className="card"><h2>Thanh toán & lịch giao demo</h2><p>{order.paymentRequestKey ? 'Đã giữ tiền Escrow demo — không thu tiền thật' : 'Đơn cũ — không có thanh toán Escrow demo'}</p><p>{order.deliveryDate ? `${order.deliveryDate} · ${order.deliverySlot === 'MORNING' ? '05–07h' : '13–15h'} · qua Hub` : 'Chưa có lịch giao demo'}</p>{order.deliveredAt && <p>Giao thành công: {new Date(order.deliveredAt).toLocaleString('vi-VN')} · Hạn khiếu nại: {new Date(Date.parse(order.deliveredAt)+7200000).toLocaleString('vi-VN')}</p>}<div className="action-row"><Link to="/customer/claims">Gửi / xem khiếu nại</Link><Link to="/customer/finance">Xem tiền demo</Link></div>{order.items.map(i => <p key={i.productId}>{i.productName}: {i.qcSnapshot ? `QC tại lúc đặt · ${i.qcSnapshot.grade} · Yield ${i.qcSnapshot.yieldPercent}% · Brix ${i.qcSnapshot.brix ?? 'không khai'}` : 'Chưa có QC được duyệt tại lúc đặt'}</p>)}</section>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}><section className="card"><h2>Thanh toán & lịch giao demo</h2><p>{order.paymentRequestKey ? 'Đã giữ tiền Escrow demo — không thu tiền thật' : 'Đơn cũ — không có thanh toán Escrow demo'}</p><p>{order.deliveryDate ? `${order.deliveryDate} · ${order.deliverySlot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Chưa có lịch giao demo'}</p>{order.deliveredAt && <p>Giao thành công: {new Date(order.deliveredAt).toLocaleString('vi-VN')} · Hạn khiếu nại: {new Date(Date.parse(order.deliveredAt)+7200000).toLocaleString('vi-VN')}</p>}<div className="action-row"><Link to="/customer/claims">Gửi / xem khiếu nại</Link><Link to="/customer/finance">Xem tiền demo</Link></div>{order.items.map(i => <p key={i.productId}>{i.productName}: {i.qcSnapshot ? `QC tại lúc đặt · ${i.qcSnapshot.grade} · Yield ${i.qcSnapshot.yieldPercent}% · Brix ${i.qcSnapshot.brix ?? 'không khai'}` : 'Chưa có QC được duyệt tại lúc đặt'}</p>)}</section>
       <div style={{ marginBottom: 16 }}>
         <Link to="/customer/orders" style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem' }}>
           ← Quay lại danh sách đơn hàng
@@ -124,7 +124,7 @@ export function OrderDetailPage() {
           </div>
         ) : (
           <div style={{ color: '#64748b', fontSize: '0.9rem', padding: '10px 0' }}>
-            ⏳ Đơn hàng của bạn đang được tổng hợp tại kho Hub. Admin sẽ dán tem QR và gom tuyến theo ngày, ca giao đã chọn.
+            ⏳ Đơn hàng của bạn đang được tổng hợp và kiểm định chất lượng. Hệ thống sẽ gom tuyến giao theo ngày, ca đã chọn.
           </div>
         )}
       </div>
@@ -164,6 +164,7 @@ export function OrderDetailPage() {
             <span style={{ color: '#64748b' }}>Phí vận chuyển (demo): </span>
             <strong>{order.shippingFeeVnd.toLocaleString('vi-VN')} đ</strong>
           </div>
+          {order.checkoutOptions && <><div>Bảo hiểm nông sản: <strong>{(order.insuranceFeeVnd || 0).toLocaleString('vi-VN')} đ</strong></div><div>{order.checkoutOptions.orderMode === 'GROUP' ? 'Gom nhóm mô phỏng' : `Đơn riêng lẻ · ${{GHN:'GHN Express',GHTK:'GHTK Logi',TRUCK:'Xe tải thường'}[order.checkoutOptions.carrier]}`}</div><div>Thanh toán mô phỏng: {{BANK:'Thẻ / Ngân hàng',COD:'COD',MOMO:'MoMo',ZALOPAY:'ZaloPay'}[order.checkoutOptions.paymentMethod]}</div></>}
           <div style={{ fontSize: '1.2rem', marginTop: 4 }}>
             <span>Tổng cộng: </span>
             <strong style={{ color: '#15803d' }}>{order.totalVnd.toLocaleString('vi-VN')} đ</strong>

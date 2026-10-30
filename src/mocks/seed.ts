@@ -1,3 +1,4 @@
+import { addCustomerProducts } from './customerMerchandising';
 import type { Commodity, Customer, DeliveryAddress, DemoSession, Order, ProductListing, Shipment, Supplier, SupplierConfirmation } from '../types/index';
 
 import type { BusinessProfile, QualityReview, Claim } from '../types/index';
@@ -65,6 +66,7 @@ export function createSeed(): DemoState {
     orders: [], confirmations: [], shipments: [], nextId: 1,
   };
   addGovernance(seed);
+  addCustomerProducts(seed);
   addAdminShowcaseProducts(seed);
   addAdminShowcaseProfiles(seed);
   return addAdminOperationsShowcase(seed);

@@ -9,7 +9,7 @@ import {
   subscribeDemoData,
 } from '../../services/demoService';
 
-export function RoleSelector() {
+export function RoleSelector({ hideControls = false }: { hideControls?: boolean }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [session, setSession] = useState<DemoSession>({
@@ -94,6 +94,8 @@ export function RoleSelector() {
   const activeRole: Role = currentPath.startsWith('/supplier')
     ? 'SUPPLIER'
     : 'CUSTOMER';
+
+  if (hideControls) return error ? <span role="alert">{error}</span> : null;
 
   return (
     <div className="role-nav-group">

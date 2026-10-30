@@ -107,6 +107,8 @@ export interface OrderItem {
 }
 
 export interface Order {
+  checkoutOptions?: CheckoutOptions;
+  insuranceFeeVnd?: number;
   deliveryDate?: string;
   deliverySlot?: DeliverySlot;
   paymentRequestKey?: string;
@@ -124,6 +126,8 @@ export interface Order {
 }
 
 export interface CheckoutQuote {
+  checkoutOptions?: CheckoutOptions;
+  insuranceFeeVnd?: number;
   items: OrderItem[];
   subtotalVnd: number;
   shippingFeeVnd: number;
@@ -159,7 +163,15 @@ export interface Shipment {
   trackingLabel?: string;
 }
 
+export interface CheckoutOptions {
+  orderMode: 'SINGLE' | 'GROUP';
+  carrier: 'GHN' | 'GHTK' | 'TRUCK';
+  paymentMethod: 'BANK' | 'COD' | 'MOMO' | 'ZALOPAY';
+  insurance: boolean;
+}
+
 export interface NewOrderInput {
+  checkoutOptions?: CheckoutOptions;
   deliveryDate?: string;
   deliverySlot?: DeliverySlot;
   requestKey?: string;

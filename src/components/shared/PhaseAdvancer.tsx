@@ -26,11 +26,11 @@ const PHASES: PhaseStep[] = [
     time: 'Sau 22:00',
     title: 'Tổng hợp nhu cầu toàn hệ thống',
     targetRoute: '/admin/aggregate',
-    role: 'Kho Hub',
+    role: 'Quản trị hệ thống',
   },
   {
     time: '03:00–04:00',
-    title: 'Xuất hàng từ vườn về Hub',
+    title: 'Xuất hàng từ vườn theo đơn',
     targetRoute: '/supplier/demand',
     role: 'Nhà vườn',
   },
@@ -38,7 +38,7 @@ const PHASES: PhaseStep[] = [
     time: 'Từ 04:00',
     title: 'Dán nhãn sọt & phân tuyến giao',
     targetRoute: '/admin/shipments',
-    role: 'Kho Hub',
+    role: 'Vận chuyển',
   },
   {
     time: 'Sáng sớm',

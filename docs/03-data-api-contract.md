@@ -23,3 +23,9 @@ LedgerEntry: id, key duy nhất, kind HOLD/REFUND/SETTLEMENT/WITHDRAWAL, orderId
 getDemoClock / advanceDemoClock từ v4 dùng chung cho đặt/nhận/khiếu nại/SLA/đối soát, lưu qua refresh. Reset toàn bộ state về schema5, không xóa storage khác.
 Chuẩn 10kg×32000 + ship30000 = giữ350000; hoàn2kg64000; hàng ròng256000; phí7680; NCC248320; ship30000. Cần kiểm tra đa NCC, khóa đúng phần, không lặp tiền, không rút vượt số dư, không gom khác ca, migration và lỗi lưu.
 Không VAT/hóa đơn/công nợ/khóa giá/tự giao/đổi hàng/video/OCR hoặc dịch vụ thật.
+
+
+## Customer checkout demo extension — approved 2026-10-30
+User approved selectable fees and persistence in demo orders. `NewOrderInput.checkoutOptions?` contains `orderMode: SINGLE | GROUP`, `carrier: GHN | GHTK | TRUCK`, `paymentMethod: BANK | COD | MOMO | ZALOPAY`, `insurance: boolean`. Quote and Order snapshot these options plus optional `insuranceFeeVnd`. Existing callers/orders without options retain address-based shipping and zero insurance.
+Single fees: GHN 35,000 VND, GHTK 30,000 VND, truck 25,000 VND. GROUP uses a provisional demo fee 20,000 VND, without actual grouping. Insurance is rounded to nearest VND at 0.5% of goods subtotal. Total = goods + shipping + insurance. Options are validated and included in payment idempotency fingerprint. All payment choices, including COD, use the existing simulated PAID/Escrow flow; no real payment, carrier or insurance integration. Escrow HOLD records total; supplier allocation remains goods only; insurance does not alter supplier payout or claims policy.
+Home sale shelf uses fixed demo comparison prices and live listing prices as final purchase prices; does not overwrite seller prices or stock. No artificial countdown or sales counts.
