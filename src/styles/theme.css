@@ -48,6 +48,31 @@ body {
   box-sizing: border-box;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  :where(a[href], button:not(:disabled), [role="button"]:not([aria-disabled="true"]), input[type="button"]:not(:disabled), input[type="submit"]:not(:disabled), input[type="reset"]:not(:disabled), summary) {
+    transition: transform 180ms ease;
+    transform-origin: center;
+  }
+
+  :where(a[href], button:not(:disabled), [role="button"]:not([aria-disabled="true"]), input[type="button"]:not(:disabled), input[type="submit"]:not(:disabled), input[type="reset"]:not(:disabled), summary):hover {
+    position: relative;
+    z-index: 1;
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(a[href], button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], summary) {
+    transition-duration: 0.01ms !important;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    :where(a[href], button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], summary):hover {
+      transform: none;
+    }
+  }
+}
+
 #root {
   width: 100% !important;
   max-width: 100% !important;
