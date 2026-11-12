@@ -1,176 +1,158 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import type { Order, Shipment } from '../../types';
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import type { OrderItem } from '../../types';
 import {
-  getDemoSession,
-  getCustomerOrders,
-  getShipmentByOrderId,
-  subscribeDemoData,
+  getClaims, getCustomerOrders, getDeliveryAddresses, getDemoClock, getDemoSession, getShipmentByOrderId,
 } from '../../services/demoService';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
+import { FruitPhoto } from '../../components/shared/FruitPhoto';
+import { money, useCatalog } from '../../components/shared/useCatalog';
+import { useDemoData } from '../../components/shared/useDemoData';
+import { canClaim } from './orderClaimEligibility';
+import './buyer-orders.css';
+
+const carrierNames = { GHN: 'GHN Express', GHTK: 'GHTK Logi', TRUCK: 'Xe tải thường' };
+const paymentNames = { BANK: 'Thẻ / Ngân hàng', COD: 'COD', MOMO: 'MoMo', ZALOPAY: 'ZaloPay' };
+const dateTime = (date: string) => new Date(date).toLocaleString('vi-VN');
+
+export function OrderDetailContent({ id }: { id: string }) {
+  const [copyMessage, setCopyMessage] = useState('');
+  const { products } = useCatalog();
+  const { data, error } = useDemoData(async () => {
+    const session = await getDemoSession();
+    const customerId = session.activeCustomerId || 'customer-1';
+    const orders = await getCustomerOrders(customerId);
+    const order = orders.find(candidate => candidate.id === id);
+    if (!order) return null;
+    const [shipment, addresses, now, claims] = await Promise.all([
+      getShipmentByOrderId(id), getDeliveryAddresses(customerId), getDemoClock(), getClaims(),
+    ]);
+    return {
+      order, shipment, address: addresses.find(candidate => candidate.id === order.deliveryAddressId),
+      eligible: session.role === 'CUSTOMER' && canClaim(order, claims, now),
+    };
+  });
+
+  if (error) return <ErrorMessage message={error} />;
+  if (data === undefined) return <LoadingSpinner />;
+  if (data === null) return <ErrorMessage message="Không tìm thấy đơn hàng." />;
+
+  const { order, shipment, address, eligible } = data;
+  const groups = new Map<string, OrderItem[]>();
+  for (const item of order.items) {
+    const key = item.supplierId || item.supplierName || '';
+    const items = groups.get(key) ?? [];
+    items.push(item);
+    groups.set(key, items);
+  }
+  const productsById = new Map(products.map(product => [product.id, product]));
+  const slot = order.deliverySlot === 'MORNING' ? '05–07h' : order.deliverySlot === 'AFTERNOON' ? '13–15h' : '';
+  const date = order.deliveryDate?.split('-').reverse().join('/');
+  const schedule = [date, slot].filter(Boolean).join(' · ');
+  const carrier = order.checkoutOptions && carrierNames[order.checkoutOptions.carrier];
+  const claimPath = '/customer/claims?orderId=' + encodeURIComponent(order.id);
+
+  async function copyId() {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopyMessage('Đã sao chép mã đơn.');
+    } catch {
+      setCopyMessage('Không thể sao chép. Bạn có thể chọn mã đơn để sao chép.');
+    }
+  }
+
+  return (
+    <div className="buyer-detail-content">
+      <section className="buyer-detail-status" aria-label="Trạng thái đơn">
+        <StatusBadge status={order.status} />
+        {order.deliveredAt ? <p>Giao thành công vào {dateTime(order.deliveredAt)}</p> :
+          schedule && <p>Lịch giao: {schedule}</p>}
+      </section>
+
+      <section className="buyer-detail-section">
+        <h3>Thông tin vận chuyển</h3>
+        {carrier && <p><strong>{carrier}</strong></p>}
+        {schedule && order.deliveredAt && <p>Ca giao: {schedule}</p>}
+        {shipment ? (
+          <>
+            <p>{shipment.routeLabel} <StatusBadge status={shipment.status} /></p>
+            {shipment.trackingLabel && <p>{shipment.trackingLabel}</p>}
+            {[shipment.driverName, shipment.driverPhone, shipment.vehiclePlate].filter(Boolean).length > 0 && (
+              <p>{[shipment.driverName, shipment.driverPhone, shipment.vehiclePlate].filter(Boolean).join(' · ')}</p>
+            )}
+          </>
+        ) : <p>Chưa có thông tin theo dõi vận chuyển.</p>}
+        <h3 className="buyer-detail-address-title">Địa chỉ nhận hàng</h3>
+        {address ? <p><strong>{address.label}</strong><br />{address.address}</p> : <p>Chưa có thông tin địa chỉ.</p>}
+      </section>
+
+      <section className="buyer-detail-section">
+        <h3>Mặt hàng</h3>
+        {[...groups].map(([key, items]) => (
+          <div className="buyer-order-group" key={key}>
+            <h4>{items[0].supplierName || key || 'Chưa rõ nhà cung cấp'}</h4>
+            <ul>
+              {items.map((item, index) => {
+                const product = productsById.get(item.productId);
+                const qc = item.qcSnapshot;
+                return (
+                  <li className="buyer-order-item" key={item.productId + '-' + index}>
+                    <FruitPhoto id={product?.commodityId ?? item.productId} name={item.productName} imageUrl={product?.imageUrl} />
+                    <div>
+                      <strong>{item.productName}</strong>
+                      <p>{item.quantityKg.toLocaleString('vi-VN')} kg · {money(item.unitPriceVnd)}/kg</p>
+                      {qc && <p>QC lúc đặt: {qc.grade} · Yield {qc.yieldPercent}%{qc.brix != null && ' · Brix ' + qc.brix}</p>}
+                    </div>
+                    <strong className="buyer-order-line-total">{money(item.lineTotalVnd)}</strong>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+        <details className="buyer-detail-totals">
+          <summary>Tổng thanh toán <strong>{money(order.totalVnd)}</strong></summary>
+          <dl>
+            <div><dt>Tiền hàng</dt><dd>{money(order.subtotalVnd)}</dd></div>
+            <div><dt>Phí giao</dt><dd>{money(order.shippingFeeVnd)}</dd></div>
+            {!!order.insuranceFeeVnd && <div><dt>Bảo hiểm</dt><dd>{money(order.insuranceFeeVnd)}</dd></div>}
+          </dl>
+        </details>
+      </section>
+
+      <section className="buyer-detail-section">
+        <h3>Thông tin đơn</h3>
+        <div className="buyer-detail-reference">
+          <span>Mã đơn <strong>{order.id}</strong></span>
+          <button type="button" className="btn-secondary" onClick={copyId}>Sao chép</button>
+        </div>
+        <div role="status">{copyMessage}</div>
+        <p>Đặt lúc: {dateTime(order.placedAt)}</p>
+        {order.checkoutOptions && <p>Phương thức thanh toán: {paymentNames[order.checkoutOptions.paymentMethod]}</p>}
+        {order.paymentRequestKey && <p>Đã giữ tiền qua Escrow</p>}
+      </section>
+
+      <section className="buyer-detail-section">
+        <h3>Hỗ trợ</h3>
+        {eligible && order.deliveredAt && <p>Hạn gửi khiếu nại: {dateTime(new Date(Date.parse(order.deliveredAt) + 7_200_000).toISOString())}</p>}
+        <div className="buyer-detail-support">
+          {eligible && <Link className="btn-primary" to={claimPath}>Gửi khiếu nại</Link>}
+          <Link to="/customer/claims">Xem khiếu nại</Link>
+          <Link to="/customer/finance">Xem tài chính</Link>
+        </div>
+      </section>
+    </div>
+  );
+}
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [shipment, setShipment] = useState<Shipment | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-
-    let isMounted = true;
-    const loadOrderDetail = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const session = await getDemoSession();
-        const cId = session.activeCustomerId || 'customer-1';
-        const orders = await getCustomerOrders(cId);
-        const found = orders.find((o) => o.id === id);
-
-        if (!found) {
-          if (isMounted) setError(`Không tìm thấy đơn hàng #${id}`);
-          return;
-        }
-
-        if (isMounted) {
-          setOrder(found);
-          const ship = await getShipmentByOrderId(id);
-          setShipment(ship);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          const msg = err instanceof Error ? err.message : 'Lỗi khi tải chi tiết đơn hàng.';
-          setError(msg);
-        }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    loadOrderDetail();
-    const unsub = subscribeDemoData((event) => {
-      if (event.type === 'DATA_CHANGED' || event.type === 'SESSION_CHANGED' || event.type === 'RESET') {
-        loadOrderDetail();
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      unsub();
-    };
-  }, [id]);
-
-  if (loading) return <LoadingSpinner />;
-  if (error || !order) return <ErrorMessage message={error || 'Đơn hàng không tồn tại'} />;
-
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}><section className="card"><h2>Thanh toán & lịch giao demo</h2><p>{order.paymentRequestKey ? 'Đã giữ tiền Escrow demo — không thu tiền thật' : 'Đơn cũ — không có thanh toán Escrow demo'}</p><p>{order.deliveryDate ? `${order.deliveryDate} · ${order.deliverySlot === 'MORNING' ? '05–07h' : '13–15h'}` : 'Chưa có lịch giao demo'}</p>{order.deliveredAt && <p>Giao thành công: {new Date(order.deliveredAt).toLocaleString('vi-VN')} · Hạn khiếu nại: {new Date(Date.parse(order.deliveredAt)+7200000).toLocaleString('vi-VN')}</p>}<div className="action-row"><Link to="/customer/claims">Gửi / xem khiếu nại</Link><Link to="/customer/finance">Xem tiền demo</Link></div>{order.items.map(i => <p key={i.productId}>{i.productName}: {i.qcSnapshot ? `QC tại lúc đặt · ${i.qcSnapshot.grade} · Yield ${i.qcSnapshot.yieldPercent}% · Brix ${i.qcSnapshot.brix ?? 'không khai'}` : 'Chưa có QC được duyệt tại lúc đặt'}</p>)}</section>
-      <div style={{ marginBottom: 16 }}>
-        <Link to="/customer/orders" style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem' }}>
-          ← Quay lại danh sách đơn hàng
-        </Link>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div>
-          <h2 style={{ margin: '0 0 4px 0', fontSize: '1.3rem' }}>Đơn Hàng #{order.id}</h2>
-          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-            Đặt lúc: {new Date(order.placedAt).toLocaleString('vi-VN')}
-          </span>
-        </div>
-        <StatusBadge status={order.status} />
-      </div>
-
-      {/* Simulated GPS & Driver Tracking */}
-      <div className="card" style={{ borderColor: shipment ? '#38bdf8' : '#e2e8f0', background: shipment ? '#f0f9ff' : '#ffffff' }}>
-        <h3 className="card-title" style={{ color: '#0369a1' }}>
-          <span>🚚 Giám Sát Hành Trình Giao Hàng</span>
-          <span className="demo-chip">Hành trình & Tài xế mô phỏng (Demo)</span>
-        </h3>
-
-        {shipment ? (
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 16 }}>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Tài xế giao hàng:</span>
-                <div style={{ fontWeight: 600 }}>{shipment.driverName || 'Nguyễn Văn Tài'}</div>
-              </div>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Số điện thoại:</span>
-                <div style={{ fontWeight: 600 }}>{shipment.driverPhone || '0903.123.456'}</div>
-              </div>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Biển số xe:</span>
-                <div style={{ fontWeight: 600 }}>{shipment.vehiclePlate || '59B1-999.88'}</div>
-              </div>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Tuyến giao:</span>
-                <div style={{ fontWeight: 600 }}>{shipment.routeLabel}</div>
-              </div>
-            </div>
-
-            <div style={{ background: '#ffffff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontWeight: 600, color: '#0369a1' }}>Trạng thái vận chuyển:</span>
-                <StatusBadge status={shipment.status} />
-              </div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155' }}>
-                📍 {shipment.trackingLabel || 'Xe đang di chuyển giao qua các quán trên cùng tuyến đường Multi-stop.'}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div style={{ color: '#64748b', fontSize: '0.9rem', padding: '10px 0' }}>
-            ⏳ Đơn hàng của bạn đang được tổng hợp và kiểm định chất lượng. Hệ thống sẽ gom tuyến giao theo ngày, ca đã chọn.
-          </div>
-        )}
-      </div>
-
-      {/* Order Item Details */}
-      <div className="card">
-        <h3 className="card-title">Chi Tiết Mặt Hàng</h3>
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Mặt hàng</th>
-                <th>Số lượng</th>
-                <th>Giá lúc đặt hàng</th>
-                <th>Thành tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map((i) => (
-                <tr key={i.productId}>
-                  <td><strong>{i.productName}</strong><div>{i.supplierName || 'Thông tin NCC chưa có'}</div></td>
-                  <td>{i.quantityKg} kg</td>
-                  <td>{i.unitPriceVnd.toLocaleString('vi-VN')} đ/kg</td>
-                  <td><strong>{i.lineTotalVnd.toLocaleString('vi-VN')} đ</strong></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end', fontSize: '0.95rem' }}>
-          <div>
-            <span style={{ color: '#64748b' }}>Tiền hàng: </span>
-            <strong>{order.subtotalVnd.toLocaleString('vi-VN')} đ</strong>
-          </div>
-          <div>
-            <span style={{ color: '#64748b' }}>Phí vận chuyển (demo): </span>
-            <strong>{order.shippingFeeVnd.toLocaleString('vi-VN')} đ</strong>
-          </div>
-          {order.checkoutOptions && <><div>Bảo hiểm nông sản: <strong>{(order.insuranceFeeVnd || 0).toLocaleString('vi-VN')} đ</strong></div><div>{order.checkoutOptions.orderMode === 'GROUP' ? 'Gom nhóm mô phỏng' : `Đơn riêng lẻ · ${{GHN:'GHN Express',GHTK:'GHTK Logi',TRUCK:'Xe tải thường'}[order.checkoutOptions.carrier]}`}</div><div>Thanh toán mô phỏng: {{BANK:'Thẻ / Ngân hàng',COD:'COD',MOMO:'MoMo',ZALOPAY:'ZaloPay'}[order.checkoutOptions.paymentMethod]}</div></>}
-          <div style={{ fontSize: '1.2rem', marginTop: 4 }}>
-            <span>Tổng cộng: </span>
-            <strong style={{ color: '#15803d' }}>{order.totalVnd.toLocaleString('vi-VN')} đ</strong>
-          </div>
-        </div>
-      </div>
+    <div className="buyer-detail-page">
+      <Link to="/customer/orders">← Quay lại danh sách đơn hàng</Link>
+      <h1>Thông tin đơn hàng</h1>
+      {id && <OrderDetailContent key={id} id={id} />}
     </div>
   );
 }

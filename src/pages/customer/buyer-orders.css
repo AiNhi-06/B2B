@@ -79,3 +79,50 @@
   .buyer-order-item .supplier-photo-frame { height: 56px; }
   .buyer-order-line-total { grid-column: 2; }
 }
+
+.buyer-detail-dialog {
+  width: min(720px, calc(100% - 32px));
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid #dce9df;
+  border-radius: 16px;
+  color: #243d30;
+  background: #fff;
+  box-shadow: 0 18px 58px #17332638;
+}
+.buyer-detail-dialog::backdrop { background: #102d2266; backdrop-filter: blur(5px); }
+.buyer-detail-shell { display: flex; flex-direction: column; max-height: min(86dvh, 850px); }
+.buyer-detail-dialog-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px; border-bottom: 1px solid #dce9df; background: #fff;
+}
+.buyer-detail-dialog-header h2 { margin: 0; font-size: clamp(1.05rem, 4vw, 1.35rem); }
+.buyer-detail-dialog-header button { min-height: 44px; }
+.buyer-detail-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 20px; background: #f4f8f5; }
+.buyer-detail-page { max-width: 720px; margin: 0 auto; }
+.buyer-detail-page h1 { font-size: 1.5rem; }
+.buyer-detail-content { display: grid; gap: 12px; overflow-wrap: anywhere; }
+.buyer-detail-status, .buyer-detail-section { padding: 16px; border-radius: 12px; }
+.buyer-detail-status { background: #146347; color: #fff; }
+.buyer-detail-status p { margin: 8px 0 0; font-weight: 700; }
+.buyer-detail-section { background: #fff; border: 1px solid #dce9df; }
+.buyer-detail-section h3 { margin: 0 0 8px; font-size: 1rem; color: #164c33; }
+.buyer-detail-section h4 { margin: 12px 0 0; font-size: .95rem; color: #365d4c; }
+.buyer-detail-section p { margin: 6px 0 0; }
+.buyer-detail-section .buyer-detail-address-title { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e0ece3; }
+.buyer-detail-totals { padding-top: 12px; }
+.buyer-detail-totals summary { cursor: pointer; padding: 8px 0; }
+.buyer-detail-totals summary strong { float: right; color: #125a3a; }
+.buyer-detail-totals dl { margin: 0; }
+.buyer-detail-totals dl div { display: flex; justify-content: space-between; gap: 8px; }
+.buyer-detail-totals dd { margin: 0; }
+.buyer-detail-reference, .buyer-detail-support { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.buyer-detail-reference { justify-content: space-between; }
+.buyer-detail-support { margin-top: 8px; }
+@media (max-width: 520px) {
+  .buyer-detail-dialog { width: calc(100% - 12px); }
+  .buyer-detail-shell { max-height: calc(100dvh - 12px); }
+  .buyer-detail-dialog-header, .buyer-detail-scroll { padding-inline: 12px; }
+  .buyer-detail-section { padding: 12px; }
+}

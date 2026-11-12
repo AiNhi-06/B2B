@@ -1,12 +1,14 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
-import type { Claim, Order, OrderItem } from '../../types';
+import type { Order, OrderItem } from '../../types';
 import { getClaims, getDemoClock, getDemoSession, getCustomerOrders } from '../../services/demoService';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { LoadingSpinner, ErrorMessage } from '../../components/shared/Feedback';
 import { FruitPhoto } from '../../components/shared/FruitPhoto';
 import { money, useCatalog } from '../../components/shared/useCatalog';
 import { useDemoData } from '../../components/shared/useDemoData';
+import { OrderDetailContent } from './OrderDetailPage';
+import { canClaim } from './orderClaimEligibility';
 import './buyer-orders.css';
 
 const shortDate = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' });
@@ -26,26 +28,31 @@ function normalizeSearch(value: string) {
     .replace(/\p{M}/gu, '').replace(/đ/g, 'd').replace(/#/g, '').trim();
 }
 
-function canClaim(order: Order, claims: Claim[], now: string) {
-  if (order.status !== 'DELIVERED' || !order.deliveredAt) return false;
-  const elapsed = Date.parse(now) - Date.parse(order.deliveredAt);
-  if (!(elapsed >= 0 && elapsed < 7_200_000)) return false;
-
-  const orderClaims = claims.filter(claim => claim.orderId === order.id);
-  return order.items.some(item => {
-    if (!item.supplierId || orderClaims.some(claim =>
-      claim.supplierId === item.supplierId && (claim.status === 'OPEN' || claim.status === 'RESPONDED')
-    )) return false;
-    const reservedKg = orderClaims.flatMap(claim => {
-      if (claim.status === 'APPROVED') return claim.approvedLines ?? [];
-      if (claim.status === 'OPEN' || claim.status === 'RESPONDED') return claim.lines;
-      return [];
-    }).reduce((kg, line) => kg + (line.productId === item.productId ? line.quantityKg : 0), 0);
-    return item.quantityKg - reservedKg >= 1;
-  });
-}
-
 export function OrdersPage() {
+  const [detailId, setDetailId] = useState<string>();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!detailId || !dialog) return;
+    const trigger = document.activeElement;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    dialog.showModal();
+    root.style.overflow = 'hidden';
+    return () => {
+      if (dialog.open) dialog.close();
+      root.style.overflow = previousOverflow;
+      if (trigger instanceof HTMLElement) trigger.focus({ preventScroll: true });
+    };
+  }, [detailId]);
+
+  function openDetail(event: MouseEvent<HTMLAnchorElement>, id: string) {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    setDetailId(id);
+  }
+
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState(orderFilters[0]);
   const searchInput = useRef<HTMLInputElement>(null);
@@ -173,7 +180,7 @@ export function OrdersPage() {
 
             <footer className="buyer-order-footer">
               {delivery && (
-                <Link className="buyer-order-delivery" to={detailPath}>
+                <Link className="buyer-order-delivery" to={detailPath} aria-haspopup="dialog" onClick={event => openDetail(event, order.id)}>
                   {delivery}<span aria-hidden="true">›</span>
                 </Link>
               )}
@@ -189,13 +196,30 @@ export function OrdersPage() {
                   {data.isBuyer && canClaim(order, data.claims, data.now) && (
                     <Link className="btn-secondary" to={`/customer/claims?orderId=${encodeURIComponent(order.id)}`}>Gửi khiếu nại</Link>
                   )}
-                  <Link className="btn-primary" to={detailPath}>Xem chi tiết</Link>
+                  <Link className="btn-primary" to={detailPath} aria-haspopup="dialog" onClick={event => openDetail(event, order.id)}>Xem chi tiết</Link>
                 </div>
               </div>
             </footer>
           </article>
         );
       })}
+      {detailId && (
+        <dialog
+          ref={dialogRef}
+          className="buyer-detail-dialog"
+          aria-labelledby="buyer-detail-title"
+          onCancel={event => { event.preventDefault(); setDetailId(undefined); }}
+          onClick={event => { if (event.target === event.currentTarget) setDetailId(undefined); }}
+        >
+          <div className="buyer-detail-shell">
+            <header className="buyer-detail-dialog-header">
+              <h2 id="buyer-detail-title">Thông tin đơn hàng</h2>
+              <button type="button" className="btn-secondary" autoFocus onClick={() => setDetailId(undefined)}>Đóng</button>
+            </header>
+            <div className="buyer-detail-scroll"><OrderDetailContent id={detailId} /></div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }
