@@ -171,20 +171,28 @@ export function OrdersPage() {
               </div>
             ))}
 
-            <div className="buyer-order-total">
-              <span>Phí giao: {money(order.shippingFeeVnd)}</span>
-              {(order.insuranceFeeVnd ?? 0) > 0 && <span>Bảo hiểm: {money(order.insuranceFeeVnd ?? 0)}</span>}
-              <div>Tổng tiền ({order.items.length} mặt hàng) <strong>{money(order.totalVnd)}</strong></div>
-            </div>
-
-            {delivery && <Link className="buyer-order-delivery" to={detailPath}>{delivery}<span aria-hidden="true">›</span></Link>}
-
-            <div className="buyer-order-actions">
-              {data.isBuyer && canClaim(order, data.claims, data.now) && (
-                <Link className="btn-secondary" to={`/customer/claims?orderId=${encodeURIComponent(order.id)}`}>Gửi khiếu nại</Link>
+            <footer className="buyer-order-footer">
+              {delivery && (
+                <Link className="buyer-order-delivery" to={detailPath}>
+                  {delivery}<span aria-hidden="true">›</span>
+                </Link>
               )}
-              <Link className="btn-primary" to={detailPath}>Xem chi tiết</Link>
-            </div>
+              <div className="buyer-order-summary">
+                <div className="buyer-order-total">
+                  <div className="buyer-order-fees">
+                    <span>Phí giao: {money(order.shippingFeeVnd)}</span>
+                    {(order.insuranceFeeVnd ?? 0) > 0 && <span>Bảo hiểm: {money(order.insuranceFeeVnd ?? 0)}</span>}
+                  </div>
+                  <div>Tổng tiền ({order.items.length} mặt hàng) <strong>{money(order.totalVnd)}</strong></div>
+                </div>
+                <div className="buyer-order-actions">
+                  {data.isBuyer && canClaim(order, data.claims, data.now) && (
+                    <Link className="btn-secondary" to={`/customer/claims?orderId=${encodeURIComponent(order.id)}`}>Gửi khiếu nại</Link>
+                  )}
+                  <Link className="btn-primary" to={detailPath}>Xem chi tiết</Link>
+                </div>
+              </div>
+            </footer>
           </article>
         );
       })}
