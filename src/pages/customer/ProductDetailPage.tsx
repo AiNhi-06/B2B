@@ -1,5 +1,6 @@
 import { ProductRating } from './ProductRating';
 import { ProductCondition } from './ProductCondition';
+import { ProductSellerChat } from './ProductSellerChat';
 import { calculateTrueCost } from '../../services/demoService';
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -77,7 +78,13 @@ export function ProductDetailPage() {
                 <strong>{product.supplier.name}</strong>
                 <small>{product.supplier.regionLabel || 'Nhà cung cấp FARMGO'}</small>
               </div>
-              <Link to={`/customer/catalog?supplier=${encodeURIComponent(product.supplierId)}`}>Ghé gian hàng</Link>
+              <div className="purchase-supplier-actions">
+                {cart.customerId && (
+                  <ProductSellerChat key={JSON.stringify([cart.customerId, product.supplierId, product.id])}
+                    product={product} customerId={cart.customerId} />
+                )}
+                <Link to={`/customer/catalog?supplier=${encodeURIComponent(product.supplierId)}`}>Ghé gian hàng</Link>
+              </div>
             </div>
 
             <label className="purchase-quantity-label" htmlFor="detail-qty">
