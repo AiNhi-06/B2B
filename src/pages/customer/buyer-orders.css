@@ -1,0 +1,43 @@
+.buyer-orders { max-width: 940px; margin: 0 auto; display: grid; gap: 16px; }
+.buyer-orders-heading, .buyer-order-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+}
+.buyer-orders-heading { flex-wrap: wrap; margin-bottom: 6px; }
+.buyer-orders-heading h1 { margin: 0; font-size: clamp(22px, 4vw, 30px); }
+.buyer-orders-heading p, .buyer-order-header p, .buyer-order-item p {
+  margin: 4px 0 0; color: #566d60; font-size: .875rem; overflow-wrap: anywhere;
+}
+.buyer-order-card {
+  background: #fff; border: 1px solid #dce9df; border-radius: 14px;
+  padding: clamp(12px, 3vw, 24px); min-width: 0;
+}
+.buyer-order-header { padding-bottom: 12px; border-bottom: 1px solid #e7eee9; }
+.buyer-order-header h2, .buyer-order-group h3 { margin: 0; font-size: 1rem; overflow-wrap: anywhere; }
+.buyer-order-group h3 { padding-top: 14px; color: #166342; }
+.buyer-order-group ul { list-style: none; padding: 0; margin: 0; }
+.buyer-order-item {
+  display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 12px;
+  align-items: center; padding: 12px 0; border-bottom: 1px solid #e7eee9; overflow-wrap: anywhere;
+}
+.buyer-order-item .supplier-fruit-photo { margin: 0; }
+.buyer-order-item .supplier-photo-frame { width: 100%; height: 70px; border-radius: 8px; overflow: hidden; }
+.buyer-order-item .supplier-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+.buyer-order-item .supplier-photo-frame svg { width: 44px; height: 44px; }
+.buyer-order-line-total { justify-self: end; }
+.buyer-order-total { text-align: right; padding: 14px 0; }
+.buyer-order-total > span { display: block; color: #566d60; font-size: .875rem; }
+.buyer-order-total > div { margin-top: 4px; }
+.buyer-order-total strong { margin-inline-start: 6px; color: #125a3a; font-size: 1.15rem; }
+.buyer-order-delivery {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: #edf8f1; color: #135c3c; border-radius: 8px; padding: 10px 14px; text-decoration: none;
+}
+.buyer-order-delivery:hover { text-decoration: underline; }
+.buyer-order-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.buyer-order-actions a, .buyer-orders-heading a { text-decoration: none; }
+@media (max-width: 520px) {
+  .buyer-order-item { grid-template-columns: 56px minmax(0, 1fr); gap: 4px 10px; }
+  .buyer-order-item .supplier-fruit-photo { grid-row: span 2; }
+  .buyer-order-item .supplier-photo-frame { height: 56px; }
+  .buyer-order-line-total { grid-column: 2; }
+}
