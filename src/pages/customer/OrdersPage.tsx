@@ -79,7 +79,7 @@ export function OrdersPage() {
         } else if (order.deliveryDate) {
           const slot = order.deliverySlot === 'MORNING' ? ' · 05–07h' :
             order.deliverySlot === 'AFTERNOON' ? ' · 13–15h' : '';
-          delivery = `Lịch giao mô phỏng: ${shortDate.format(new Date(order.deliveryDate))}${slot}`;
+          delivery = `Lịch giao: ${shortDate.format(new Date(order.deliveryDate))}${slot}`;
         }
 
         return (
@@ -115,7 +115,7 @@ export function OrdersPage() {
 
             <div className="buyer-order-total">
               <span>Phí giao: {money(order.shippingFeeVnd)}</span>
-              {(order.insuranceFeeVnd ?? 0) > 0 && <span>Bảo hiểm mô phỏng: {money(order.insuranceFeeVnd ?? 0)}</span>}
+              {(order.insuranceFeeVnd ?? 0) > 0 && <span>Bảo hiểm: {money(order.insuranceFeeVnd ?? 0)}</span>}
               <div>Tổng tiền ({order.items.length} mặt hàng) <strong>{money(order.totalVnd)}</strong></div>
             </div>
 
