@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import type { OrderStatus, ShipmentStatus } from '../../types';
 import * as api from '../../services/demoService';
 import { useDemoData } from '../../components/shared/useDemoData';
@@ -11,6 +11,33 @@ const dateTime = new Intl.DateTimeFormat('vi-VN', {
   dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Ho_Chi_Minh',
 });
 const quantity = new Intl.NumberFormat('vi-VN');
+// Matches the four-digit code accepted by the transport pickup demo.
+const pickupPin = '1234';
+
+function HandoverButton({ orderId }: { orderId: string }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const title = useId();
+
+  return <>
+    <button type="button" className="btn-primary seller-handover-button" onClick={() => dialog.current?.showModal()}>
+      Hiện QR / PIN bàn giao xe
+    </button>
+    <dialog ref={dialog} className="seller-listing-dialog seller-handover-dialog" aria-labelledby={title}>
+      <header>
+        <h2 id={title}>QR / PIN bàn giao xe</h2>
+        <button type="button" className="btn-secondary" aria-label="Đóng popup" onClick={() => dialog.current?.close()}>×</button>
+      </header>
+      <div className="seller-handover-content">
+        <p>Mã đơn <b>{orderId}</b></p>
+        <svg viewBox="0 0 24 24" width="92" height="92" aria-hidden="true">
+          <path fill="currentColor" d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4zm14 0h4v4h-4v-4zm-4 4h4v4h-4v-4zm4-4h-4v-4h4v4zm0-6h4v2h-4v-2zm-6 0h2v4h-2v-4z" />
+        </svg>
+        <p>PIN bàn giao <b className="seller-handover-pin">{pickupPin}</b></p>
+        <p>Nhập PIN tại mục Lấy hàng trên trang giao nhận. Hình QR chỉ dùng để minh họa thao tác quét.</p>
+      </div>
+    </dialog>
+  </>;
+}
 
 const stages = [
   { key: 'pending', label: 'Chờ xác nhận' },
@@ -82,6 +109,7 @@ export function SellerOrders() {
         const address = addresses.get(order.deliveryAddressId);
         const slot = order.deliverySlot === 'MORNING' ? '05:00–07:00' : order.deliverySlot === 'AFTERNOON' ? '13:00–15:00' : '';
         const canConfirm = stage === 'pending' && eligible.has(order.id);
+        const canShowHandover = stage === 'preparing' || stage === 'transport';
         const current = stages.find(item => item.key === stage)!;
         const statusLabel = stage === 'transport'
           ? shipment?.status === 'ASSIGNED' ? 'Đã phân công chuyến' : 'Đã tới điểm gom'
@@ -127,8 +155,9 @@ export function SellerOrders() {
               </section>
             </div>
             <footer>
-              <span>{stage === 'pending' && !canConfirm ? 'Chờ hệ thống gom đơn' : <>Đặt lúc <time dateTime={order.placedAt}>{dateTime.format(new Date(order.placedAt))}</time></>}</span>
+              <span>{canShowHandover ? <>Mã đơn bàn giao <b>{order.id}</b></> : stage === 'pending' && !canConfirm ? 'Chờ hệ thống gom đơn' : <>Đặt lúc <time dateTime={order.placedAt}>{dateTime.format(new Date(order.placedAt))}</time></>}</span>
               <div className="seller-order-card-actions">
+              {canShowHandover && <HandoverButton orderId={order.id} />}
               {canConfirm && (
                 <button
                   className="btn-primary"

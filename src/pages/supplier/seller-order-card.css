@@ -57,6 +57,14 @@
 
 .seller-order-card footer > span { font-size: .875rem; }
 .seller-order-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-inline-start: auto; }
+.seller-shell .seller-handover-button { background: #7828bf; border-color: #7828bf; }
+.seller-shell .seller-handover-button:hover { background: #602097; border-color: #602097; }
+.seller-handover-dialog { max-width: 420px; }
+.seller-handover-dialog > header { border-bottom: 1px solid var(--seller-border); }
+.seller-handover-content { display: grid; justify-items: center; gap: 12px; padding: 20px; text-align: center; }
+.seller-handover-content p { margin: 0; color: var(--seller-muted); }
+.seller-handover-content svg { padding: 8px; border: 1px solid var(--seller-border); border-radius: 8px; }
+.seller-handover-pin { display: block; color: var(--seller-ink); font-size: 1.6rem; letter-spacing: .12em; }
 
 @media (max-width: 760px) {
   .seller-order-card-grid { grid-template-columns: minmax(0, 1fr); }
