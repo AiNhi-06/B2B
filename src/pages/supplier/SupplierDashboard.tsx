@@ -2,7 +2,6 @@ import { FinancePage } from '../FinancePage';
 import { QualityPage } from '../QualityPage';
 import { SellerProfile } from './SellerProfile';
 import { SellerOrders } from './SellerOrders';
-import { SellerShipping } from './SellerShipping';
 import { SellerReviews } from './SellerReviews';
 import { SellerClaims } from './SellerClaims';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -17,7 +16,6 @@ export function SupplierDashboard() {
       <Routes>
         <Route path="orders" element={<SellerOrders />} />
         <Route path="reviews" element={<SellerReviews />} />
-        <Route path="shipping" element={<SellerShipping />} />
         <Route path="finance" element={<FinancePage />} />
         <Route path="claims" element={<SellerClaims />} />
         <Route path="profile" element={<SellerProfile />} />

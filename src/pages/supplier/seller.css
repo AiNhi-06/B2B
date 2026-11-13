@@ -98,27 +98,8 @@
 .btn-save-farm:hover { background: #059669 !important; }
 .farm-save-msg { color: #059669; font-size: 13.5px; font-weight: 600; margin: 0; }
 
-/* --- Phạm vi phục vụ --- */
-.seller-service-area-layout { max-width: 980px; margin: 0 auto; }
-.seller-service-area-panel { padding: 30px; background: white; border: 1px solid #e2e8f0; border-radius: 14px; }
-.seller-service-area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; gap: 16px; }
-.seller-service-area-header h2 { font-size: 18px; margin: 0 0 6px; color: #1e293b; }
-.seller-service-area-header p { font-size: 13.5px; color: #64748b; margin: 0; }
-.seller-service-count { background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 14px; border-radius: 20px; font-size: 13px; color: #065f46; white-space: nowrap; }
-.seller-zones-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
-.seller-zone-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #ffffff; cursor: pointer; transition: all 0.15s ease; }
-.seller-zone-card.selected { background: #f0fdf4; border-color: #86efac; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.08); }
-.seller-zone-card input { width: 18px; height: 18px; accent-color: #059669; cursor: pointer; }
-.seller-zone-card strong { display: block; font-size: 14px; color: #1e293b; }
-.seller-zone-card span { display: block; font-size: 12px; color: #64748b; margin-top: 2px; }
-.seller-transport-linked-notice { display: flex; gap: 14px; align-items: flex-start; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; margin: 20px 0; }
-.notice-icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
-.seller-transport-linked-notice strong { display: block; font-size: 14px; color: #1e40af; margin-bottom: 4px; }
-.seller-transport-linked-notice p { font-size: 13px; color: #3b82f6; margin: 0; line-height: 1.5; }
-.seller-save-status { color: #059669; font-weight: 600; font-size: 13px; margin: 0; }
-
 @media(max-width: 900px) {
-  .farm-badges, .seller-zones-grid { grid-template-columns: 1fr; }
+  .farm-badges { grid-template-columns: 1fr; }
   .farm-profile-form .form-grid { grid-template-columns: 1fr; }
 }
 
