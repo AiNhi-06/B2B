@@ -4,7 +4,7 @@ import { SellerProfile } from './SellerProfile';
 import { SellerOrders } from './SellerOrders';
 import { SellerShipping } from './SellerShipping';
 import { SellerReviews } from './SellerReviews';
-import { ClaimsPage } from '../ClaimsPage';
+import { SellerClaims } from './SellerClaims';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ListingsPage } from './ListingsPage';
 import { AddProductPage } from './AddProductPage';
@@ -19,7 +19,7 @@ export function SupplierDashboard() {
         <Route path="reviews" element={<SellerReviews />} />
         <Route path="shipping" element={<SellerShipping />} />
         <Route path="finance" element={<FinancePage />} />
-        <Route path="claims" element={<ClaimsPage />} />
+        <Route path="claims" element={<SellerClaims />} />
         <Route path="profile" element={<SellerProfile />} />
         <Route path="quality" element={<QualityPage />} />
         <Route index element={<SellerOverview />} />
