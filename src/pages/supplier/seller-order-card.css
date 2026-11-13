@@ -1,0 +1,66 @@
+.seller-order.seller-order-card {
+  padding: 0;
+  overflow-wrap: anywhere;
+}
+
+.seller-order-card .seller-order-card-head {
+  align-items: center;
+  flex-flow: row wrap;
+  gap: 8px 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--seller-border);
+}
+
+.seller-order-card .seller-order-card-id {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  text-align: left;
+  flex-shrink: 1;
+}
+
+.seller-order-card-id h2 { margin: 0; font-size: 1rem; }
+.seller-order-card-head time { font-weight: 650; }
+.seller-order-card .seller-order-status { margin: 0; }
+.seller-order-card .seller-order-status[data-stage="pending"] { color: #825006; background: #fff1d3; }
+.seller-order-card .seller-order-status[data-stage="transport"] { color: #633199; background: #f0e6fb; }
+.seller-order-card .seller-order-status[data-stage="tracking"] { color: #1d557c; background: #e6f1fa; }
+
+.seller-order-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 24px;
+  padding: 18px 20px;
+}
+
+.seller-order-card-grid h3 {
+  margin: 0 0 6px;
+  color: var(--seller-muted);
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+
+.seller-order-card-grid p,
+.seller-order-card-grid ul { margin: 0; }
+.seller-order-card-grid ul { padding: 0; list-style: none; }
+.seller-order-card-grid li { display: grid; gap: 2px; margin-bottom: 6px; }
+.seller-order-card-grid li b { color: var(--seller-accent); }
+.seller-order-card-grid li span { color: var(--seller-muted); font-size: .94rem; }
+.seller-order-card-grid section > p + p { margin-top: 3px; }
+
+.seller-order.seller-order-card > footer {
+  justify-content: space-between;
+  padding: 10px 20px 14px;
+  border-top: 1px solid var(--seller-border);
+}
+
+.seller-order-card footer > span { font-size: .875rem; }
+.seller-order-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-inline-start: auto; }
+
+@media (max-width: 760px) {
+  .seller-order-card-grid { grid-template-columns: minmax(0, 1fr); }
+  .seller-order-card .seller-order-card-head,
+  .seller-order-card-grid,
+  .seller-order-card footer { padding-inline: 14px; }
+}
