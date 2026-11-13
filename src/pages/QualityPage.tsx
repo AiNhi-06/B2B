@@ -2,9 +2,10 @@ import { Fragment, useState } from 'react';
 import * as api from '../services/demoService';
 import type { ProductListing, QualityReview } from '../types';
 import { useDemoData } from '../components/shared/useDemoData';
-import { ErrorMessage } from '../components/shared/Feedback';
+import { ErrorMessage, LoadingSpinner } from '../components/shared/Feedback';
 import { FruitPhoto } from '../components/shared/FruitPhoto';
 import { money } from '../components/shared/useCatalog';
+import './supplier/seller-quality.css';
 
 type QualityRun = (action: () => Promise<unknown>) => Promise<boolean>;
 const statusLabel = { PENDING: 'Chờ duyệt', APPROVED: 'Đã duyệt niêm yết', REJECTED: 'Cần bổ sung' };
@@ -18,10 +19,10 @@ function QualityDetails({ product, supplierName, qc, admin, busy, run }: { produ
   const trueCost = api.calculateTrueCost(product.publicPricePerKg, product.availableKg, qc);
 
   return <div className="quality-expanded-panel">
-    <div className="quality-detail-heading">
+    {admin && <div className="quality-detail-heading">
       <div className="quality-detail-photo"><FruitPhoto id={product.commodityId || product.id} name={product.name} imageUrl={product.imageUrl} /></div>
       <div><span className="quality-detail-kicker">Chi tiết mặt hàng</span><h3>{product.name}</h3><span className={`quality-status-pill${qc ? ` quality-pill-${qc.status.toLowerCase()}` : ' quality-pill-legacy'}`}>{status}</span></div>
-    </div>
+    </div>}
     <div className="quality-detail-facts">
       <div><span>Vựa cung cấp</span><strong>{supplierName}</strong></div>
       <div><span>Tồn khả dụng</span><strong>{product.availableKg.toLocaleString('vi-VN')} kg</strong></div>
@@ -108,29 +109,45 @@ export function QualityPage() {
 
   if (admin && s.data) return <><div className="page-heading"><div><h1>Kiểm duyệt nhà cung cấp</h1><p>Hồ sơ, chứng nhận và chất lượng nguồn cung trong dữ liệu mô phỏng.</p></div></div>{s.error && <ErrorMessage message={s.error} />}<AdminSupplierQuality suppliers={s.data.suppliers} profiles={s.data.profiles} reviews={s.data.reviews} products={s.data.products} busy={s.busy} run={s.run} /></>;
 
+  const { data } = s;
   return <><div className="page-heading"><div><h1>Chất lượng & QC</h1><p>Phân hạng, Yield và Brix do NCC khai; Admin xét duyệt mô phỏng.</p></div></div>{s.error && <ErrorMessage message={s.error} />}
-    {s.data && <section className="card admin-quality-table-card">
-      <header className="admin-quality-table-heading"><h2>Danh mục nông sản & kiểm định chất lượng đầu vào</h2><span>{s.data.products.length} mặt hàng</span></header>
-      <div className="table-responsive admin-quality-table-scroll"><table className="data-table admin-quality-table"><thead><tr><th>Mặt hàng trái cây</th><th>Vựa cung cấp</th><th>Giá khai báo</th><th>Độ ngọt Brix chuẩn</th><th>Yield Rate chuẩn (%)</th><th>Tính toán True-cost B2B</th><th>Phê duyệt QC</th></tr></thead>
-        <tbody>{products.map(product => {
-          const qc = s.data!.reviews.find(review => review.productId === product.id);
-          const supplierName = s.data!.suppliers.find(supplier => supplier.id === product.supplierId)?.name || product.supplierId;
+    {!s.data && !s.error && <LoadingSpinner />}
+    {data && <section className="seller-quality" aria-label="Danh mục kiểm định chất lượng">
+      <p className="seller-quality-count">{products.length} mặt hàng</p>
+      {products.length === 0 && <p className="seller-panel">Chưa có mặt hàng nào để kiểm định.</p>}
+      <div className="seller-quality-grid">
+        {products.map(product => {
+          const qc = data.reviews.find(review => review.productId === product.id);
+          const supplierName = data.suppliers.find(supplier => supplier.id === product.supplierId)?.name || product.supplierId;
           const cost = api.calculateTrueCost(product.publicPricePerKg, product.availableKg, qc);
           const expanded = expandedId === product.id;
-          const approval = qc?.status === 'APPROVED' ? 'Đã duyệt niêm yết' : qc?.status === 'PENDING' ? 'Chờ duyệt' : qc?.status === 'REJECTED' ? 'Cần bổ sung' : product.legacy ? 'Dữ liệu cũ' : 'Chưa nộp QC';
-          return <Fragment key={product.id}>
-            <tr className={`admin-quality-row${expanded ? ' is-expanded' : ''}`} onClick={() => setExpandedId(expanded ? undefined : product.id)}>
-              <td><button type="button" className="quality-row-trigger" aria-expanded={expanded} aria-controls={`quality-detail-${product.id}`}><span><strong>{product.name}{qc?.grade ? ` · Grade ${qc.grade}` : ''}</strong><small>{expanded ? 'Ẩn chi tiết' : 'Xem chi tiết'}</small></span><span className="quality-row-chevron" aria-hidden="true">{expanded ? '−' : '+'}</span></button></td>
-              <td>{supplierName}</td><td><strong>{money(product.publicPricePerKg)}/kg</strong></td>
-              <td>{qc?.brix !== undefined ? `${qc.brix}° Brix` : '—'}</td><td>{qc?.yieldPercent !== undefined ? `${qc.yieldPercent}%` : '—'}</td>
-              <td className={cost ? 'quality-cost-value' : ''}>{cost ? `${money(Math.round(cost.costPerUsableKg))}/kg` : '—'}</td>
-              <td><span className={`quality-table-status quality-table-status-${qc?.status.toLowerCase() ?? 'legacy'}`}>{approval}</span></td>
-            </tr>
-            {expanded && <tr className="quality-detail-row"><td colSpan={7}><div id={`quality-detail-${product.id}`}><QualityDetails product={product} supplierName={supplierName} qc={qc} admin={!!admin} busy={s.busy} run={s.run} /></div></td></tr>}
-          </Fragment>;
-        })}</tbody>
-      </table></div>
-      {s.data.products.length === 0 && <div className="quality-table-empty">Chưa có mặt hàng nào để kiểm định.</div>}
+          const approval = qc ? statusLabel[qc.status] : product.legacy ? 'Dữ liệu cũ' : 'Chưa nộp QC';
+          const detailId = 'quality-detail-' + product.id;
+          return <article key={product.id} className="seller-quality-card" data-expanded={expanded}>
+            <div className="seller-quality-photo"><FruitPhoto id={product.commodityId || product.id} name={product.name} imageUrl={product.imageUrl} /></div>
+            <div className="seller-quality-summary">
+              <header>
+                <span className="seller-quality-status" data-status={qc?.status}>{approval}</span>
+                <h2>{product.name}</h2>
+                <p><strong>{money(product.publicPricePerKg)}/kg</strong> · Sẵn có {product.availableKg.toLocaleString('vi-VN')} kg</p>
+              </header>
+              <dl className="seller-quality-metrics">
+                <div><dt>Phân hạng</dt><dd>{qc?.grade ?? '—'}</dd></div>
+                <div><dt>Brix</dt><dd>{qc?.brix !== undefined ? qc.brix + '°' : '—'}</dd></div>
+                <div><dt>Yield</dt><dd>{qc?.yieldPercent !== undefined ? qc.yieldPercent + '%' : '—'}</dd></div>
+                <div><dt>True-cost</dt><dd>{cost ? money(Math.round(cost.costPerUsableKg)) + '/kg' : '—'}</dd></div>
+              </dl>
+              <button type="button" className="btn-secondary" aria-expanded={expanded} aria-controls={detailId}
+                onClick={() => setExpandedId(expanded ? undefined : product.id)}>
+                {expanded ? 'Thu gọn' : 'Xem chi tiết QC'}
+              </button>
+            </div>
+            <div id={detailId} className="seller-quality-details" hidden={!expanded}>
+              {expanded && <QualityDetails product={product} supplierName={supplierName} qc={qc} admin={false} busy={s.busy} run={s.run} />}
+            </div>
+          </article>;
+        })}
+      </div>
     </section>}
   </>;
 }

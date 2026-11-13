@@ -1,0 +1,57 @@
+.seller-quality-count { color: var(--seller-muted); }
+.seller-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  align-items: start;
+  gap: 16px;
+}
+.seller-quality-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: white;
+  border: 1px solid var(--seller-border);
+  border-radius: 14px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.seller-quality-card[data-expanded="true"] { border-color: var(--seller-accent); }
+.seller-quality-photo { height: 154px; background: #edf4ef; }
+.seller-quality-photo :is(figure, .supplier-photo-frame, img, .supplier-photo-fallback) {
+  width: 100%; height: 100%; margin: 0;
+}
+.seller-quality-photo img { display: block; object-fit: cover; }
+.seller-quality-photo .supplier-photo-fallback { display: grid; place-items: center; }
+.seller-quality-summary { display: grid; gap: 12px; padding: 16px; }
+.seller-quality-summary h2 { margin: 6px 0 0; }
+.seller-quality-summary p { margin: 0; color: var(--seller-muted); }
+.seller-quality-summary p strong { color: var(--seller-accent); }
+.seller-quality-status {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: #edf2ef;
+  color: #40594a;
+  font-size: .875rem;
+  font-weight: 700;
+}
+.seller-quality-status[data-status="APPROVED"] { color: #126043; background: #e3f5e9; }
+.seller-quality-status[data-status="PENDING"] { color: #785003; background: #fff1d1; }
+.seller-quality-status[data-status="REJECTED"] { color: #982e33; background: #ffedeb; }
+.seller-quality-metrics,.seller-quality-details .quality-detail-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.seller-quality-metrics div,.seller-quality-details .quality-detail-facts > div {
+  padding: 8px 10px;
+  background: #f3f7f4;
+  border-radius: 7px;
+}
+.seller-quality-metrics dt,.seller-quality-details .quality-detail-facts span { color: var(--seller-muted); font-size: .875rem; }
+.seller-quality-metrics dd { margin: 3px 0 0; font-weight: 700; }
+.seller-quality-summary button { justify-self: start; }
+.seller-quality-details .quality-expanded-panel { padding: 16px; border-top: 1px solid var(--seller-border); }
+.seller-quality-details .quality-detail-facts strong { display: block; }
+.seller-quality-details .quality-submit-form .form-grid { grid-template-columns: 1fr; }
+.seller-quality-details .quality-submit-form :is(input, select) { font-size: 1rem; }
