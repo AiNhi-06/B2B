@@ -36,10 +36,10 @@
 .transport-signed-in small { display: block; margin-top: 2px; color: #a9c3ad; font-size: 9px; font-weight: 400; }
 .transport-signout { min-height: 34px; padding: 0 11px; border: 1px solid #4d6b56; border-radius: 7px; color: #e7f0e7; background: transparent; font-size: 14px; cursor: pointer; }
 .transport-signout:hover { background: #244633; }
-.transport-step-nav { min-height: 62px; padding: 0 max(clamp(14px, 3vw, 36px), calc((100vw - 1280px) / 2)); display: flex; align-items: stretch; gap: 5px; position: sticky; top: 0; z-index: 20; overflow-x: auto; border-bottom: 1px solid #dfe8dd; background: #fff; }
+.transport-step-nav { min-height: 62px; padding: 0 max(clamp(14px, 3vw, 36px), calc((100vw - 1280px) / 2)); display: flex; flex-wrap: wrap; align-items: stretch; gap: 5px; position: sticky; top: 0; z-index: 20; border-bottom: 1px solid #dfe8dd; background: #fff; }
 .transport-step-nav button { min-width: 138px; min-height: 61px; padding: 0 10px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-bottom: 3px solid transparent; color: #7a887d; background: transparent; text-align: left; cursor: pointer; }
 .transport-step-nav button > span { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #65766a; background: #e9eee8; font-size: 14px; font-weight: 750; }
-.transport-step-nav button strong { font-size: 14px; font-weight: 650; white-space: nowrap; }
+.transport-step-nav button strong { font-size: 14px; font-weight: 650; }
 .transport-step-nav button:hover { color: #225d3b; background: #f7faf5; }
 .transport-step-nav button.active { border-bottom-color: #25834f; color: #1d7447; background: #f6fbf4; }
 .transport-step-nav button.active > span { color: #fff; background: #27834f; }
@@ -142,7 +142,7 @@
 
 /* Six-stage transport workspace inspired by the supplied reference screens. */
 .transport-step-nav { justify-content: center; }
-.transport-step-nav button { min-width: max-content; padding-inline: 12px; gap: 9px; color: #52665c; }
+.transport-step-nav button { min-width: 0; max-width: 100%; padding-inline: 12px; gap: 9px; color: #52665c; }
 .transport-step-nav button strong { font-size: 14px; }
 .transport-step-nav button > span { width: 25px; height: 25px; font-size: 14px; }
 .transport-step-nav button > i { color: #c4d0c9; font-size: 18px; font-style: normal; }
@@ -293,10 +293,8 @@
   .transport-masthead { min-height: 64px; padding: 0 16px; }
   .transport-masthead-actions { gap: 8px; }
   .transport-demo-chip { padding: 7px 9px; font-size: 14px; }
-  .transport-step-nav { justify-content: flex-start; }
-  .transport-step-nav { min-height: 55px; padding-inline: 10px; }
-  .transport-step-nav button { min-width: 125px; min-height: 54px; }
-  .transport-step-nav button { min-width: max-content; padding-inline: 8px; gap: 6px; }
+  .transport-step-nav { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-inline: 10px; }
+  .transport-step-nav button { min-height: 54px; padding-inline: 8px; gap: 6px; }
   .transport-step-nav button strong { font-size: 14px; }
   .transport-step-nav button > i { font-size: 15px; }
   .transport-content { padding: 17px 13px 12px; }
@@ -507,7 +505,6 @@
 .transport-portal :is(button, input, select, textarea) { min-height: 44px; font-size: 15px; }
 .transport-portal :is(input, select, textarea) { font-size: 16px; }
 .transport-portal .transport-otp-mock input { font-size: 20px; }
-.transport-step-nav { justify-content: flex-start; }
 .transport-step-nav button strong { font-size: 15px; }
 .transport-route-planner-head,.route-map-labels,.transport-review-card > header { flex-wrap: wrap; }
 .route-recalculate,.route-next-action { white-space: normal; }
